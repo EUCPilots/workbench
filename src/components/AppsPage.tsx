@@ -18,6 +18,7 @@ interface AppVersion {
 
 interface AppRecord {
   name: string;
+  displayName: string;
   versions: AppVersion[];
   lastUpdated: string | null;
 }
@@ -36,12 +37,6 @@ interface AppEntry {
   displayName: string;
   versions: AppVersion[];
   lastUpdated: string | null;
-}
-
-function prettifyName(name: string): string {
-  return name
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
 }
 
 type Tab = 'apps' | 'dashboard' | 'about';
@@ -112,7 +107,7 @@ export default function AppsPage({ base }: AppsPageProps) {
     if (!appData) return [];
     return appData.apps.map((a) => ({
       name: a.name,
-      displayName: prettifyName(a.name),
+      displayName: a.displayName,
       versions: a.versions,
       lastUpdated: a.lastUpdated,
     }));

@@ -50,6 +50,12 @@ node_modules
 dist/
 .astro/
 
+# App JSON data — fetched from aaronparker/apptracker at build time, not stored here
+json/
+
+# Cloned source repo used during CI build
+_appdata/
+
 # Workflow files
 changed-files-hosted.txt
 changed-files-pwsh.txt

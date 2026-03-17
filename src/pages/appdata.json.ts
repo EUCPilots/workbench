@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
-import { basename } from 'node:path';
+import { basename, join } from 'node:path';
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 interface AppVersion {
   Version?: string;
@@ -12,7 +13,28 @@ interface AppVersion {
   [key: string]: unknown;
 }
 
-// Load all JSON files at build time
+interface SupportedApp {
+  Name: string;
+  Application: string;
+  Link: string;
+}
+
+// Load supported-apps.json at build time.  The file is fetched from
+// aaronparker/apptracker by the CI workflow; falls back to an empty map
+// so local builds without the file still succeed (displayName = name).
+function loadDisplayNameMap(): Map<string, string> {
+  try {
+    const raw = readFileSync(join(process.cwd(), 'json', 'supported-apps.json'), 'utf-8');
+    return new Map<string, string>(
+      (JSON.parse(raw) as SupportedApp[]).map((a) => [a.Name.toLowerCase(), a.Application])
+    );
+  } catch {
+    return new Map();
+  }
+}
+const displayNameMap = loadDisplayNameMap();
+
+// Load all JSON files at build time (excluding supported-apps.json)
 const modules = import.meta.glob<{ default: AppVersion[] }>('/json/*.json', { eager: true });
 
 /**
@@ -30,9 +52,12 @@ function buildDateMapFromGit(): Map<string, string> {
   try {
     // --pretty=format:"DATE %cI" prints one "DATE <iso>" header per commit.
     // --name-only appends the list of changed files beneath each header.
+    // JSON_GIT_DIR points to the cloned source repo (aaronparker/apptracker)
+    // so that lastUpdated reflects that repo's commit history, not this one.
+    const gitDir = process.env.JSON_GIT_DIR ?? process.cwd();
     const output = execSync(
       'git log --pretty=format:"DATE %cI" --name-only -- json/',
-      { encoding: 'utf-8', cwd: process.cwd(), stdio: ['pipe', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }
+      { encoding: 'utf-8', cwd: gitDir, stdio: ['pipe', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }
     );
 
     let currentDate: string | null = null;
@@ -58,12 +83,14 @@ const dateMap = buildDateMapFromGit();
 
 export const GET: APIRoute = () => {
   const apps = Object.entries(modules)
+    .filter(([path]) => !path.endsWith('/supported-apps.json'))
     .map(([path, mod]) => {
       const name = basename(path, '.json').replace('/json/', '');
+      const displayName = displayNameMap.get(name.toLowerCase()) ?? name;
       const lastUpdated = dateMap.get(name.toLowerCase()) ?? null;
-      return { name, versions: mod.default ?? [], lastUpdated };
+      return { name, displayName, versions: mod.default ?? [], lastUpdated };
     })
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }));
 
   const appCount = apps.length;
   const versionCount = apps.reduce((sum, a) => sum + a.versions.length, 0);
