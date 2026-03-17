@@ -1,10 +1,11 @@
 interface AboutProps {
   appCount: number;
   versionCount: number;
+  generatedAt: string;
 }
 
 const INFO_ROWS = [
-  { label: 'Author', value: 'Aaron Parker' },
+  { label: 'Author', value: 'Aaron Parker (stealthpuppy)' },
   { label: 'Copyright', value: '(c) EUCPilots. Licensed under the MIT Licence.' },
   {
     label: 'License',
@@ -40,7 +41,7 @@ const CHANGELOG = [
   },
 ];
 
-export default function AboutPage({ appCount, versionCount }: AboutProps) {
+export default function AboutPage({ appCount, versionCount, generatedAt }: AboutProps) {
   return (
     <div className="about-page">
       <div className="about-card">
@@ -66,13 +67,22 @@ export default function AboutPage({ appCount, versionCount }: AboutProps) {
           <span className="about-card__label">Unique installers</span>
           <span className="about-card__value">{versionCount.toLocaleString()}</span>
         </div>
+        <div className="about-card__row">
+          <span className="about-card__label">Data last generated</span>
+          <span className="about-card__value">
+            {new Date(generatedAt).toLocaleString(undefined, {
+              dateStyle: 'long',
+              timeStyle: 'short',
+            })}
+          </span>
+        </div>
       </div>
 
       <div className="about-description">
         <p className="about-description__title">Description</p>
         <p className="about-description__body">
           Evergreen Workbench uses the{' '}
-          <a href="https://stealthpuppy.com/evergreen/" target="_blank" rel="noopener noreferrer">
+          <a href="https://eucpilots.com/evergreen-docs/" target="_blank" rel="noopener noreferrer">
             Evergreen
           </a>{' '}
           PowerShell module to track the latest versions and download URIs for {appCount} Windows

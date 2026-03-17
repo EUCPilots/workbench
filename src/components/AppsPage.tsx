@@ -338,6 +338,7 @@ export default function AppsPage({ base }: AppsPageProps) {
             <AboutPage
               appCount={appData?.meta.appCount ?? 0}
               versionCount={appData?.meta.versionCount ?? 0}
+              generatedAt={appData?.meta.generatedAt ?? ''}
             />
           )}
         </main>
