@@ -5,6 +5,8 @@ import AboutPage from './AboutPage';
 import DashboardPage from './DashboardPage';
 import ThemeToggle from './ThemeToggle';
 import GlobalSearch from './GlobalSearch';
+import ErrorBoundary from './ErrorBoundary';
+import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 
 interface AppVersion {
   Version?: string;
@@ -52,6 +54,7 @@ export default function AppsPage({ base }: AppsPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [favourites, setFavourites] = useState<Set<string>>(() => {
@@ -62,7 +65,24 @@ export default function AppsPage({ base }: AppsPageProps) {
       return new Set();
     }
   });
+  const [recentThresholdHours, setRecentThresholdHours] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('recentThresholdHours');
+      const n = saved ? parseInt(saved, 10) : NaN;
+      return isNaN(n) ? 48 : n;
+    } catch {
+      return 48;
+    }
+  });
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const sidebarSearchRef = useRef<HTMLInputElement>(null);
+  const swipeStartX = useRef<number | null>(null);
+  const swipeStartY = useRef<number | null>(null);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(searchQuery), 150);
+    return () => clearTimeout(id);
+  }, [searchQuery]);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -127,12 +147,12 @@ export default function AppsPage({ base }: AppsPageProps) {
   }, [allApps]);
 
   const filteredApps = useMemo(() => {
-    if (!searchQuery.trim()) return allApps;
-    const q = searchQuery.toLowerCase();
+    if (!debouncedQuery.trim()) return allApps;
+    const q = debouncedQuery.toLowerCase();
     return allApps.filter(
       (a) => a.name.toLowerCase().includes(q) || a.displayName.toLowerCase().includes(q)
     );
-  }, [allApps, searchQuery]);
+  }, [allApps, debouncedQuery]);
 
   // Mirrors the pinned-first order shown in the sidebar, used for arrow-key nav
   const orderedApps = useMemo(() => {
@@ -141,12 +161,19 @@ export default function AppsPage({ base }: AppsPageProps) {
     return [...pinned, ...rest];
   }, [filteredApps, favourites]);
 
-  // Keyboard navigation: / focuses sidebar search, ↑↓ moves through app list
+  // Keyboard navigation: / focuses sidebar search, ↑↓ moves through app list, ? opens shortcuts
   useEffect(() => {
-    if (tab !== 'apps') return;
     function onKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const inInput = ['INPUT', 'TEXTAREA'].includes(target.tagName);
+
+      if (e.key === '?' && !inInput) {
+        e.preventDefault();
+        setShowShortcuts((v) => !v);
+        return;
+      }
+
+      if (tab !== 'apps') return;
 
       if (e.key === '/' && !inInput) {
         e.preventDefault();
@@ -162,9 +189,9 @@ export default function AppsPage({ base }: AppsPageProps) {
           e.key === 'ArrowDown'
             ? Math.min(idx + 1, orderedApps.length - 1)
             : Math.max(idx - 1, 0);
-        const target = orderedApps[next];
-        if (target && target.name !== selectedApp) {
-          handleSelectApp(target.name);
+        const nextApp = orderedApps[next];
+        if (nextApp && nextApp.name !== selectedApp) {
+          handleSelectApp(nextApp.name);
         }
       }
     }
@@ -208,13 +235,37 @@ export default function AppsPage({ base }: AppsPageProps) {
     });
   }
 
+  function handleThresholdChange(h: number) {
+    setRecentThresholdHours(h);
+    localStorage.setItem('recentThresholdHours', String(h));
+  }
+
   function handleTabChange(t: Tab) {
     setTab(t);
     if (isMobile) setSidebarOpen(false);
   }
 
+  function handleSidebarTouchStart(e: React.TouchEvent) {
+    swipeStartX.current = e.touches[0].clientX;
+    swipeStartY.current = e.touches[0].clientY;
+  }
+
+  function handleSidebarTouchEnd(e: React.TouchEvent) {
+    if (swipeStartX.current === null || swipeStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - swipeStartX.current;
+    const dy = e.changedTouches[0].clientY - swipeStartY.current;
+    swipeStartX.current = null;
+    swipeStartY.current = null;
+    // Left swipe: horizontal > 50px, vertical drift < half the horizontal
+    if (dx < -50 && Math.abs(dy) < Math.abs(dx) / 2) {
+      setSidebarOpen(false);
+    }
+  }
+
   return (
     <>
+      {showShortcuts && <KeyboardShortcutsModal onClose={() => setShowShortcuts(false)} />}
+
       {/* Header */}
       <header className="app-header">
         <div className="app-header__left">
@@ -238,6 +289,14 @@ export default function AppsPage({ base }: AppsPageProps) {
               </span>
             </>
           )}
+          <button
+            className="shortcuts-help-btn"
+            onClick={() => setShowShortcuts(true)}
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+          >
+            ?
+          </button>
           <ThemeToggle />
         </div>
       </header>
@@ -254,7 +313,11 @@ export default function AppsPage({ base }: AppsPageProps) {
         )}
 
         {/* Sidebar */}
-        <aside className={`sidebar${sidebarOpen ? ' sidebar--open' : ' sidebar--closed'}${isMobile ? ' sidebar--mobile' : ''}`}>
+        <aside
+          className={`sidebar${sidebarOpen ? ' sidebar--open' : ' sidebar--closed'}${isMobile ? ' sidebar--mobile' : ''}`}
+          onTouchStart={isMobile ? handleSidebarTouchStart : undefined}
+          onTouchEnd={isMobile ? handleSidebarTouchEnd : undefined}
+        >
           <nav className="sidebar-nav" aria-label="Main navigation">
             {NAV_TABS.map((t) => (
               <button
@@ -291,6 +354,8 @@ export default function AppsPage({ base }: AppsPageProps) {
                   favourites={favourites}
                   onToggleFavourite={handleToggleFavourite}
                   searchRef={sidebarSearchRef}
+                  recentThresholdHours={recentThresholdHours}
+                  onThresholdChange={handleThresholdChange}
                 />
               )}
             </>
@@ -298,7 +363,7 @@ export default function AppsPage({ base }: AppsPageProps) {
         </aside>
 
         {/* Main content */}
-        <main className={`main-content${!sidebarOpen || isMobile ? ' main-content--expanded' : ''}`}>
+        <main id="main-content" className={`main-content${!sidebarOpen || isMobile ? ' main-content--expanded' : ''}`}>
           {tab === 'apps' && (
             <>
               {loading ? (
@@ -306,14 +371,16 @@ export default function AppsPage({ base }: AppsPageProps) {
                   <div className="loading-spinner" />
                 </div>
               ) : selectedEntry ? (
-                <AppDetails
-                  key={selectedEntry.name}
-                  appName={selectedEntry.name}
-                  displayName={selectedEntry.displayName}
-                  versions={selectedEntry.versions}
-                  lastUpdated={selectedEntry.lastUpdated}
-                  onBack={isMobile ? () => setSidebarOpen(true) : undefined}
-                />
+                <ErrorBoundary key={selectedEntry.name} label="AppDetails">
+                  <AppDetails
+                    key={selectedEntry.name}
+                    appName={selectedEntry.name}
+                    displayName={selectedEntry.displayName}
+                    versions={selectedEntry.versions}
+                    lastUpdated={selectedEntry.lastUpdated}
+                    onBack={isMobile ? () => setSidebarOpen(true) : undefined}
+                  />
+                </ErrorBoundary>
               ) : (
                 <div className="empty-state" style={{ flex: 1 }}>
                   <span className="empty-state__icon">📦</span>
@@ -327,11 +394,14 @@ export default function AppsPage({ base }: AppsPageProps) {
           )}
 
           {tab === 'dashboard' && (
-            <DashboardPage
-              apps={allApps}
-              totalVersionCount={appData?.meta.versionCount ?? 0}
-              onSelectApp={handleGlobalSearchSelect}
-            />
+            <ErrorBoundary label="DashboardPage">
+              <DashboardPage
+                apps={allApps}
+                totalVersionCount={appData?.meta.versionCount ?? 0}
+                onSelectApp={handleGlobalSearchSelect}
+                recentThresholdHours={recentThresholdHours}
+              />
+            </ErrorBoundary>
           )}
 
           {tab === 'about' && (

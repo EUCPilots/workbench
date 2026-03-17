@@ -26,6 +26,15 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.1',
+    date: '2026-03-17',
+    changes: [
+      'Keyboard shortcuts help modal (? key or header button)',
+      'Persistent Architecture and Type column filters per app saved to local storage',
+      'Configurable "updated recently" threshold (24h / 48h / 72h / 1w) in sidebar footer',
+    ],
+  },
+  {
     version: '3.0.0',
     date: '2026-03-17',
     changes: [

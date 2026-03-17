@@ -1,15 +1,20 @@
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef, memo } from 'react';
 
-const HOURS_48 = 48 * 60 * 60 * 1000;
-
-function isRecent(lastUpdated: string | null): boolean {
+function isRecent(lastUpdated: string | null, thresholdMs: number): boolean {
   if (!lastUpdated) return false;
   try {
-    return Date.now() - new Date(lastUpdated).getTime() <= HOURS_48;
+    return Date.now() - new Date(lastUpdated).getTime() <= thresholdMs;
   } catch {
     return false;
   }
 }
+
+const THRESHOLD_PRESETS = [
+  { label: '24h', hours: 24 },
+  { label: '48h', hours: 48 },
+  { label: '72h', hours: 72 },
+  { label: '1w', hours: 168 },
+];
 
 interface AppItem {
   name: string;
@@ -27,6 +32,8 @@ interface AppsSidebarProps {
   favourites: Set<string>;
   onToggleFavourite: (name: string) => void;
   searchRef?: React.RefObject<HTMLInputElement>;
+  recentThresholdHours: number;
+  onThresholdChange: (h: number) => void;
 }
 
 function StarIcon({ filled }: { filled: boolean }) {
@@ -46,6 +53,44 @@ function StarIcon({ filled }: { filled: boolean }) {
   );
 }
 
+interface AppListItemProps {
+  app: AppItem;
+  isActive: boolean;
+  isFav: boolean;
+  onSelect: (name: string) => void;
+  onToggleFavourite: (name: string) => void;
+  thresholdMs: number;
+}
+
+const AppListItem = memo(function AppListItem({ app, isActive, isFav, onSelect, onToggleFavourite, thresholdMs }: AppListItemProps) {
+  const recent = isRecent(app.lastUpdated, thresholdMs);
+  return (
+    <li
+      data-name={app.name}
+      className={`app-list__item${isActive ? ' app-list__item--active' : ''}`}
+      onClick={() => onSelect(app.name)}
+      role="option"
+      aria-selected={isActive}
+      title={recent ? `${app.displayName} — updated recently` : app.displayName}
+    >
+      <span className="app-list__item-name">{app.displayName}</span>
+      <span className="app-list__item-actions">
+        {recent && (
+          <span className="app-list__badge" aria-label="Updated recently" title="Updated in the last 48 hours" />
+        )}
+        <button
+          className={`app-list__star${isFav ? ' app-list__star--active' : ''}`}
+          onClick={(e) => { e.stopPropagation(); onToggleFavourite(app.name); }}
+          aria-label={isFav ? `Unpin ${app.displayName}` : `Pin ${app.displayName}`}
+          title={isFav ? 'Remove from pinned' : 'Pin to top'}
+        >
+          <StarIcon filled={isFav} />
+        </button>
+      </span>
+    </li>
+  );
+});
+
 export default function AppsSidebar({
   apps,
   selectedApp,
@@ -56,7 +101,10 @@ export default function AppsSidebar({
   favourites,
   onToggleFavourite,
   searchRef,
+  recentThresholdHours,
+  onThresholdChange,
 }: AppsSidebarProps) {
+  const thresholdMs = recentThresholdHours * 3600 * 1000;
   const listRef = useRef<HTMLUListElement>(null);
 
   const { pinned, rest } = useMemo(() => {
@@ -75,34 +123,16 @@ export default function AppsSidebar({
   }, [selectedApp]);
 
   function renderItem(app: AppItem) {
-    const recent = isRecent(app.lastUpdated);
-    const isFav = favourites.has(app.name);
-    const isActive = selectedApp === app.name;
     return (
-      <li
+      <AppListItem
         key={app.name}
-        data-name={app.name}
-        className={`app-list__item${isActive ? ' app-list__item--active' : ''}`}
-        onClick={() => onSelectApp(app.name)}
-        role="option"
-        aria-selected={isActive}
-        title={recent ? `${app.displayName} — updated recently` : app.displayName}
-      >
-        <span className="app-list__item-name">{app.displayName}</span>
-        <span className="app-list__item-actions">
-          {recent && (
-            <span className="app-list__badge" aria-label="Updated recently" title="Updated in the last 48 hours" />
-          )}
-          <button
-            className={`app-list__star${isFav ? ' app-list__star--active' : ''}`}
-            onClick={(e) => { e.stopPropagation(); onToggleFavourite(app.name); }}
-            aria-label={isFav ? `Unpin ${app.displayName}` : `Pin ${app.displayName}`}
-            title={isFav ? 'Remove from pinned' : 'Pin to top'}
-          >
-            <StarIcon filled={isFav} />
-          </button>
-        </span>
-      </li>
+        app={app}
+        isActive={selectedApp === app.name}
+        isFav={favourites.has(app.name)}
+        onSelect={onSelectApp}
+        onToggleFavourite={onToggleFavourite}
+        thresholdMs={thresholdMs}
+      />
     );
   }
 
@@ -133,6 +163,22 @@ export default function AppsSidebar({
         )}
         {rest.map(renderItem)}
       </ul>
+
+      <div className="apps-panel__settings">
+        <span className="apps-panel__settings-label">Recent:</span>
+        <div className="apps-panel__settings-presets">
+          {THRESHOLD_PRESETS.map(({ label, hours }) => (
+            <button
+              key={hours}
+              className={`apps-panel__preset-btn${recentThresholdHours === hours ? ' apps-panel__preset-btn--active' : ''}`}
+              onClick={() => onThresholdChange(hours)}
+              title={`Mark apps updated in the last ${label} as recent`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
