@@ -1,3 +1,5 @@
-# App Tracker
+# Evergreen Workbench (web edition)
 
-An application version tracker that uses [Evergreen](https://eucpilots.com/evergreen-docs/) to query for application version updates and store the result in JSON format. A workflow runs every 24-hours to retrieve available updates and commit changes to this repository, which then generates the [App Tracker](http://stealthpuppy.com/apptracker/) site.
+Evergreen Workbench is an Astro-based web application for exploring EUC pilot apps in a single, searchable interface. It provides a dashboard-style experience with app listings, detail views, sidebar navigation, and theme support, backed by local app data and reusable UI components.
+
+This repository contains the web edition implementation, including Astro pages and layouts, React/TSX components, and global styling assets used to run the workbench in the browser.
