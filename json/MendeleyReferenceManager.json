@@ -1,0 +1,29 @@
+[
+  {
+    "Version": "2.143.0",
+    "Date": "2/3/2026",
+    "Size": 158285280,
+    "Sha512": "Zf/b7pJOMEcR90Tyi3zgzMCZ4YTitg/VqfFX7kErSiVdYhAiUydNxT7xELynjIihlJUSs7seEATqfwlWOIJT7A==",
+    "Architecture": "ARM64",
+    "Type": "exe",
+    "URI": "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.143.0-arm64.exe"
+  },
+  {
+    "Version": "2.143.0",
+    "Date": "2/3/2026",
+    "Size": 156942288,
+    "Sha512": "Q5/dl0lKeaXE/AgiNs4iwD9DtPu+5hvgVa/aQq7DJ8CDphLpUwUkRJJ3vAmuFxe8pGbevyH/aO1NCAhdrq/ZAQ==",
+    "Architecture": "x64",
+    "Type": "exe",
+    "URI": "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.143.0-x64.exe"
+  },
+  {
+    "Version": "2.143.0",
+    "Date": "2/3/2026",
+    "Size": 314654208,
+    "Sha512": "H//iRfN/UWSZtTGcbjLrGik8ESLWyaaIS9MrbveNbbEQ0rZspb3oudvezp/ADU4abniPuWSC1XZ8gSSpw5ZSuA==",
+    "Architecture": "x86",
+    "Type": "exe",
+    "URI": "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.143.0.exe"
+  }
+]

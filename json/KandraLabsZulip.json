@@ -1,0 +1,32 @@
+[
+  {
+    "Version": "5.12.3",
+    "Date": "12/12/2025",
+    "Size": 818256,
+    "Sha256": "ec6674a6be4724a50a408b2e44f226e4809eed010305a7ff58bee1239cc37a06",
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/zulip/zulip-desktop/releases/download/v5.12.3/Zulip-Web-Setup-5.12.3.exe"
+  },
+  {
+    "Version": "5.12.3",
+    "Date": "12/12/2025",
+    "Size": 110096384,
+    "Sha256": "12bc49fde2758a81e4cd12d8c8f1ab13862af26608f3aefc37f9c1aaa5011972",
+    "Architecture": "x64",
+    "InstallerType": "Default",
+    "Type": "msi",
+    "URI": "https://github.com/zulip/zulip-desktop/releases/download/v5.12.3/Zulip-5.12.3-x64.msi"
+  },
+  {
+    "Version": "5.12.3",
+    "Date": "12/12/2025",
+    "Size": 96288768,
+    "Sha256": "0ae412f037630ce7482cfa2bf9b4ea0dabdb0da18d43664f357550238e16d25a",
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "msi",
+    "URI": "https://github.com/zulip/zulip-desktop/releases/download/v5.12.3/Zulip-5.12.3-ia32.msi"
+  }
+]

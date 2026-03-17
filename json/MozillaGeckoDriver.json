@@ -1,0 +1,32 @@
+[
+  {
+    "Version": "0.36.0",
+    "Date": "25/2/2025",
+    "Size": 1695995,
+    "Sha256": null,
+    "Architecture": "ARM64",
+    "InstallerType": "Default",
+    "Type": "zip",
+    "URI": "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-win-aarch64.zip"
+  },
+  {
+    "Version": "0.36.0",
+    "Date": "25/2/2025",
+    "Size": 1845646,
+    "Sha256": null,
+    "Architecture": "x64",
+    "InstallerType": "Default",
+    "Type": "zip",
+    "URI": "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-win64.zip"
+  },
+  {
+    "Version": "0.36.0",
+    "Date": "25/2/2025",
+    "Size": 1780945,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "zip",
+    "URI": "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-win32.zip"
+  }
+]

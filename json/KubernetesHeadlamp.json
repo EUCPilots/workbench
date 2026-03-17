@@ -1,0 +1,12 @@
+[
+  {
+    "Version": "0.40.1",
+    "Date": "10/2/2026",
+    "Size": 124265862,
+    "Sha256": "ea8172a5d5902b75019319d86891135295c18366e0148ddabe12917232748f2c",
+    "Architecture": "x64",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/kubernetes-sigs/headlamp/releases/download/v0.40.1/Headlamp-0.40.1-win-x64.exe"
+  }
+]

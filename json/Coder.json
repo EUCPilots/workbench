@@ -1,0 +1,12 @@
+[
+  {
+    "Version": "2.30.3",
+    "Date": "3/3/2026",
+    "Size": 145832520,
+    "Sha256": "b866afbeca1c5b1bd47d528f7fcb62d7b6c2816ffe5fe13e8c9e654451d37622",
+    "Architecture": "x64",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/coder/coder/releases/download/v2.30.3/coder_2.30.3_windows_amd64_installer.exe"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "Version": "2.6.3",
+    "Date": "12/12/2025",
+    "Size": 246501376,
+    "Sha256": "0f0d05de80e6fff17c160bb5f1aee19776ff1350f518067b0b06c0bb105e27cd",
+    "Architecture": "ARM64",
+    "InstallerType": "Default",
+    "Type": "msi",
+    "URI": "https://github.com/microsoft/WSL/releases/download/2.6.3/wsl.2.6.3.0.arm64.msi"
+  },
+  {
+    "Version": "2.6.3",
+    "Date": "12/12/2025",
+    "Size": 247123968,
+    "Sha256": "562c79aba6ce9b6e9170f069d31e3717f10d76dd8bfbee39b07eae0ca4a02ca0",
+    "Architecture": "x64",
+    "InstallerType": "Default",
+    "Type": "msi",
+    "URI": "https://github.com/microsoft/WSL/releases/download/2.6.3/wsl.2.6.3.0.x64.msi"
+  },
+  {
+    "Version": "2.6.3",
+    "Date": "12/12/2025",
+    "Size": 496210829,
+    "Sha256": "7be7ad60b824e9b6dd8aac61c36c2804369281cf26f8fd77de88d43c9368635d",
+    "Architecture": "ARM64",
+    "InstallerType": "Default",
+    "Type": "msixbundle",
+    "URI": "https://github.com/microsoft/WSL/releases/download/2.6.3/Microsoft.WSL_2.6.3.0_x64_ARM64.msixbundle"
+  }
+]

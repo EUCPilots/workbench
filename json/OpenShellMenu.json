@@ -1,0 +1,22 @@
+[
+  {
+    "Version": "4.4.196",
+    "Date": "8/5/2025",
+    "Size": 9865728,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v4.4.196/OpenShellSetup_4_4_196.exe"
+  },
+  {
+    "Version": "4.4.196",
+    "Date": "8/5/2025",
+    "Size": 675840,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v4.4.196/Utility.exe"
+  }
+]

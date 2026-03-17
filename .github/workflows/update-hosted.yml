@@ -1,0 +1,59 @@
+# Update JSON via my self-hosted runner
+name: 'Update self-hosted'
+
+# Environment variables
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Controls when the action will run.
+on:
+  schedule:
+    - cron: "00 11 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-powershell:
+    runs-on: [self-hosted, macos, arm64]
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Install modules
+        shell: pwsh
+        run: |
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          Get-PSResourceRepository | Set-PSResourceRepository -Trusted
+          Install-PSResource -Name "DnsClient-PS"
+          Install-PSResource -Name "Evergreen" -Prerelease
+          Update-Evergreen
+
+      # Run Pester tests
+      - name: Update app JSON
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          $params = @{
+              Path = "${{ github.workspace }}/json"
+              Apps = @("FreedomScientificFusion", "FreedomScientificJAWS", "FreedomScientificZoomText", "OracleJava17", "OracleJava20", "OracleJava21", "OracleJava22", "OracleJava23", "OracleJava25")
+          }
+          . "${{ github.workspace }}/scripts/Update-JsonHosted.ps1" @params
+
+      # Format the date number for the commit message
+      - name: Get date
+        id: get-date
+        shell: pwsh
+        run: |
+          $Date = Get-Date -Format "yyyy.MM.dd"
+          echo "date=$Date" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Commit changes
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config --global user.email ${{ secrets.COMMIT_EMAIL }}
+          git config --global user.name ${{ secrets.COMMIT_NAME }}
+          git add .
+          git commit -m "Update json ${{ steps.get-date.outputs.date }}.${{ github.run_number }} ${{ github.job }}"
+          git push origin main

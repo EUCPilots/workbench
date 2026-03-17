@@ -1,0 +1,12 @@
+[
+  {
+    "Version": "2026.1.1",
+    "Date": "9/2/2026",
+    "Size": 280470853,
+    "Sha256": "6ea421cb8e579ec02c8573507fab082770446c7cd13497c172c90cb375d0d5af",
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/jitsi/jitsi-meet-electron/releases/download/v2026.1.1/jitsi-meet.exe"
+  }
+]

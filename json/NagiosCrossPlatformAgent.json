@@ -1,0 +1,8 @@
+[
+  {
+    "Version": "3.3.0",
+    "Architecture": "x64",
+    "Type": "exe",
+    "URI": "https://assets.nagios.com/downloads/ncpa3/ncpa-latest.exe"
+  }
+]

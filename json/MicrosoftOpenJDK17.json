@@ -1,0 +1,34 @@
+[
+  {
+    "Version": "17.0.18+8",
+    "Date": "2026-02-04T15:00:00Z",
+    "ImageType": "jdk",
+    "Architecture": "ARM64",
+    "Type": "exe",
+    "URI": "https://download.visualstudio.microsoft.com/download/pr/ef779785-8a9a-44b8-b914-03618ab72e64/a7cc6b75f55b2156b0315631ed9c8e2b/microsoft-jdk-17.0.18-windows-aarch64.exe"
+  },
+  {
+    "Version": "17.0.18+8",
+    "Date": "2026-02-04T15:00:00Z",
+    "ImageType": "jdk",
+    "Architecture": "x64",
+    "Type": "exe",
+    "URI": "https://download.visualstudio.microsoft.com/download/pr/ef779785-8a9a-44b8-b914-03618ab72e64/34801860683ae04f22cdc8e23063ea1c/microsoft-jdk-17.0.18-windows-x64.exe"
+  },
+  {
+    "Version": "17.0.18+8",
+    "Date": "2026-02-04T15:00:00Z",
+    "ImageType": "jdk",
+    "Architecture": "ARM64",
+    "Type": "msi",
+    "URI": "https://download.visualstudio.microsoft.com/download/pr/db8032ab-e94f-4817-9983-6af15c635374/7aff214a486092e15ea5c1bc5f1b271d/microsoft-jdk-17.0.18-windows-aarch64.msi"
+  },
+  {
+    "Version": "17.0.18+8",
+    "Date": "2026-02-04T15:00:00Z",
+    "ImageType": "jdk",
+    "Architecture": "x64",
+    "Type": "msi",
+    "URI": "https://download.visualstudio.microsoft.com/download/pr/db8032ab-e94f-4817-9983-6af15c635374/2214998468d8a123e919521f38b839ba/microsoft-jdk-17.0.18-windows-x64.msi"
+  }
+]

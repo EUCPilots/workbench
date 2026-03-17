@@ -1,0 +1,281 @@
+name: 'Update apps'
+
+# Environment variables
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Controls when the action will run.
+on:
+  workflow_run:
+    workflows: ['Update self-hosted']
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  update-pwsh:
+    runs-on: windows-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run && github.event.workflow_run.conclusion == 'success') }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Install packages
+        shell: pwsh
+        run: |
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          Register-PackageSource -Name "NuGet" -Location "https://api.nuget.org/v3/index.json" -ProviderName "NuGet" -Trusted
+          Install-PackageProvider -Name "PowerShellGet" -MinimumVersion "2.2.5" -Force
+          Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
+
+      - name: Install modules
+        shell: pwsh
+        run: |
+          Install-Module -Name "DnsClient-PS"
+          Install-Module -Name "Evergreen" -AllowClobber -SkipPublisherCheck -AllowPrerelease -Force -Verbose
+          Update-Evergreen
+
+      # Import GPG key
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPGKEY }}
+          passphrase: ${{ secrets.GPGPASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_config_global: true
+          git_tag_gpgsign: true
+          git_push_gpgsign: false
+          git_committer_name: ${{ secrets.COMMIT_NAME }}
+          git_committer_email: ${{ secrets.COMMIT_EMAIL }}
+
+      - name: Update app JSON
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          Import-Module -Name "Evergreen"
+          $params = @{
+              Path     = "${{ github.workspace }}\json"
+          }
+          . "${{ github.workspace }}\scripts\Update-Json.ps1" @params
+
+      # Format the date number for the commit message
+      - name: Get date
+        id: get-date
+        shell: pwsh
+        run: |
+          $Date = Get-Date -Format "yyyy.MM.dd"
+          echo "date=$Date" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Commit changes
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Update json ${{ steps.get-date.outputs.date }}.${{ github.run_number }} ${{ github.job }}"
+          commit_user_name: ${{ secrets.COMMIT_NAME }}
+          commit_user_email: ${{ secrets.COMMIT_EMAIL }}
+
+      - name: "Run if changes have been detected"
+        if: steps.commit.outputs.changes_detected == 'true'
+        run: echo "Changes committed."
+
+      - name: "Run if no changes have been detected"
+        if: steps.commit.outputs.changes_detected == 'false'
+        run: echo "No changes detected."
+
+  update-kv-apps:
+    needs: [update-pwsh]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Install Wrangler
+        id: install-wrangler
+        shell: bash
+        run: |
+          npm install -g wrangler
+
+      - name: Update Cloudflare KV with recent apps
+        id: update-apps
+        shell: pwsh
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          CLOUDFLARE_ZONE_ID: ${{secrets.CLOUDFLARE_ZONE_ID}}
+          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+        run: |
+            # Fetch at least two commits so HEAD~1 is available
+            git fetch --no-tags --prune --depth=2 origin main || true
+
+            # Get list of changed json files in the json directory from the previous commit
+            $changed = git diff --name-only HEAD~1 HEAD -- 'json/*.json' 2>$null
+            if (-not $changed) {
+              Write-Host "No json files changed in the previous commit."
+              exit 0
+            }
+
+            $files = $changed -split "`n" | Where-Object { $_ -and $_ -match '\.json$' } | ForEach-Object { $_.Trim() }
+            Write-Host "Found $($files.Count) json files changed:"
+            $files | ForEach-Object { Write-Host " - $_" }
+
+            foreach ($rel in $files) {
+              try {
+                $full = Join-Path -Path $Env:GITHUB_WORKSPACE -ChildPath $rel
+                if (-not (Test-Path $full)) {
+                  Write-Warning -Message "File not found: $full"
+                  continue
+                }
+                $key = [System.IO.Path]::GetFileNameWithoutExtension($rel).ToLower()
+                Write-Host "Uploading $rel as KV key '$key'..."
+                wrangler kv key put $key --path="$full" --namespace-id="${{secrets.KV_PROD_NAMESPACE_ID}}" --remote
+              }
+              catch {
+                Write-Warning -Message "Failed to upload $rel - $($_.Exception.Message)"
+              }
+            }
+
+      - name: Install modules
+        shell: pwsh
+        run: |
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          Get-PSResourceRepository | Set-PSResourceRepository -Trusted
+          Install-PSResource -Name "Evergreen" -Prerelease
+          Update-Evergreen
+
+      - name: Update Cloudflare KV with all apps list
+        id: update-allapps
+        shell: pwsh
+        working-directory: "${{ github.workspace }}"
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          CLOUDFLARE_ZONE_ID: ${{secrets.CLOUDFLARE_ZONE_ID}}
+          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+        run: |
+          try {
+            Import-Module -Name "Evergreen"
+            Find-EvergreenApp | ConvertTo-Json | Out-File -FilePath "./AllApps.json" -Encoding "Utf8" -NoNewline
+            wrangler kv key put "_allapps" --path="./AllApps.json" --namespace-id="${{secrets.KV_PROD_NAMESPACE_ID}}" --remote
+          }
+          catch { $_.Exception.Message }
+          finally { Remove-Item -Path "./AllApps.json" -Force -ErrorAction "SilentlyContinue" }
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPGKEY }}
+          passphrase: ${{ secrets.GPGPASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_config_global: true
+          git_tag_gpgsign: true
+          git_push_gpgsign: false
+          git_committer_name: ${{ secrets.COMMIT_NAME }}
+          git_committer_email: ${{ secrets.COMMIT_EMAIL }}
+
+      - name: Get date
+        id: get-date
+        shell: pwsh
+        run: |
+          $Date = Get-Date -Format "yyyy.MM.dd"
+          echo "date=$Date" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Commit changes
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Update KV ${{ steps.get-date.outputs.date }}.${{ github.run_number }}"
+          commit_user_name: ${{ secrets.COMMIT_NAME }}
+          commit_user_email: ${{ secrets.COMMIT_EMAIL }}
+
+  update-endpoints-versions:
+    needs: [update-pwsh]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          repository: "eucpilots/evergreen-apps"
+          ref: main
+
+      - name: Install Wrangler
+        id: install-wrangler
+        shell: bash
+        run: |
+          npm install -g wrangler
+
+      - name: Update Cloudflare KV for endpoints/versions data
+        id: update-endpoints
+        shell: pwsh
+        working-directory: "${{ github.workspace }}"
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          CLOUDFLARE_ZONE_ID: ${{secrets.CLOUDFLARE_ZONE_ID}}
+          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+        run: |
+          # Get endpoint URLs from Evergreen manifests and post to the version endpoint
+          $UrlMatch = "http[s]?\:\/\/([^\/?#]+)(?:[\/?#]|$)"
+          $Endpoints = Get-ChildItem -Path "${{ github.workspace }}/Manifests" -Recurse -Include "*.json" | ForEach-Object {
+            Write-Host "Processing: $($_.FullName)"
+            [PSCustomObject]@{
+                Application = $_.BaseName
+                Endpoints   = @(((((Select-String -Path $_.FullName -Pattern $UrlMatch).Matches.Value | `
+                                    Select-Object -Unique | `
+                                    Sort-Object) -replace "http://|https://", "").TrimEnd("/|#|`",|`"")))
+                Ports       = @(((((Select-String -Path $_.FullName -Pattern $UrlMatch).Matches.Value | Select-Object -Unique))) | ForEach-Object {
+                        if ($_ -match "http://") { "80" }
+                        if ($_ -match "https://") { "443" }
+                    } | Select-Object -Unique | Sort-Object -Descending)
+            }
+          }
+          $Endpoints | ConvertTo-Json | Out-File -FilePath "${{ github.workspace }}/Endpoints.json" -Encoding "Utf8" -NoNewline
+          wrangler kv key put "endpoints-versions" --path="${{ github.workspace }}/Endpoints.json" --namespace-id="${{secrets.KV_PROD_NAMESPACE_ID}}" --remote
+          Remove-Item -Path "${{ github.workspace }}/Endpoints.json"
+
+  update-endpoints-downloads:
+    needs: [update-pwsh]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Install Wrangler
+        id: install-wrangler
+        shell: bash
+        run: |
+          npm install -g wrangler
+
+      - name: Update Cloudflare KV for endpoints/downloads data
+        id: update-endpoints
+        shell: pwsh
+        working-directory: "${{ github.workspace }}"
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          CLOUDFLARE_ZONE_ID: ${{secrets.CLOUDFLARE_ZONE_ID}}
+          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+        run: |
+          # Get endpoint URLs from Evergreen manifests and post to the downloads endpoint
+          $UrlMatch = "http[s]?\:\/\/([^\/?#]+)(?:[\/?#]|$)"
+          $Endpoints = Get-ChildItem -Path "${{ github.workspace }}/json" -Recurse -Include "*.json" | ForEach-Object {
+            Write-Host "Processing: $($_.FullName)"
+            [PSCustomObject]@{
+                Application = $_.BaseName
+                Endpoints   = @(((((Select-String -Path $_.FullName -Pattern $UrlMatch).Matches.Value | `
+                                    Select-Object -Unique | `
+                                    Sort-Object) -replace "http://|https://", "").TrimEnd("/|#|`",|`"")))
+                Ports       = @(((((Select-String -Path $_.FullName -Pattern $UrlMatch).Matches.Value | Select-Object -Unique))) | ForEach-Object {
+                        if ($_ -match "http://") { "80" }
+                        if ($_ -match "https://") { "443" }
+                    } | Select-Object -Unique | Sort-Object -Descending)
+            }
+          }
+          $Endpoints | ConvertTo-Json | Out-File -FilePath "${{ github.workspace }}/Endpoints.json" -Encoding "Utf8" -NoNewline
+          wrangler kv key put "endpoints-downloads" --path="${{ github.workspace }}/Endpoints.json" --namespace-id="${{secrets.KV_PROD_NAMESPACE_ID}}" --remote
+          Remove-Item -Path "${{ github.workspace }}/Endpoints.json"

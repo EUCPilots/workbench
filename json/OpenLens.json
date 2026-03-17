@@ -1,0 +1,32 @@
+[
+  {
+    "Version": "6.5.2",
+    "Date": "30/6/2023",
+    "Size": 109231104,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Portable",
+    "Type": "exe",
+    "URI": "https://github.com/MuhammedKalkan/OpenLens/releases/download/v6.5.2-366/OpenLens.6.5.2-366.exe"
+  },
+  {
+    "Version": "6.5.2",
+    "Date": "30/6/2023",
+    "Size": 109472872,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "exe",
+    "URI": "https://github.com/MuhammedKalkan/OpenLens/releases/download/v6.5.2-366/OpenLens.Setup.6.5.2-366.exe"
+  },
+  {
+    "Version": "6.5.2",
+    "Date": "30/6/2023",
+    "Size": 148393984,
+    "Sha256": null,
+    "Architecture": "x86",
+    "InstallerType": "Default",
+    "Type": "msi",
+    "URI": "https://github.com/MuhammedKalkan/OpenLens/releases/download/v6.5.2-366/OpenLens.6.5.2-366.msi"
+  }
+]
