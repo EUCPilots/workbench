@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 interface AppVersion {
   Version?: string;
   Type?: string;
@@ -50,8 +52,10 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showAll, setShowAll] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Open on Ctrl+K or /
   useEffect(() => {
@@ -72,6 +76,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     if (open) {
       setQuery('');
       setActiveIndex(0);
+      setShowAll(false);
       requestAnimationFrame(() => inputRef.current?.focus());
       document.body.classList.add('search-open');
     } else {
@@ -80,7 +85,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     return () => document.body.classList.remove('search-open');
   }, [open]);
 
-  const results = useMemo<AppResult[]>(() => {
+  const allResults = useMemo<AppResult[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
 
@@ -105,12 +110,17 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
 
       if (nameMatch || versionMatches.length > 0) {
         out.push({ appName: app.name, displayName: app.displayName, nameMatch, versionMatches });
-        if (out.length >= MAX_APP_RESULTS) break;
       }
     }
 
     return out;
   }, [apps, query]);
+
+  const results = useMemo(
+    () => (showAll ? allResults : allResults.slice(0, MAX_APP_RESULTS)),
+    [allResults, showAll]
+  );
+  const hiddenCount = allResults.length - results.length;
 
   // Flat list of selectable items for keyboard nav
   const flatItems: Array<{ appName: string }> = useMemo(
@@ -147,10 +157,11 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     el?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex]);
 
-  // Reset active index when results change
+  // Reset active index and showAll when results change
   useEffect(() => {
     setActiveIndex(0);
-  }, [results]);
+    setShowAll(false);
+  }, [allResults]);
 
   function highlightMatch(text: string, q: string) {
     if (!q) return <>{text}</>;
@@ -183,15 +194,29 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     );
   }
 
+  function handleOverlayKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Tab' || !modalRef.current) return;
+    const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+
   return createPortal(
     <div
       className="global-search-overlay"
       onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+      onKeyDown={handleOverlayKeyDown}
       role="dialog"
       aria-modal="true"
       aria-label="Global search"
     >
-      <div className="global-search-modal">
+      <div className="global-search-modal" ref={modalRef}>
         <div className="global-search-input-row">
           <svg className="global-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
@@ -276,6 +301,12 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
               </li>
             ))}
           </ul>
+        )}
+
+        {hiddenCount > 0 && (
+          <button className="global-search-show-more" onClick={() => setShowAll(true)}>
+            Show {hiddenCount} more result{hiddenCount !== 1 ? 's' : ''}
+          </button>
         )}
 
         {results.length > 0 && (

@@ -62,6 +62,26 @@ function formatDate(iso: string | null): string | null {
   }
 }
 
+function loadSavedFilters(name: string): { archs: Set<string>; types: Set<string> } | null {
+  try {
+    const raw = localStorage.getItem(`columnFilters__${name}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return { archs: new Set(parsed.archs), types: new Set(parsed.types) };
+  } catch {
+    return null;
+  }
+}
+
+function saveFilters(name: string, archs: Set<string>, types: Set<string>) {
+  try {
+    localStorage.setItem(`columnFilters__${name}`, JSON.stringify({
+      archs: Array.from(archs),
+      types: Array.from(types),
+    }));
+  } catch { /* ignore */ }
+}
+
 export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack }: AppDetailsProps) {
   // Derive unique filter values from data
   const architectures = useMemo(() => {
@@ -78,19 +98,31 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     return Array.from(set).sort();
   }, [versions]);
 
+  function initArchitectures(name: string, archs: string[]): Set<string> {
+    const saved = loadSavedFilters(name);
+    if (saved) return new Set(archs.filter((a) => saved.archs.has(a)));
+    return new Set(archs);
+  }
+
+  function initFileTypes(name: string, types: string[]): Set<string> {
+    const saved = loadSavedFilters(name);
+    if (saved) return new Set(types.filter((t) => saved.types.has(t)));
+    return new Set(types);
+  }
+
   const [selectedArchitectures, setSelectedArchitectures] = useState<Set<string>>(
-    () => new Set(architectures)
+    () => initArchitectures(appName, architectures)
   );
   const [selectedFileTypes, setSelectedFileTypes] = useState<Set<string>>(
-    () => new Set(fileTypes)
+    () => initFileTypes(appName, fileTypes)
   );
 
   // Reset filters when app changes
   const [lastApp, setLastApp] = useState(appName);
   if (lastApp !== appName) {
     setLastApp(appName);
-    setSelectedArchitectures(new Set(architectures));
-    setSelectedFileTypes(new Set(fileTypes));
+    setSelectedArchitectures(initArchitectures(appName, architectures));
+    setSelectedFileTypes(initFileTypes(appName, fileTypes));
     setColumnSearch({});
   }
 
@@ -109,6 +141,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
       const next = new Set(prev);
       if (next.has(arch)) next.delete(arch);
       else next.add(arch);
+      saveFilters(appName, next, selectedFileTypes);
       return next;
     });
   }
@@ -118,13 +151,17 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
       const next = new Set(prev);
       if (next.has(ft)) next.delete(ft);
       else next.add(ft);
+      saveFilters(appName, selectedArchitectures, next);
       return next;
     });
   }
 
   function clearFilters() {
-    setSelectedArchitectures(new Set(architectures));
-    setSelectedFileTypes(new Set(fileTypes));
+    const archs = new Set(architectures);
+    const types = new Set(fileTypes);
+    setSelectedArchitectures(archs);
+    setSelectedFileTypes(types);
+    saveFilters(appName, archs, types);
   }
 
   // Determine which columns to show based on the data.
@@ -147,6 +184,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
   const [columnSearch, setColumnSearch] = useState<Record<string, string>>({});
   const [copiedRow, setCopiedRow] = useState<number | null>(null);
   const [copiedCmd, setCopiedCmd] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   // Reset column search when app changes
   if (lastApp !== appName) {
@@ -200,19 +238,24 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     });
   }, [columnFilteredVersions, sortCol, sortDir]);
 
+  function showCopyError() {
+    setCopyError(true);
+    setTimeout(() => setCopyError(false), 2500);
+  }
+
   function copyEvergreenCommand() {
     const cmd = `Get-EvergreenApp -Name ${appName}`;
     navigator.clipboard.writeText(cmd).then(() => {
       setCopiedCmd(true);
       setTimeout(() => setCopiedCmd(false), 1500);
-    }).catch(() => {});
+    }).catch(showCopyError);
   }
 
   function copyRowUri(uri: string, rowIndex: number) {
     navigator.clipboard.writeText(uri).then(() => {
       setCopiedRow(rowIndex);
       setTimeout(() => setCopiedRow(null), 1500);
-    }).catch(() => {/* ignore – clipboard unavailable */});
+    }).catch(showCopyError);
   }
 
   return (
@@ -282,6 +325,13 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             </div>
           )}
         </div>
+
+        {/* Copy error notice */}
+        {copyError && (
+          <div className="copy-error-notice" role="alert">
+            Copy failed — select the text manually to copy.
+          </div>
+        )}
 
         {/* Results bar */}
         <div className="results-bar">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 
 interface AppVersion {
   Version?: string;
@@ -21,6 +21,7 @@ interface DashboardPageProps {
   apps: AppEntry[];
   totalVersionCount: number;
   onSelectApp: (name: string) => void;
+  recentThresholdHours: number;
 }
 
 function getFileType(v: AppVersion): string {
@@ -49,7 +50,7 @@ interface BarChartProps {
   colorVar?: string;
 }
 
-function BarChart({ data, maxItems = 15, colorVar = '--accent' }: BarChartProps) {
+const BarChart = memo(function BarChart({ data, maxItems = 15, colorVar = '--accent' }: BarChartProps) {
   const rows = data.slice(0, maxItems);
   const max = rows[0]?.count ?? 1;
 
@@ -72,7 +73,7 @@ function BarChart({ data, maxItems = 15, colorVar = '--accent' }: BarChartProps)
       ))}
     </div>
   );
-}
+});
 
 interface StatCardProps {
   label: string;
@@ -80,7 +81,7 @@ interface StatCardProps {
   sub?: string;
 }
 
-function StatCard({ label, value, sub }: StatCardProps) {
+const StatCard = memo(function StatCard({ label, value, sub }: StatCardProps) {
   return (
     <div className="stat-card">
       <span className="stat-card__value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
@@ -88,7 +89,7 @@ function StatCard({ label, value, sub }: StatCardProps) {
       {sub && <span className="stat-card__sub">{sub}</span>}
     </div>
   );
-}
+});
 
 interface UriMatch {
   appName: string;
@@ -198,19 +199,19 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
   );
 }
 
-export default function DashboardPage({ apps, totalVersionCount, onSelectApp }: DashboardPageProps) {
+export default function DashboardPage({ apps, totalVersionCount, onSelectApp, recentThresholdHours }: DashboardPageProps) {
   const { archData, typeData, langData, recentCount } = useMemo(() => {
     const archs: string[] = [];
     const types: string[] = [];
     const langs: string[] = [];
     const now = Date.now();
-    const HOURS_48 = 48 * 60 * 60 * 1000;
+    const thresholdMs = recentThresholdHours * 3600 * 1000;
     let recentCount = 0;
 
     for (const app of apps) {
       if (app.lastUpdated) {
         try {
-          if (now - new Date(app.lastUpdated).getTime() <= HOURS_48) recentCount++;
+          if (now - new Date(app.lastUpdated).getTime() <= thresholdMs) recentCount++;
         } catch { /* ignore */ }
       }
       for (const v of app.versions) {
