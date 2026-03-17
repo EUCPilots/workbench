@@ -95,34 +95,7 @@ scripts/New-Report.ps1       ← Jekyll report generator, no longer used
 .github/workflows/update-apps.yml  ← Stays in original repo (or move if json/ moves)
 ```
 
-### Cross-repo data strategy (choose one)
-
-**Option A — json/ lives in the new repo (recommended)**
-Move `json/` to the new Astro repo. Update `update-apps.yml` in the original repo to
-commit the JSON files to the new repo using a Personal Access Token (PAT):
-
-```yaml
-# In update-apps.yml, change the checkout step:
-- uses: actions/checkout@v4
-  with:
-    repository: stealthpuppy/apptracker-site   # new repo
-    token: ${{ secrets.PAT_NEW_REPO }}
-    ref: main
-```
-
-Then `astro-gh-pages.yml` in the new repo keeps its `workflow_run` trigger pointing at
-`'Update apps'` — but since that workflow now lives in the old repo it won't fire
-cross-repo. Instead, switch the new repo's deploy trigger to:
-
-```yaml
-on:
-  push:
-    branches: [main]
-    paths: ["json/**", "src/**", "public/**", "astro.config.mjs", "package.json"]
-  workflow_dispatch:
-```
-
-This way every commit of new JSON data automatically rebuilds the site.
+### Cross-repo data strategy
 
 **Option B — json/ stays in original repo, fetched at build time**
 Keep `update-apps.yml` and `json/` in the original repo unchanged.
@@ -140,22 +113,6 @@ from the original repo before building:
 
 Note: `fetch-depth: 0` on the main checkout is still needed for `git log` date
 resolution to work correctly in `appdata.json.ts`.
-
-### GitHub Pages setup for new repo
-1. Repo Settings → Pages → Source: **GitHub Actions**
-2. The `astro-gh-pages.yml` workflow handles the rest
-3. Update `astro.config.mjs` if the base path changes:
-   ```js
-   base: '/apptracker',   // change if deployed at repo root
-   ```
-
-### Secrets required in new repo
-| Secret | Purpose |
-|--------|---------|
-| `GITHUB_TOKEN` | Auto-provided; needed for Pages deploy |
-| `PAT` | If update-apps.yml commits to this repo |
-| `GPGKEY` / `GPGPASSPHRASE` | GPG-signed commits (if used) |
-| `COMMIT_NAME` / `COMMIT_EMAIL` | Committer identity |
 
 ---
 
