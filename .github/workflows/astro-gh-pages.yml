@@ -43,11 +43,10 @@ jobs:
           # Blobless sparse clone: downloads full commit history but only the
           # json/ directory blobs. This gives git log accurate lastUpdated dates
           # without downloading the rest of the repository content.
-          git clone --filter=blob:none --sparse \
-            https://github.com/aaronparker/apptracker.git _appdata
-          cd _appdata && git sparse-checkout set json
+          git clone --filter=blob:none --sparse https://github.com/aaronparker/apptracker.git ${{ github.workspace }}/_appdata
+          cd ${{ github.workspace }}/_appdata && git sparse-checkout set json
           mkdir -p ${{ github.workspace }}/json
-          cp _appdata/json/*.json ${{ github.workspace }}/json/
+          cp ${{ github.workspace }}/_appdata/json/*.json ${{ github.workspace }}/json/
 
       - name: Setup Node
         uses: actions/setup-node@v4
