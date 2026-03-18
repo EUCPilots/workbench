@@ -26,6 +26,18 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.2',
+    date: '2026-03-18',
+    changes: [
+      'F key toggles the favourite/pin on the currently selected app',
+      'Global search (Ctrl+K) shows recent search history from local storage when the input is empty',
+      'Dashboard shows a Recent activity card listing the 10 most recently updated apps',
+      'Column visibility chooser in the version details table, persisted per app to local storage',
+      'Removed unused language data computation from the Dashboard',
+      'Fixed hook ordering in AppsPage that caused a server-side rendering error',
+    ],
+  },
+  {
     version: '3.0.1',
     date: '2026-03-17',
     changes: [

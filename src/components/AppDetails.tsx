@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 
 interface AppVersion {
   Version?: string;
@@ -16,6 +16,7 @@ interface AppDetailsProps {
   versions: AppVersion[];
   lastUpdated: string | null;
   onBack?: () => void;
+  base: string;
 }
 
 function getFileType(v: AppVersion): string {
@@ -82,7 +83,23 @@ function saveFilters(name: string, archs: Set<string>, types: Set<string>) {
   } catch { /* ignore */ }
 }
 
-export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack }: AppDetailsProps) {
+function loadHiddenColumns(name: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(`hiddenColumns__${name}`);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveHiddenColumns(name: string, hidden: Set<string>) {
+  try {
+    localStorage.setItem(`hiddenColumns__${name}`, JSON.stringify(Array.from(hidden)));
+  } catch { /* ignore */ }
+}
+
+export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack, base }: AppDetailsProps) {
+  const feedUrl = `${base}feeds/${appName}.xml`;
   // Derive unique filter values from data
   const architectures = useMemo(() => {
     const set = new Set<string>();
@@ -123,6 +140,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     setLastApp(appName);
     setSelectedArchitectures(initArchitectures(appName, architectures));
     setSelectedFileTypes(initFileTypes(appName, fileTypes));
+    setHiddenColumns(loadHiddenColumns(appName));
     setColumnSearch({});
   }
 
@@ -178,6 +196,36 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     );
     return ordered;
   }, [versions]);
+
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => loadHiddenColumns(appName));
+  const [colPickerOpen, setColPickerOpen] = useState(false);
+  const colPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!colPickerOpen) return;
+    function onPointerDown(e: PointerEvent) {
+      if (colPickerRef.current && !colPickerRef.current.contains(e.target as Node)) {
+        setColPickerOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [colPickerOpen]);
+
+  const visibleColumns = useMemo(
+    () => columns.filter((c) => !hiddenColumns.has(c)),
+    [columns, hiddenColumns]
+  );
+
+  function toggleColumn(col: string) {
+    setHiddenColumns((prev) => {
+      const next = new Set(prev);
+      if (next.has(col)) next.delete(col);
+      else next.add(col);
+      saveHiddenColumns(appName, next);
+      return next;
+    });
+  }
 
   const [sortCol, setSortCol] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -281,6 +329,21 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             {copiedCmd ? 'Copied!' : `Get-EvergreenApp -Name ${appName}`}
           </code>
         </button>
+        <a
+          className="feed-subscribe-btn"
+          href={feedUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`RSS feed for ${displayName}`}
+          aria-label={`RSS feed for ${displayName}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="2.5" cy="13.5" r="1.5" />
+            <path d="M1 9.5a6 6 0 0 1 5.5 5.5H8a7.5 7.5 0 0 0-7-7v1.5z" />
+            <path d="M1 5.5a10 10 0 0 1 9.5 9.5H12A11.5 11.5 0 0 0 1 4v1.5z" />
+          </svg>
+          <span className="feed-subscribe-btn__label">RSS</span>
+        </a>
         {formatDate(lastUpdated) && (
           <span className="details-panel__updated">Updated {formatDate(lastUpdated)}</span>
         )}
@@ -347,6 +410,30 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             <button className="btn btn-outline" onClick={clearFilters}>
               Clear filters
             </button>
+            <div className="col-picker" ref={colPickerRef}>
+              <button
+                className="btn btn-outline"
+                onClick={() => setColPickerOpen((o) => !o)}
+                aria-expanded={colPickerOpen}
+                aria-haspopup="listbox"
+              >
+                Columns{hiddenColumns.size > 0 ? ` (${hiddenColumns.size} hidden)` : ''}
+              </button>
+              {colPickerOpen && (
+                <div className="col-picker__dropdown" role="listbox" aria-label="Toggle column visibility">
+                  {columns.map((col) => (
+                    <label key={col} className="col-picker__item">
+                      <input
+                        type="checkbox"
+                        checked={!hiddenColumns.has(col)}
+                        onChange={() => toggleColumn(col)}
+                      />
+                      {col}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
               className="btn btn-outline"
               onClick={() => exportToCSV(sortedVersions, appName)}
@@ -361,7 +448,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
           <table className="version-table">
             <thead>
               <tr>
-                {columns.map((col) => (
+                {visibleColumns.map((col) => (
                   <th
                     key={col}
                     aria-sort={sortCol === col ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -392,7 +479,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             <tbody>
               {sortedVersions.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                  <td colSpan={visibleColumns.length} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
                     No results match the current filters.
                   </td>
                 </tr>
@@ -413,7 +500,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                       onClick={rowUri ? () => copyRowUri(rowUri, i) : undefined}
                       title={rowUri ? (isCopied ? 'Copied!' : 'Click to copy URI') : undefined}
                     >
-                      {columns.map((col) => {
+                      {visibleColumns.map((col) => {
                         const raw = v[col];
                         const strVal = raw != null ? String(raw) : '';
                         const isUrl = typeof raw === 'string' && /^https?:\/\//i.test(raw);

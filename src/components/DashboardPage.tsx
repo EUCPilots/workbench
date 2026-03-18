@@ -98,32 +98,46 @@ interface UriMatch {
   version: AppVersion;
 }
 
+interface UriIndexEntry {
+  uris: string[];
+  appName: string;
+  displayName: string;
+  version: AppVersion;
+}
+
 function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
   const [query, setQuery] = useState('');
+
+  // Pre-extract all HTTP URIs once per data load, not per keystroke
+  const uriIndex = useMemo<UriIndexEntry[]>(() => {
+    const index: UriIndexEntry[] = [];
+    for (const app of apps) {
+      for (const v of app.versions) {
+        const uris: string[] = [];
+        for (const val of Object.values(v)) {
+          if (typeof val === 'string' && /^https?:\/\//i.test(val)) uris.push(val);
+        }
+        if (uris.length > 0) index.push({ uris, appName: app.name, displayName: app.displayName, version: v });
+      }
+    }
+    return index;
+  }, [apps]);
 
   const matches = useMemo<UriMatch[]>(() => {
     const q = query.trim().toLowerCase();
     if (q.length < 4) return [];
-
     const results: UriMatch[] = [];
-    for (const app of apps) {
-      for (const v of app.versions) {
-        for (const val of Object.values(v)) {
-          if (
-            typeof val === 'string' &&
-            /^https?:\/\//i.test(val) &&
-            val.toLowerCase().includes(q)
-          ) {
-            results.push({ appName: app.name, displayName: app.displayName, matchedUri: val, version: v });
-            break; // one match per version row
-          }
+    for (const entry of uriIndex) {
+      for (const uri of entry.uris) {
+        if (uri.toLowerCase().includes(q)) {
+          results.push({ appName: entry.appName, displayName: entry.displayName, matchedUri: uri, version: entry.version });
+          break; // one match per version row
         }
-        if (results.length >= 50) break;
       }
       if (results.length >= 50) break;
     }
     return results;
-  }, [apps, query]);
+  }, [uriIndex, query]);
 
   const hasQuery = query.trim().length >= 4;
 
@@ -199,11 +213,55 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
   );
 }
 
+function formatRelativeDate(iso: string): string {
+  try {
+    const diff = Date.now() - new Date(iso).getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days} days ago`;
+    if (days < 30) return `${Math.floor(days / 7)}w ago`;
+    return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(iso));
+  } catch {
+    return '';
+  }
+}
+
+interface RecentActivityProps {
+  apps: AppEntry[];
+  onSelectApp: (name: string) => void;
+}
+
+const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: RecentActivityProps) {
+  const recent = useMemo(() => {
+    return apps
+      .filter((a) => a.lastUpdated !== null)
+      .sort((a, b) => new Date(b.lastUpdated!).getTime() - new Date(a.lastUpdated!).getTime())
+      .slice(0, 10);
+  }, [apps]);
+
+  if (recent.length === 0) return null;
+
+  return (
+    <div className="dashboard-card recent-activity">
+      <h2 className="dashboard-card__title">Recent activity</h2>
+      <p className="dashboard-card__subtitle">Apps with the most recent data updates</p>
+      <ul className="recent-activity__list">
+        {recent.map((app) => (
+          <li key={app.name} className="recent-activity__item" onClick={() => onSelectApp(app.name)}>
+            <span className="recent-activity__name">{app.displayName}</span>
+            <span className="recent-activity__date">{formatRelativeDate(app.lastUpdated!)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+});
+
 export default function DashboardPage({ apps, totalVersionCount, onSelectApp, recentThresholdHours }: DashboardPageProps) {
-  const { archData, typeData, langData, recentCount } = useMemo(() => {
+  const { archData, typeData, recentCount } = useMemo(() => {
     const archs: string[] = [];
     const types: string[] = [];
-    const langs: string[] = [];
     const now = Date.now();
     const thresholdMs = recentThresholdHours * 3600 * 1000;
     let recentCount = 0;
@@ -217,21 +275,18 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
       for (const v of app.versions) {
         if (v.Architecture) archs.push(String(v.Architecture));
         types.push(getFileType(v));
-        if (v.Language) langs.push(String(v.Language));
       }
     }
 
     return {
       archData: tally(archs),
       typeData: tally(types),
-      langData: tally(langs),
       recentCount,
     };
-  }, [apps]);
+  }, [apps, recentThresholdHours]);
 
   const uniqueArchCount = archData.length;
   const uniqueTypeCount = typeData.length;
-  const uniqueLangCount = langData.length;
 
   return (
     <div className="dashboard-page">
@@ -244,7 +299,6 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
         <StatCard label="Version entries" value={totalVersionCount} />
         <StatCard label="Architectures" value={uniqueArchCount} />
         <StatCard label="File types" value={uniqueTypeCount} />
-        <StatCard label="Languages" value={uniqueLangCount} />
         {recentCount > 0 && (
           <StatCard label="Updated recently" value={recentCount} sub="last 48 hours" />
         )}
@@ -268,6 +322,9 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
           <BarChart data={typeData} maxItems={10} colorVar="--accent-hover" />
         </div>
       </div>
+
+      {/* Recent activity */}
+      <RecentActivity apps={apps} onSelectApp={onSelectApp} />
 
     </div>
   );
