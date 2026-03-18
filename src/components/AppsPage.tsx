@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import AppsSidebar from './AppsSidebar';
 import AppDetails from './AppDetails';
 import AboutPage from './AboutPage';
@@ -197,7 +197,7 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [tab, orderedApps, selectedApp]);
+  }, [tab, orderedApps, selectedApp, handleSelectApp]);
 
   const selectedEntry = useMemo(
     () => allApps.find((a) => a.name === selectedApp) ?? null,
@@ -210,22 +210,22 @@ export default function AppsPage({ base }: AppsPageProps) {
     { id: 'about', label: 'About' },
   ];
 
-  function handleSelectApp(name: string) {
+  const handleSelectApp = useCallback((name: string) => {
     setSelectedApp(name);
     localStorage.setItem('selectedApp', name);
     history.replaceState(null, '', `#${name}`);
     if (isMobile) setSidebarOpen(false);
-  }
+  }, [isMobile]);
 
-  function handleGlobalSearchSelect(appName: string) {
+  const handleGlobalSearchSelect = useCallback((appName: string) => {
     setTab('apps');
     setSelectedApp(appName);
     localStorage.setItem('selectedApp', appName);
     history.replaceState(null, '', `#${appName}`);
     if (isMobile) setSidebarOpen(false);
-  }
+  }, [isMobile]);
 
-  function handleToggleFavourite(name: string) {
+  const handleToggleFavourite = useCallback((name: string) => {
     setFavourites((prev) => {
       const next = new Set(prev);
       if (next.has(name)) next.delete(name);
@@ -233,7 +233,7 @@ export default function AppsPage({ base }: AppsPageProps) {
       localStorage.setItem('favouriteApps', JSON.stringify(Array.from(next)));
       return next;
     });
-  }
+  }, []);
 
   function handleThresholdChange(h: number) {
     setRecentThresholdHours(h);

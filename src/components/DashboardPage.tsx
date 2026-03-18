@@ -98,32 +98,46 @@ interface UriMatch {
   version: AppVersion;
 }
 
+interface UriIndexEntry {
+  uris: string[];
+  appName: string;
+  displayName: string;
+  version: AppVersion;
+}
+
 function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
   const [query, setQuery] = useState('');
+
+  // Pre-extract all HTTP URIs once per data load, not per keystroke
+  const uriIndex = useMemo<UriIndexEntry[]>(() => {
+    const index: UriIndexEntry[] = [];
+    for (const app of apps) {
+      for (const v of app.versions) {
+        const uris: string[] = [];
+        for (const val of Object.values(v)) {
+          if (typeof val === 'string' && /^https?:\/\//i.test(val)) uris.push(val);
+        }
+        if (uris.length > 0) index.push({ uris, appName: app.name, displayName: app.displayName, version: v });
+      }
+    }
+    return index;
+  }, [apps]);
 
   const matches = useMemo<UriMatch[]>(() => {
     const q = query.trim().toLowerCase();
     if (q.length < 4) return [];
-
     const results: UriMatch[] = [];
-    for (const app of apps) {
-      for (const v of app.versions) {
-        for (const val of Object.values(v)) {
-          if (
-            typeof val === 'string' &&
-            /^https?:\/\//i.test(val) &&
-            val.toLowerCase().includes(q)
-          ) {
-            results.push({ appName: app.name, displayName: app.displayName, matchedUri: val, version: v });
-            break; // one match per version row
-          }
+    for (const entry of uriIndex) {
+      for (const uri of entry.uris) {
+        if (uri.toLowerCase().includes(q)) {
+          results.push({ appName: entry.appName, displayName: entry.displayName, matchedUri: uri, version: entry.version });
+          break; // one match per version row
         }
-        if (results.length >= 50) break;
       }
       if (results.length >= 50) break;
     }
     return results;
-  }, [apps, query]);
+  }, [uriIndex, query]);
 
   const hasQuery = query.trim().length >= 4;
 
@@ -227,7 +241,7 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
       langData: tally(langs),
       recentCount,
     };
-  }, [apps]);
+  }, [apps, recentThresholdHours]);
 
   const uniqueArchCount = archData.length;
   const uniqueTypeCount = typeData.length;

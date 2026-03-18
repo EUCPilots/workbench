@@ -50,6 +50,7 @@ const MAX_VERSION_MATCHES = 2;
 
 export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -74,6 +75,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   // Focus input when opened; toggle body class for background blur
   useEffect(() => {
     if (open) {
+      setInputValue('');
       setQuery('');
       setActiveIndex(0);
       setShowAll(false);
@@ -85,15 +87,26 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     return () => document.body.classList.remove('search-open');
   }, [open]);
 
+  // Debounce: search computation lags 200ms behind typing
+  useEffect(() => {
+    const id = setTimeout(() => setQuery(inputValue), 200);
+    return () => clearTimeout(id);
+  }, [inputValue]);
+
+  // Pre-compute lowercased names once per data load, not per keystroke
+  const appsWithLower = useMemo(
+    () => apps.map((a) => ({ ...a, lowerName: a.name.toLowerCase(), lowerDisplayName: a.displayName.toLowerCase() })),
+    [apps]
+  );
+
   const allResults = useMemo<AppResult[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
 
     const out: AppResult[] = [];
 
-    for (const app of apps) {
-      const nameMatch =
-        app.displayName.toLowerCase().includes(q) || app.name.toLowerCase().includes(q);
+    for (const app of appsWithLower) {
+      const nameMatch = app.lowerDisplayName.includes(q) || app.lowerName.includes(q);
 
       const versionMatches: VersionMatch[] = [];
       for (let i = 0; i < app.versions.length; i++) {
@@ -114,7 +127,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     }
 
     return out;
-  }, [apps, query]);
+  }, [appsWithLower, query]);
 
   const results = useMemo(
     () => (showAll ? allResults : allResults.slice(0, MAX_APP_RESULTS)),
@@ -227,31 +240,31 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
             className="global-search-input"
             type="text"
             placeholder="Search apps, versions, URLs…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             autoComplete="off"
             spellCheck={false}
             aria-autocomplete="list"
             aria-controls="global-search-results"
           />
-          {query && (
-            <button className="global-search-clear" onClick={() => setQuery('')} aria-label="Clear search">
+          {inputValue && (
+            <button className="global-search-clear" onClick={() => { setInputValue(''); setQuery(''); }} aria-label="Clear search">
               ✕
             </button>
           )}
           <kbd className="global-search-esc">Esc</kbd>
         </div>
 
-        {query.trim() === '' && (
+        {inputValue.trim() === '' && (
           <div className="global-search-hint">
             Type to search across all apps and version data
           </div>
         )}
 
-        {query.trim() !== '' && results.length === 0 && (
+        {inputValue.trim() !== '' && results.length === 0 && (
           <div className="global-search-empty">
-            No results for <strong>"{query}"</strong>
+            No results for <strong>"{inputValue}"</strong>
           </div>
         )}
 
