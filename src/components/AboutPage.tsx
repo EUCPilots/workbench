@@ -26,6 +26,13 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.3',
+    date: '2026-03-18',
+    changes: [
+      'Add support for installing the Workbench as a Progressive Web App (PWA) with an app manifest and service worker for offline caching',
+    ],
+  },
+  {
     version: '3.0.2',
     date: '2026-03-18',
     changes: [
