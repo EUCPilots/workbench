@@ -8,8 +8,8 @@ export default defineConfig({
     AstroPWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Evergreen Workbench (web)',
-        short_name: 'EG Workbench',
+        name: 'Evergreen Web Workbench',
+        short_name: 'Evergreen Workbench',
         description: 'Track the latest application versions via the Evergreen PowerShell module.',
         theme_color: '#009485',
         background_color: '#ffffff',
