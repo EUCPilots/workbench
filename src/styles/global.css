@@ -606,6 +606,34 @@ a:hover {
   text-overflow: ellipsis;
 }
 
+/* RSS subscribe link in the app header */
+.feed-subscribe-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border: 1px solid var(--panel-border);
+  border-radius: 5px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.feed-subscribe-btn:hover {
+  border-color: #f26522;
+  color: #f26522;
+  background: color-mix(in srgb, #f26522 8%, var(--bg-secondary));
+}
+
+.feed-subscribe-btn__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 @media (max-width: 767px) {
   .ps-copy-btn {
     display: none;

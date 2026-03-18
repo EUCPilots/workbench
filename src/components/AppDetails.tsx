@@ -16,6 +16,7 @@ interface AppDetailsProps {
   versions: AppVersion[];
   lastUpdated: string | null;
   onBack?: () => void;
+  base: string;
 }
 
 function getFileType(v: AppVersion): string {
@@ -82,7 +83,8 @@ function saveFilters(name: string, archs: Set<string>, types: Set<string>) {
   } catch { /* ignore */ }
 }
 
-export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack }: AppDetailsProps) {
+export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack, base }: AppDetailsProps) {
+  const feedUrl = `${base}feeds/${appName}.xml`;
   // Derive unique filter values from data
   const architectures = useMemo(() => {
     const set = new Set<string>();
@@ -281,6 +283,21 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             {copiedCmd ? 'Copied!' : `Get-EvergreenApp -Name ${appName}`}
           </code>
         </button>
+        <a
+          className="feed-subscribe-btn"
+          href={feedUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`RSS feed for ${displayName}`}
+          aria-label={`RSS feed for ${displayName}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="2.5" cy="13.5" r="1.5" />
+            <path d="M1 9.5a6 6 0 0 1 5.5 5.5H8a7.5 7.5 0 0 0-7-7v1.5z" />
+            <path d="M1 5.5a10 10 0 0 1 9.5 9.5H12A11.5 11.5 0 0 0 1 4v1.5z" />
+          </svg>
+          <span className="feed-subscribe-btn__label">RSS</span>
+        </a>
         {formatDate(lastUpdated) && (
           <span className="details-panel__updated">Updated {formatDate(lastUpdated)}</span>
         )}

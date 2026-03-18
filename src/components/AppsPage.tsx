@@ -379,6 +379,7 @@ export default function AppsPage({ base }: AppsPageProps) {
                     versions={selectedEntry.versions}
                     lastUpdated={selectedEntry.lastUpdated}
                     onBack={isMobile ? () => setSidebarOpen(true) : undefined}
+                    base={base}
                   />
                 </ErrorBoundary>
               ) : (
