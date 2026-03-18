@@ -750,7 +750,7 @@ a:hover {
   right: 0;
   top: calc(100% + 4px);
   z-index: 200;
-  background: var(--card-bg);
+  background: var(--panel-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
