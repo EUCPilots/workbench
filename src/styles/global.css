@@ -1054,10 +1054,8 @@ a:hover {
   padding: 1px 5px;
 }
 
-/* Background blur when search is open — portal renders outside #root */
+/* Disable interaction with page content when search is open */
 body.search-open #root {
-  filter: blur(4px);
-  transition: filter 0.2s ease;
   pointer-events: none;
   user-select: none;
 }
@@ -1069,19 +1067,22 @@ body.search-open #root {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding-top: 80px;
   padding-inline: 16px;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .global-search-modal {
   width: 100%;
   max-width: 580px;
-  background: var(--panel-bg);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -1304,6 +1305,14 @@ body.search-open #root {
 [data-theme="dark"] .search-highlight {
   background: var(--accent-light);
   color: var(--accent);
+}
+
+[data-theme="dark"] .global-search-modal {
+  background: rgba(28, 40, 38, 0.75);
+}
+
+[data-theme="dark"] .shortcuts-modal {
+  background: rgba(28, 40, 38, 0.75);
 }
 
 /* Show more button */
@@ -1918,18 +1927,21 @@ body.search-open #root {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   padding-inline: 16px;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .shortcuts-modal {
   width: 100%;
   max-width: 420px;
-  background: var(--panel-bg);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);

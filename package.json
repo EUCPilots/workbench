@@ -1,6 +1,6 @@
 {
-  "name": "apptracker",
-  "version": "1.0.0",
+  "name": "workbench",
+  "version": "3.0.3",
   "private": true,
   "scripts": {
     "dev": "astro dev",
