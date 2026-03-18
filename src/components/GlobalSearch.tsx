@@ -48,12 +48,31 @@ const VERSION_FIELDS: Array<{ key: keyof AppVersion; label: string }> = [
 const MAX_APP_RESULTS = 8;
 const MAX_VERSION_MATCHES = 2;
 
+const HISTORY_KEY = 'searchHistory';
+const MAX_HISTORY = 8;
+
+function loadHistory(): string[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(history: string[]) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch { /* ignore */ }
+}
+
 export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -79,6 +98,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
       setQuery('');
       setActiveIndex(0);
       setShowAll(false);
+      setSearchHistory(loadHistory());
       requestAnimationFrame(() => inputRef.current?.focus());
       document.body.classList.add('search-open');
     } else {
@@ -142,8 +162,25 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   );
 
   function handleSelect(appName: string) {
+    const q = inputValue.trim();
+    if (q) {
+      const next = [q, ...searchHistory.filter((h) => h !== q)].slice(0, MAX_HISTORY);
+      setSearchHistory(next);
+      saveHistory(next);
+    }
     setOpen(false);
     onSelect(appName);
+  }
+
+  function applyHistoryQuery(q: string) {
+    setInputValue(q);
+  }
+
+  function removeHistoryEntry(q: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    const next = searchHistory.filter((h) => h !== q);
+    setSearchHistory(next);
+    saveHistory(next);
   }
 
   const handleKeyDown = useCallback(
@@ -256,9 +293,31 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
           <kbd className="global-search-esc">Esc</kbd>
         </div>
 
-        {inputValue.trim() === '' && (
+        {inputValue.trim() === '' && searchHistory.length === 0 && (
           <div className="global-search-hint">
             Type to search across all apps and version data
+          </div>
+        )}
+
+        {inputValue.trim() === '' && searchHistory.length > 0 && (
+          <div className="global-search-history">
+            <div className="global-search-history__header">Recent searches</div>
+            <ul className="global-search-history__list">
+              {searchHistory.map((h) => (
+                <li key={h} className="global-search-history__item" onClick={() => applyHistoryQuery(h)}>
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                    <polyline points="8,5 8,8 10,10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="global-search-history__text">{h}</span>
+                  <button
+                    className="global-search-history__remove"
+                    onClick={(e) => removeHistoryEntry(h, e)}
+                    aria-label={`Remove "${h}" from history`}
+                  >✕</button>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 

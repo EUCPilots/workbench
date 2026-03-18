@@ -161,6 +161,31 @@ export default function AppsPage({ base }: AppsPageProps) {
     return [...pinned, ...rest];
   }, [filteredApps, favourites]);
 
+  const handleSelectApp = useCallback((name: string) => {
+    setSelectedApp(name);
+    localStorage.setItem('selectedApp', name);
+    history.replaceState(null, '', `#${name}`);
+    if (isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
+  const handleGlobalSearchSelect = useCallback((appName: string) => {
+    setTab('apps');
+    setSelectedApp(appName);
+    localStorage.setItem('selectedApp', appName);
+    history.replaceState(null, '', `#${appName}`);
+    if (isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
+  const handleToggleFavourite = useCallback((name: string) => {
+    setFavourites((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      localStorage.setItem('favouriteApps', JSON.stringify(Array.from(next)));
+      return next;
+    });
+  }, []);
+
   // Keyboard navigation: / focuses sidebar search, ↑↓ moves through app list, ? opens shortcuts
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -170,6 +195,12 @@ export default function AppsPage({ base }: AppsPageProps) {
       if (e.key === '?' && !inInput) {
         e.preventDefault();
         setShowShortcuts((v) => !v);
+        return;
+      }
+
+      if (e.key === 'f' && !inInput && selectedApp) {
+        e.preventDefault();
+        handleToggleFavourite(selectedApp);
         return;
       }
 
@@ -197,7 +228,7 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [tab, orderedApps, selectedApp, handleSelectApp]);
+  }, [tab, orderedApps, selectedApp, handleSelectApp, handleToggleFavourite]);
 
   const selectedEntry = useMemo(
     () => allApps.find((a) => a.name === selectedApp) ?? null,
@@ -209,31 +240,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'about', label: 'About' },
   ];
-
-  const handleSelectApp = useCallback((name: string) => {
-    setSelectedApp(name);
-    localStorage.setItem('selectedApp', name);
-    history.replaceState(null, '', `#${name}`);
-    if (isMobile) setSidebarOpen(false);
-  }, [isMobile]);
-
-  const handleGlobalSearchSelect = useCallback((appName: string) => {
-    setTab('apps');
-    setSelectedApp(appName);
-    localStorage.setItem('selectedApp', appName);
-    history.replaceState(null, '', `#${appName}`);
-    if (isMobile) setSidebarOpen(false);
-  }, [isMobile]);
-
-  const handleToggleFavourite = useCallback((name: string) => {
-    setFavourites((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      localStorage.setItem('favouriteApps', JSON.stringify(Array.from(next)));
-      return next;
-    });
-  }, []);
 
   function handleThresholdChange(h: number) {
     setRecentThresholdHours(h);
