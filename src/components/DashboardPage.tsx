@@ -188,7 +188,14 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
             const v = m.version;
             const meta = [v.Version, v.Architecture, v.Type ?? getFileType(v)].filter(Boolean).join(' · ');
             return (
-              <li key={i} className="uri-lookup__result" onClick={() => onSelectApp(m.appName)}>
+              <li
+                key={`${m.appName}|${m.matchedUri}`}
+                className="uri-lookup__result"
+                role="button"
+                tabIndex={0}
+                onClick={() => onSelectApp(m.appName)}
+                onKeyDown={(e) => e.key === 'Enter' && onSelectApp(m.appName)}
+              >
                 <div className="uri-lookup__result-app">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -234,10 +241,10 @@ interface RecentActivityProps {
 
 const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: RecentActivityProps) {
   const recent = useMemo(() => {
+    const cutoff = Date.now() - 48 * 3600 * 1000;
     return apps
-      .filter((a) => a.lastUpdated !== null)
-      .sort((a, b) => new Date(b.lastUpdated!).getTime() - new Date(a.lastUpdated!).getTime())
-      .slice(0, 10);
+      .filter((a) => a.lastUpdated !== null && new Date(a.lastUpdated).getTime() >= cutoff)
+      .sort((a, b) => new Date(b.lastUpdated!).getTime() - new Date(a.lastUpdated!).getTime());
   }, [apps]);
 
   if (recent.length === 0) return null;
@@ -245,10 +252,17 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
   return (
     <div className="dashboard-card recent-activity">
       <h2 className="dashboard-card__title">Recent activity</h2>
-      <p className="dashboard-card__subtitle">Apps with the most recent data updates</p>
+      <p className="dashboard-card__subtitle">Apps updated in the past 48 hours ({recent.length})</p>
       <ul className="recent-activity__list">
         {recent.map((app) => (
-          <li key={app.name} className="recent-activity__item" onClick={() => onSelectApp(app.name)}>
+          <li
+            key={app.name}
+            className="recent-activity__item"
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelectApp(app.name)}
+            onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+          >
             <span className="recent-activity__name">{app.displayName}</span>
             <span className="recent-activity__date">{formatRelativeDate(app.lastUpdated!)}</span>
           </li>

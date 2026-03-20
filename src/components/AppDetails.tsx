@@ -98,6 +98,18 @@ function saveHiddenColumns(name: string, hidden: Set<string>) {
   } catch { /* ignore */ }
 }
 
+function initArchitectures(name: string, archs: string[]): Set<string> {
+  const saved = loadSavedFilters(name);
+  if (saved) return new Set(archs.filter((a) => saved.archs.has(a)));
+  return new Set(archs);
+}
+
+function initFileTypes(name: string, types: string[]): Set<string> {
+  const saved = loadSavedFilters(name);
+  if (saved) return new Set(types.filter((t) => saved.types.has(t)));
+  return new Set(types);
+}
+
 export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack, base }: AppDetailsProps) {
   const feedUrl = `${base}feeds/${appName}.xml`;
   // Derive unique filter values from data
@@ -115,18 +127,6 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     return Array.from(set).sort();
   }, [versions]);
 
-  function initArchitectures(name: string, archs: string[]): Set<string> {
-    const saved = loadSavedFilters(name);
-    if (saved) return new Set(archs.filter((a) => saved.archs.has(a)));
-    return new Set(archs);
-  }
-
-  function initFileTypes(name: string, types: string[]): Set<string> {
-    const saved = loadSavedFilters(name);
-    if (saved) return new Set(types.filter((t) => saved.types.has(t)));
-    return new Set(types);
-  }
-
   const [selectedArchitectures, setSelectedArchitectures] = useState<Set<string>>(
     () => initArchitectures(appName, architectures)
   );
@@ -135,14 +135,12 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
   );
 
   // Reset filters when app changes
-  const [lastApp, setLastApp] = useState(appName);
-  if (lastApp !== appName) {
-    setLastApp(appName);
+  useEffect(() => {
     setSelectedArchitectures(initArchitectures(appName, architectures));
     setSelectedFileTypes(initFileTypes(appName, fileTypes));
     setHiddenColumns(loadHiddenColumns(appName));
     setColumnSearch({});
-  }
+  }, [appName, architectures, fileTypes]);
 
   const filteredVersions = useMemo(() => {
     return versions.filter((v) => {
@@ -230,15 +228,21 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
   const [sortCol, setSortCol] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [columnSearch, setColumnSearch] = useState<Record<string, string>>({});
-  const [copiedRow, setCopiedRow] = useState<number | null>(null);
+  const [copiedRow, setCopiedRow] = useState<string | null>(null);
   const [copiedCmd, setCopiedCmd] = useState(false);
   const [copyError, setCopyError] = useState(false);
 
-  // Reset column search when app changes
-  if (lastApp !== appName) {
-    // (lastApp/appName sync already handled above)
-    // columnSearch reset handled via the key approach below
-  }
+  const copyErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copiedCmdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copiedRowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyErrorTimer.current) clearTimeout(copyErrorTimer.current);
+      if (copiedCmdTimer.current) clearTimeout(copiedCmdTimer.current);
+      if (copiedRowTimer.current) clearTimeout(copiedRowTimer.current);
+    };
+  }, []);
 
   function handleSort(col: string) {
     if (sortCol === col) {
@@ -288,21 +292,24 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
 
   function showCopyError() {
     setCopyError(true);
-    setTimeout(() => setCopyError(false), 2500);
+    if (copyErrorTimer.current) clearTimeout(copyErrorTimer.current);
+    copyErrorTimer.current = setTimeout(() => setCopyError(false), 2500);
   }
 
   function copyEvergreenCommand() {
     const cmd = `Get-EvergreenApp -Name ${appName}`;
     navigator.clipboard.writeText(cmd).then(() => {
       setCopiedCmd(true);
-      setTimeout(() => setCopiedCmd(false), 1500);
+      if (copiedCmdTimer.current) clearTimeout(copiedCmdTimer.current);
+      copiedCmdTimer.current = setTimeout(() => setCopiedCmd(false), 1500);
     }).catch(showCopyError);
   }
 
-  function copyRowUri(uri: string, rowIndex: number) {
+  function copyRowUri(uri: string, rowKey: string) {
     navigator.clipboard.writeText(uri).then(() => {
-      setCopiedRow(rowIndex);
-      setTimeout(() => setCopiedRow(null), 1500);
+      setCopiedRow(rowKey);
+      if (copiedRowTimer.current) clearTimeout(copiedRowTimer.current);
+      copiedRowTimer.current = setTimeout(() => setCopiedRow(null), 1500);
     }).catch(showCopyError);
   }
 
@@ -489,15 +496,16 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                   const rowUri = columns
                     .map((col) => v[col])
                     .find((val): val is string => typeof val === 'string' && /^https?:\/\//i.test(val));
-                  const isCopied = copiedRow === i;
+                  const trKey = [v.Version, v.Architecture, v.URI ?? '', v.Type ?? '', v.Language ?? ''].join('|') || String(i);
+                  const isCopied = copiedRow === rowUri;
                   return (
                     <tr
-                      key={i}
+                      key={trKey}
                       className={[
                         rowUri ? 'version-table__row--has-uri' : '',
                         isCopied ? 'version-table__row--copied' : '',
                       ].filter(Boolean).join(' ')}
-                      onClick={rowUri ? () => copyRowUri(rowUri, i) : undefined}
+                      onClick={rowUri ? () => copyRowUri(rowUri, rowUri) : undefined}
                       title={rowUri ? (isCopied ? 'Copied!' : 'Click to copy URI') : undefined}
                     >
                       {visibleColumns.map((col) => {

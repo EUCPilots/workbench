@@ -26,6 +26,21 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.4',
+    date: '2026-03-21',
+    changes: [
+      'Search modal and help dialog backgrounds are now fully opaque',
+      'Recent activity on the Dashboard now shows all apps updated in the past 48 hours instead of the top 10',
+      'Dashboard stat cards are distributed evenly across the full page width',
+      'Fixed stale closure in global search keyboard handler that could prevent search history from saving correctly',
+      'Fixed uncleaned timeouts in the version details copy-to-clipboard functions that could update state after unmount',
+      'Fixed tab focus escaping the global search modal when no results are shown',
+      'Fixed clickable list items in Dashboard being inaccessible to keyboard and screen reader users',
+      'Fixed unstable row keys and index-based copy state in the version table that caused visual state to appear on the wrong row after sorting',
+      'Replaced render-time state mutation with useEffect for resetting filters when switching apps',
+    ],
+  },
+  {
     version: '3.0.3',
     date: '2026-03-18',
     changes: [
