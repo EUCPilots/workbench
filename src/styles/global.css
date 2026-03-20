@@ -1080,9 +1080,7 @@ body.search-open #root {
 .global-search-modal {
   width: 100%;
   max-width: 580px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -1307,13 +1305,7 @@ body.search-open #root {
   color: var(--accent);
 }
 
-[data-theme="dark"] .global-search-modal {
-  background: rgba(28, 40, 38, 0.75);
-}
 
-[data-theme="dark"] .shortcuts-modal {
-  background: rgba(28, 40, 38, 0.75);
-}
 
 /* Show more button */
 .global-search-show-more {
@@ -1379,10 +1371,10 @@ body.search-open #root {
   gap: 20px;
 }
 
-/* Stat cards row — 6 equal columns, same gap as .dashboard-charts */
+/* Stat cards row — equal columns filling full width, same gap as .dashboard-charts */
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -1939,9 +1931,7 @@ body.search-open #root {
 .shortcuts-modal {
   width: 100%;
   max-width: 420px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);

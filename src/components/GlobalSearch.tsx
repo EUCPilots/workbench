@@ -161,7 +161,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     [results]
   );
 
-  function handleSelect(appName: string) {
+  const handleSelect = useCallback((appName: string) => {
     const q = inputValue.trim();
     if (q) {
       const next = [q, ...searchHistory.filter((h) => h !== q)].slice(0, MAX_HISTORY);
@@ -170,7 +170,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     }
     setOpen(false);
     onSelect(appName);
-  }
+  }, [inputValue, searchHistory, onSelect]);
 
   function applyHistoryQuery(q: string) {
     setInputValue(q);
@@ -198,7 +198,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
         setOpen(false);
       }
     },
-    [flatItems, activeIndex]
+    [flatItems, activeIndex, handleSelect]
   );
 
   // Scroll active item into view
@@ -247,7 +247,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   function handleOverlayKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (e.key !== 'Tab' || !modalRef.current) return;
     const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
-    if (focusable.length === 0) return;
+    if (focusable.length === 0) { e.preventDefault(); return; }
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
     if (e.shiftKey) {
