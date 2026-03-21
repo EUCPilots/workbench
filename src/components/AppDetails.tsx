@@ -19,6 +19,11 @@ interface AppDetailsProps {
   base: string;
 }
 
+const DROPDOWN_FILTER_COLS = new Set([
+  'Release', 'Channel', 'ImageType', 'InstallerType',
+  'Type', 'Architecture', 'Platform', 'BundleType', 'Lts',
+]);
+
 function getFileType(v: AppVersion): string {
   if (v.Type && typeof v.Type === 'string' && v.Type.trim()) return v.Type.trim();
   if (v.URI) {
@@ -215,6 +220,20 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     [columns, hiddenColumns]
   );
 
+  const dropdownOptions = useMemo(() => {
+    const opts: Record<string, string[]> = {};
+    for (const col of columns) {
+      if (!DROPDOWN_FILTER_COLS.has(col)) continue;
+      const values = new Set<string>();
+      filteredVersions.forEach((v) => {
+        const val = v[col] != null ? String(v[col]) : '';
+        if (val) values.add(val);
+      });
+      opts[col] = Array.from(values).sort();
+    }
+    return opts;
+  }, [columns, filteredVersions]);
+
   function toggleColumn(col: string) {
     setHiddenColumns((prev) => {
       const next = new Set(prev);
@@ -264,10 +283,13 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
   const columnFilteredVersions = useMemo(() => {
     return filteredVersions.filter((v) =>
       columns.every((col) => {
-        const term = (columnSearch[col] ?? '').trim().toLowerCase();
+        const term = (columnSearch[col] ?? '').trim();
         if (!term) return true;
         const cellVal = v[col] != null ? String(v[col]) : '';
-        return cellVal.toLowerCase().includes(term);
+        if (DROPDOWN_FILTER_COLS.has(col)) {
+          return cellVal === term;
+        }
+        return cellVal.toLowerCase().includes(term.toLowerCase());
       })
     );
   }, [filteredVersions, columnSearch, columns]);
@@ -470,15 +492,30 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                         {sortCol === col ? (sortDir === 'asc' ? '▲' : '▼') : '⬍'}
                       </span>
                     </button>
-                    <input
-                      className="th-search-input"
-                      type="text"
-                      placeholder={`Filter…`}
-                      value={columnSearch[col] ?? ''}
-                      onChange={(e) => handleColumnSearch(col, e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={`Search ${col}`}
-                    />
+                    {DROPDOWN_FILTER_COLS.has(col) && dropdownOptions[col]?.length ? (
+                      <select
+                        className="th-search-input th-search-select"
+                        value={columnSearch[col] ?? ''}
+                        onChange={(e) => handleColumnSearch(col, e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Filter ${col}`}
+                      >
+                        <option value="">All</option>
+                        {dropdownOptions[col].map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        className="th-search-input"
+                        type="text"
+                        placeholder="Filter…"
+                        value={columnSearch[col] ?? ''}
+                        onChange={(e) => handleColumnSearch(col, e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Search ${col}`}
+                      />
+                    )}
                   </th>
                 ))}
               </tr>
