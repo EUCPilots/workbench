@@ -26,6 +26,14 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.5',
+    date: '2026-03-23',
+    changes: [
+      'Dashboard shows a callout and dedicated list of applications that provide .msix format downloads',
+      'Dashboard, About, and app detail views can now be linked to directly via URL hash (#dashboard, #about, #AppName)',
+    ],
+  },
+  {
     version: '3.0.4',
     date: '2026-03-21',
     changes: [

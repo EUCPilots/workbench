@@ -48,7 +48,13 @@ interface AppsPageProps {
 }
 
 export default function AppsPage({ base }: AppsPageProps) {
-  const [tab, setTab] = useState<Tab>('apps');
+  const [tab, setTab] = useState<Tab>(() => {
+    if (typeof window === 'undefined') return 'apps';
+    const hash = window.location.hash.slice(1);
+    if (hash === 'dashboard') return 'dashboard';
+    if (hash === 'about') return 'about';
+    return 'apps';
+  });
   const [appData, setAppData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +143,11 @@ export default function AppsPage({ base }: AppsPageProps) {
   useEffect(() => {
     function onHashChange() {
       const hash = window.location.hash.slice(1);
-      if (hash && allApps.some((a) => a.name === hash)) {
+      if (hash === 'dashboard') {
+        setTab('dashboard');
+      } else if (hash === 'about') {
+        setTab('about');
+      } else if (hash && allApps.some((a) => a.name === hash)) {
         setSelectedApp(hash);
         setTab('apps');
       }
@@ -248,6 +258,10 @@ export default function AppsPage({ base }: AppsPageProps) {
 
   function handleTabChange(t: Tab) {
     setTab(t);
+    if (t === 'dashboard') history.replaceState(null, '', '#dashboard');
+    else if (t === 'about') history.replaceState(null, '', '#about');
+    else if (selectedApp) history.replaceState(null, '', `#${selectedApp}`);
+    else history.replaceState(null, '', location.pathname);
     if (isMobile) setSidebarOpen(false);
   }
 
