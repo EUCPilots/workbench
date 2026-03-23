@@ -220,6 +220,55 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
   );
 }
 
+function MsixCallout({ count }: { count: number }) {
+  return (
+    <div className="msix-callout">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+        <rect x="1" y="4" width="14" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M5 4V3a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        <circle cx="8" cy="8.5" r="1" fill="currentColor" />
+        <line x1="8" y1="9.5" x2="8" y2="11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+      <p style={{ margin: 0 }}>
+        <strong>{count} application{count !== 1 ? 's' : ''}</strong> in this feed provide downloads in{' '}
+        <strong>.msix</strong> format — the modern Windows packaging format for Microsoft Store and sideloaded deployment.
+      </p>
+    </div>
+  );
+}
+
+interface MsixAppsProps {
+  apps: AppEntry[];
+  onSelectApp: (name: string) => void;
+}
+
+const MsixApps = memo(function MsixApps({ apps, onSelectApp }: MsixAppsProps) {
+  return (
+    <div className="dashboard-card">
+      <h2 className="dashboard-card__title">MSIX downloads</h2>
+      <p className="dashboard-card__subtitle">Apps that provide .msix installers ({apps.length})</p>
+      <ul className="msix-apps__list">
+        {apps.map((app) => {
+          const msixCount = app.versions.filter((v) => getFileType(v) === 'msix').length;
+          return (
+            <li
+              key={app.name}
+              className="msix-apps__item"
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelectApp(app.name)}
+              onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+            >
+              <span className="msix-apps__name">{app.displayName}</span>
+              <span className="msix-apps__count">{msixCount}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+});
+
 function formatRelativeDate(iso: string): string {
   try {
     const diff = Date.now() - new Date(iso).getTime();
@@ -273,6 +322,14 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
 });
 
 export default function DashboardPage({ apps, totalVersionCount, onSelectApp, recentThresholdHours }: DashboardPageProps) {
+  const msixApps = useMemo(
+    () =>
+      apps
+        .filter((app) => app.versions.some((v) => getFileType(v) === 'msix'))
+        .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [apps]
+  );
+
   const { archData, typeData, recentCount } = useMemo(() => {
     const archs: string[] = [];
     const types: string[] = [];
@@ -336,6 +393,10 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
           <BarChart data={typeData} maxItems={10} colorVar="--accent-hover" />
         </div>
       </div>
+
+      {/* MSIX callout + apps list */}
+      {msixApps.length > 0 && <MsixCallout count={msixApps.length} />}
+      {msixApps.length > 0 && <MsixApps apps={msixApps} onSelectApp={onSelectApp} />}
 
       {/* Recent activity */}
       <RecentActivity apps={apps} onSelectApp={onSelectApp} />
