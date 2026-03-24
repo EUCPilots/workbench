@@ -2113,6 +2113,38 @@ body.search-open #root {
   background: rgba(255,255,255,0.15);
 }
 
+/* About modal */
+.about-modal__body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 4px 16px;
+}
+
+.about-modal__logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.about-modal__text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.about-modal__text a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.about-modal__text a:hover {
+  opacity: 0.8;
+}
+
 /* =============================================
    Sidebar Settings Footer (threshold)
    ============================================= */
