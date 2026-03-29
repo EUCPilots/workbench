@@ -26,6 +26,16 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.6',
+    date: '2026-03-29',
+    changes: [
+      'About information is now accessible via the (i) button in the header, opening a modal with project details',
+      'Added theme-color meta tags so the browser chrome follows the active light or dark theme',
+      'Updated date in the app detail header is now displayed as a styled pill matching the Get-EvergreenApp and RSS buttons, with a hover highlight effect',
+      'Ring, Language, and Throttle columns now use dropdown filters in the version details table when those fields are present in the data',
+    ],
+  },
+  {
     version: '3.0.5',
     date: '2026-03-23',
     changes: [
