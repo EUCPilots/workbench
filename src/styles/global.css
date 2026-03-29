@@ -559,10 +559,24 @@ a:hover {
 }
 
 .details-panel__updated {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid var(--panel-border);
+  border-radius: 5px;
+  background: var(--bg-secondary);
   color: var(--text-muted);
+  font-size: 11px;
   white-space: nowrap;
   flex-shrink: 0;
+  line-height: 1;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.details-panel__updated:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-secondary));
 }
 
 /* PowerShell copy button in the app header */
@@ -579,6 +593,7 @@ a:hover {
   flex-shrink: 0;
   max-width: 320px;
   overflow: hidden;
+  line-height: 1;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
@@ -619,6 +634,7 @@ a:hover {
   text-decoration: none;
   font-size: 11px;
   flex-shrink: 0;
+  line-height: 1;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
