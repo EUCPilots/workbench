@@ -561,7 +561,7 @@ a:hover {
 .details-panel__updated {
   display: inline-flex;
   align-items: center;
-  padding: 3px 7px;
+  padding: 4px 7px;
   border: 1px solid var(--panel-border);
   border-radius: 5px;
   background: var(--bg-secondary);
