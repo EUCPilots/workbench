@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "apptracker-preview",
-      "runtimeExecutable": "/usr/local/bin/npm",
-      "runtimeArgs": ["run", "preview"],
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": ["./node_modules/.bin/astro", "preview"],
       "port": 4321
     }
   ]

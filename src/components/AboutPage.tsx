@@ -26,6 +26,14 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.7',
+    date: '2026-04-04',
+    changes: [
+      'Upgraded Astro from v5 to v6, React from v18 to v19, and @astrojs/react from v4 to v5',
+      'Added explicit buildBase configuration to the PWA plugin to fix a manifest.webmanifest 404 on the deployed site',
+    ],
+  },
+  {
     version: '3.0.6',
     date: '2026-03-29',
     changes: [
