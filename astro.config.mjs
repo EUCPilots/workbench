@@ -7,6 +7,7 @@ export default defineConfig({
     react(),
     AstroPWA({
       registerType: 'autoUpdate',
+      buildBase: '/workbench/',
       manifest: {
         name: 'Evergreen Web Workbench',
         short_name: 'Evergreen Workbench',
