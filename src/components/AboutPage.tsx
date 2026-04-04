@@ -26,6 +26,16 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.8',
+    date: '2026-04-04',
+    changes: [
+      'Migrated global styling to Fluent design tokens for more consistent theming across the app',
+      'Replaced custom icon assets with Fluent UI React Icons throughout the interface',
+      'Refined UI polish by removing the app count display and adjusting version table header spacing',
+      'Updated build and tooling dependencies, including TypeScript 6.0.2 and lodash 4.18.1, plus CI Node.js updates',
+    ],
+  },
+  {
     version: '3.0.7',
     date: '2026-04-04',
     changes: [
