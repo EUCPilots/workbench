@@ -959,8 +959,8 @@ a:hover {
 
 .version-table th {
   text-align: left;
-  padding: 0 var(--space-m);
-  height: 44px;
+  padding: var(--space-s) var(--space-m) var(--space-xs);
+  min-height: 52px;
   background: var(--table-header-bg);
   color: var(--text-secondary);
   font-weight: var(--font-weight-semibold);
@@ -978,7 +978,7 @@ a:hover {
   background: none;
   border: none;
   padding: 0;
-  margin: 0 0 5px 0;
+  margin: 0 0 var(--space-s) 0;
   cursor: pointer;
   color: var(--text-secondary);
   font: inherit;
