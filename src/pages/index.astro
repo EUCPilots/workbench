@@ -8,5 +8,5 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 ---
 
 <Layout title="Evergreen Workbench">
-  <AppsPage client:load base={base} />
+  <AppsPage client:only="react" base={base} />
 </Layout>

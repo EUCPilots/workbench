@@ -35,9 +35,4 @@ export default defineConfig({
   output: 'static',
   site: 'https://eucpilots.com',
   base: '/workbench',
-  vite: {
-    ssr: {
-      noExternal: ['@fluentui/react-icons'],
-    },
-  },
 });
