@@ -304,13 +304,7 @@ export default function AppsPage({ base }: AppsPageProps) {
         </div>
         <div className="app-header__right">
           {appData && (
-            <>
-              <GlobalSearch apps={allApps} onSelect={handleGlobalSearchSelect} />
-              <span className="app-header__count">
-                <span className="version-dot" />
-                {appData.meta.appCount} apps tracked
-              </span>
-            </>
+            <GlobalSearch apps={allApps} onSelect={handleGlobalSearchSelect} />
           )}
           <button
             className="shortcuts-help-btn"

@@ -204,9 +204,6 @@ a:hover {
   flex-shrink: 0;
 }
 
-.app-header__count {
-  white-space: nowrap;
-}
 
 .sidebar-toggle-btn {
   display: flex;
@@ -252,14 +249,6 @@ a:hover {
   background: var(--btn-outline-hover);
 }
 
-.version-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--status-positive);
-  margin-right: 4px;
-}
 
 .app-body {
   display: flex;
@@ -1925,9 +1914,6 @@ body.search-open #root {
     font-size: 13px;
   }
 
-  .app-header__count {
-    display: none;
-  }
 
   /* On mobile the sidebar is a fixed overlay — it occupies no layout space */
   .sidebar--mobile.sidebar--closed {
