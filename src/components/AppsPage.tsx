@@ -1,4 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import {
+  NavigationRegular,
+  InfoRegular,
+  QuestionCircleRegular,
+  BoxRegular,
+  AppsListRegular,
+  DataBarVerticalRegular,
+} from '@fluentui/react-icons';
 import AppsSidebar from './AppsSidebar';
 import AppDetails from './AppDetails';
 import AboutPage from './AboutPage';
@@ -247,10 +255,10 @@ export default function AppsPage({ base }: AppsPageProps) {
     [allApps, selectedApp]
   );
 
-  const NAV_TABS: { id: Tab; label: string }[] = [
-    { id: 'apps', label: 'Apps' },
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'about', label: 'About' },
+  const NAV_TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: 'apps', label: 'Apps', icon: <AppsListRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <DataBarVerticalRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
+    { id: 'about', label: 'About', icon: <InfoRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
   ];
 
   function handleThresholdChange(h: number) {
@@ -298,7 +306,7 @@ export default function AppsPage({ base }: AppsPageProps) {
             aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={sidebarOpen}
           >
-            <span className="sidebar-toggle-btn__icon">&#9776;</span>
+            <NavigationRegular aria-hidden="true" className="sidebar-toggle-btn__icon" />
           </button>
           <span className="app-header__title">Evergreen Workbench</span>
         </div>
@@ -312,7 +320,7 @@ export default function AppsPage({ base }: AppsPageProps) {
             aria-label="About Evergreen"
             title="About Evergreen"
           >
-            i
+            <InfoRegular aria-hidden="true" />
           </button>
           <button
             className="shortcuts-help-btn"
@@ -320,7 +328,7 @@ export default function AppsPage({ base }: AppsPageProps) {
             aria-label="Keyboard shortcuts"
             title="Keyboard shortcuts (?)"
           >
-            ?
+            <QuestionCircleRegular aria-hidden="true" />
           </button>
           <ThemeToggle />
         </div>
@@ -351,6 +359,7 @@ export default function AppsPage({ base }: AppsPageProps) {
                 onClick={() => handleTabChange(t.id)}
                 aria-current={tab === t.id ? 'page' : undefined}
               >
+                {t.icon}
                 {t.label}
               </button>
             ))}
@@ -409,7 +418,7 @@ export default function AppsPage({ base }: AppsPageProps) {
                 </ErrorBoundary>
               ) : (
                 <div className="empty-state" style={{ flex: 1 }}>
-                  <span className="empty-state__icon">📦</span>
+                  <BoxRegular aria-hidden="true" className="empty-state__icon" />
                   <span className="empty-state__title">Select an application</span>
                   <span className="empty-state__subtitle">
                     Choose an app from the list to view version details.

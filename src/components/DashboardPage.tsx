@@ -1,4 +1,5 @@
 import { useMemo, useState, memo } from 'react';
+import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular } from '@fluentui/react-icons';
 
 interface AppVersion {
   Version?: string;
@@ -159,10 +160,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
       <p className="dashboard-card__subtitle">Paste a download URL to find which app it belongs to</p>
 
       <div className="uri-lookup__input-row">
-        <svg className="uri-lookup__icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
-          <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <SearchRegular aria-hidden="true" className="uri-lookup__icon" style={{ width: 15, height: 15 }} />
         <input
           className="uri-lookup__input"
           type="text"
@@ -174,7 +172,9 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
           aria-label="Search by download URL"
         />
         {query && (
-          <button className="uri-lookup__clear" onClick={() => setQuery('')} aria-label="Clear">✕</button>
+          <button className="uri-lookup__clear" onClick={() => setQuery('')} aria-label="Clear">
+            <DismissRegular aria-hidden="true" style={{ width: 14, height: 14 }} />
+          </button>
         )}
       </div>
 
@@ -197,11 +197,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
                 onKeyDown={(e) => e.key === 'Enter' && onSelectApp(m.appName)}
               >
                 <div className="uri-lookup__result-app">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                    <line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                    <line x1="5" y1="9" x2="9" y2="9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                  </svg>
+                  <AppGenericRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
                   <span className="uri-lookup__result-name">{m.displayName}</span>
                   {meta && <span className="uri-lookup__result-meta">{meta}</span>}
                 </div>
@@ -223,12 +219,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
 function MsixCallout({ count }: { count: number }) {
   return (
     <div className="msix-callout">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
-        <rect x="1" y="4" width="14" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M5 4V3a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        <circle cx="8" cy="8.5" r="1" fill="currentColor" />
-        <line x1="8" y1="9.5" x2="8" y2="11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      </svg>
+      <LockClosedRegular aria-hidden="true" style={{ width: 16, height: 16, flexShrink: 0 }} />
       <p style={{ margin: 0 }}>
         <strong>{count} application{count !== 1 ? 's' : ''}</strong> in this feed provide downloads in{' '}
         <strong>.msix</strong> format — the modern Windows packaging format for Microsoft Store and sideloaded deployment.

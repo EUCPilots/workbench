@@ -1,4 +1,13 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import {
+  ArrowLeftRegular,
+  CopyRegular,
+  RssRegular,
+  CheckmarkRegular,
+  ArrowSortUpRegular,
+  ArrowSortDownRegular,
+  ArrowSortRegular,
+} from '@fluentui/react-icons';
 
 interface AppVersion {
   Version?: string;
@@ -341,7 +350,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
       <div className="details-panel__header">
         {onBack && (
           <button className="back-btn" onClick={onBack} aria-label="Back to app list">
-            &#8592;
+            <ArrowLeftRegular aria-hidden="true" />
           </button>
         )}
         <span className="details-panel__title">{displayName}</span>
@@ -351,10 +360,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
           title={`Copy: Get-EvergreenApp -Name ${appName}`}
           aria-label="Copy Evergreen PowerShell command"
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="ps-copy-btn__icon">
-            <rect x="5" y="1" width="9" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
-            <path d="M2 4.5H2A1.5 1.5 0 0 0 .5 6v8A1.5 1.5 0 0 0 2 15.5h6A1.5 1.5 0 0 0 9.5 14v-.5" stroke="currentColor" strokeWidth="1.4"/>
-          </svg>
+          <CopyRegular aria-hidden="true" className="ps-copy-btn__icon" style={{ width: 13, height: 13 }} />
           <code className="ps-copy-btn__label">
             {copiedCmd ? 'Copied!' : `Get-EvergreenApp -Name ${appName}`}
           </code>
@@ -367,11 +373,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
           title={`RSS feed for ${displayName}`}
           aria-label={`RSS feed for ${displayName}`}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-            <circle cx="2.5" cy="13.5" r="1.5" />
-            <path d="M1 9.5a6 6 0 0 1 5.5 5.5H8a7.5 7.5 0 0 0-7-7v1.5z" />
-            <path d="M1 5.5a10 10 0 0 1 9.5 9.5H12A11.5 11.5 0 0 0 1 4v1.5z" />
-          </svg>
+          <RssRegular aria-hidden="true" style={{ width: 13, height: 13 }} />
           <span className="feed-subscribe-btn__label">RSS</span>
         </a>
         {formatDate(lastUpdated) && (
@@ -490,7 +492,11 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                     >
                       <span>{col}</span>
                       <span className="sort-icon">
-                        {sortCol === col ? (sortDir === 'asc' ? '▲' : '▼') : '⬍'}
+                        {sortCol === col
+                          ? (sortDir === 'asc'
+                              ? <ArrowSortUpRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
+                              : <ArrowSortDownRegular aria-hidden="true" style={{ width: 12, height: 12 }} />)
+                          : <ArrowSortRegular aria-hidden="true" style={{ width: 12, height: 12 }} />}
                       </span>
                     </button>
                     {DROPDOWN_FILTER_COLS.has(col) && dropdownOptions[col]?.length ? (
@@ -554,9 +560,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                           <td key={col} className={isUrl ? 'uri-cell' : ''} title={isUrl && !isCopied ? strVal : undefined}>
                             {isUrl && isCopied ? (
                               <span className="uri-copy-badge">
-                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                  <path d="M2.5 8.5l3.5 3.5 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                                <CheckmarkRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
                                 Copied
                               </span>
                             ) : isUrl ? (

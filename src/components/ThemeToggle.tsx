@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { WeatherSunnyRegular, WeatherMoonRegular } from '@fluentui/react-icons';
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -26,7 +27,7 @@ export default function ThemeToggle() {
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={dark ? 'Light mode' : 'Dark mode'}
     >
-      {dark ? '☀' : '☾'}
+      {dark ? <WeatherSunnyRegular aria-hidden="true" /> : <WeatherMoonRegular aria-hidden="true" />}
     </button>
   );
 }

@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useRef, memo } from 'react';
+import { StarRegular, StarFilled } from '@fluentui/react-icons';
 
 function isRecent(lastUpdated: string | null, thresholdMs: number): boolean {
   if (!lastUpdated) return false;
@@ -37,20 +38,9 @@ interface AppsSidebarProps {
 }
 
 function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      width="13"
-      height="13"
-      viewBox="0 0 16 16"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polygon points="8,1.5 10,6 15,6.5 11.5,10 12.5,15 8,12.5 3.5,15 4.5,10 1,6.5 6,6" />
-    </svg>
-  );
+  return filled
+    ? <StarFilled aria-hidden="true" style={{ width: 13, height: 13 }} />
+    : <StarRegular aria-hidden="true" style={{ width: 13, height: 13 }} />;
 }
 
 interface AppListItemProps {

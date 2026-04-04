@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { SearchRegular, HistoryRegular, AppGenericRegular, DismissRegular } from '@fluentui/react-icons';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -234,10 +235,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
         aria-label="Open global search"
         title="Search (Ctrl+K)"
       >
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
-          <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <SearchRegular aria-hidden="true" style={{ width: 15, height: 15 }} />
         <span className="global-search-trigger__label">Search</span>
         <kbd className="global-search-trigger__kbd">Ctrl K</kbd>
       </button>
@@ -268,10 +266,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     >
       <div className="global-search-modal" ref={modalRef}>
         <div className="global-search-input-row">
-          <svg className="global-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <SearchRegular aria-hidden="true" className="global-search-icon" style={{ width: 16, height: 16 }} />
           <input
             ref={inputRef}
             className="global-search-input"
@@ -287,7 +282,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
           />
           {inputValue && (
             <button className="global-search-clear" onClick={() => { setInputValue(''); setQuery(''); }} aria-label="Clear search">
-              ✕
+              <DismissRegular aria-hidden="true" style={{ width: 14, height: 14 }} />
             </button>
           )}
           <kbd className="global-search-esc">Esc</kbd>
@@ -305,16 +300,15 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
             <ul className="global-search-history__list">
               {searchHistory.map((h) => (
                 <li key={h} className="global-search-history__item" onClick={() => applyHistoryQuery(h)}>
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
-                    <polyline points="8,5 8,8 10,10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <HistoryRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
                   <span className="global-search-history__text">{h}</span>
                   <button
                     className="global-search-history__remove"
                     onClick={(e) => removeHistoryEntry(h, e)}
                     aria-label={`Remove "${h}" from history`}
-                  >✕</button>
+                  >
+                    <DismissRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -345,11 +339,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
                 onClick={() => handleSelect(result.appName)}
               >
                 <div className="global-search-result__name">
-                  <svg className="global-search-result__icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                    <line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                    <line x1="5" y1="9" x2="9" y2="9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                  </svg>
+                  <AppGenericRegular aria-hidden="true" className="global-search-result__icon" style={{ width: 13, height: 13 }} />
                   {highlightMatch(result.displayName, query.trim())}
                 </div>
 

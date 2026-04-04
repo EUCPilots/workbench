@@ -311,9 +311,10 @@ a:hover {
 .sidebar-nav__item {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 12px 16px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
   border-left: 3px solid transparent;
   user-select: none;
