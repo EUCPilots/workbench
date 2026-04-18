@@ -1520,11 +1520,16 @@ body.search-open #root {
   gap: 20px;
 }
 
-/* Stat cards row — equal columns filling full width, same gap as .dashboard-charts */
+/* Stat cards row — primary stats always 4 equal columns */
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+}
+
+/* Insight stats — up to 3 cards; auto-fit collapses empty tracks so 3 cards fill the row */
+.dashboard-stats--insights {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 }
 
 .stat-card {
@@ -1867,6 +1872,109 @@ body.search-open #root {
   white-space: nowrap;
 }
 
+/* Column chart (vertical bars — update cadence) */
+.column-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 80px;
+}
+
+.column-chart__bar {
+  flex: 1;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0.75;
+  transition: height var(--duration-slower) ease, opacity var(--duration-fast);
+  min-height: 0;
+  cursor: default;
+}
+
+.column-chart__bar:hover {
+  opacity: 1;
+}
+
+.column-chart__x-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Stacked bar (installer modernity) */
+.stacked-bar {
+  height: 22px;
+  display: flex;
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  gap: 2px;
+  margin: 10px 0 6px;
+}
+
+.stacked-bar__segment {
+  height: 100%;
+  min-width: 0;
+  transition: flex var(--duration-slower) ease;
+}
+
+.stacked-bar__segment--modern {
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.stacked-bar__segment--legacy {
+  background: var(--color-neutral-foreground-3);
+  opacity: 0.6;
+}
+
+.stacked-bar__segment--other {
+  background: var(--color-neutral-background-5);
+}
+
+.stacked-bar__legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.stacked-bar__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stacked-bar__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.stacked-bar__legend-item--modern .stacked-bar__swatch {
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.stacked-bar__legend-item--legacy .stacked-bar__swatch {
+  background: var(--color-neutral-foreground-3);
+  opacity: 0.6;
+}
+
+.stacked-bar__legend-item--other .stacked-bar__swatch {
+  background: var(--color-neutral-background-5);
+}
+
+.stacked-bar__note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .dashboard-page {
@@ -1874,6 +1982,10 @@ body.search-open #root {
   }
 
   .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-stats--insights {
     grid-template-columns: repeat(3, 1fr);
   }
 

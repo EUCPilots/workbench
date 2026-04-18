@@ -25,6 +25,9 @@ interface DashboardPageProps {
   recentThresholdHours: number;
 }
 
+const MODERN_TYPES = new Set(['msix', 'msixbundle', 'intunewin']);
+const LEGACY_TYPES = new Set(['exe', 'msi', 'msp', 'cab', 'iso', 'zip', '7z']);
+
 function getFileType(v: AppVersion): string {
   if (v.Type && typeof v.Type === 'string' && v.Type.trim()) return v.Type.trim().toLowerCase();
   if (v.URI) {
@@ -32,6 +35,14 @@ function getFileType(v: AppVersion): string {
     if (ext) return ext.toLowerCase();
   }
   return 'unknown';
+}
+
+function hasHashField(v: AppVersion): boolean {
+  for (const key of ['Sha256', 'SHA256', 'sha256']) {
+    const val = v[key];
+    if (typeof val === 'string' && val.trim().length > 0) return true;
+  }
+  return false;
 }
 
 function tally(items: string[]): Array<{ label: string; count: number }> {
@@ -92,6 +103,119 @@ const StatCard = memo(function StatCard({ label, value, sub }: StatCardProps) {
   );
 });
 
+const ColumnChart = memo(function ColumnChart({ data }: { data: number[] }) {
+  // data[0] = today, data[N-1] = oldest — reverse for left→right display
+  const reversed = [...data].reverse();
+  const max = Math.max(...reversed, 1);
+
+  return (
+    <div>
+      <div className="column-chart">
+        {reversed.map((count, idx) => {
+          const daysAgo = reversed.length - 1 - idx;
+          const label = daysAgo === 0 ? 'Today' : `${daysAgo}d ago`;
+          return (
+            <div
+              key={idx}
+              className="column-chart__bar"
+              style={{ height: count > 0 ? `${Math.max((count / max) * 100, 4)}%` : '0%' }}
+              title={`${label}: ${count} app${count !== 1 ? 's' : ''} updated`}
+            />
+          );
+        })}
+      </div>
+      <div className="column-chart__x-axis">
+        <span>{data.length - 1}d ago</span>
+        <span>Today</span>
+      </div>
+    </div>
+  );
+});
+
+interface ModernityGroups {
+  modern: number;
+  legacy: number;
+  other: number;
+}
+
+const ModernityBar = memo(function ModernityBar({ modern, legacy, other }: ModernityGroups) {
+  const total = modern + legacy + other || 1;
+  const pct = (n: number) => `${((n / total) * 100).toFixed(1)}%`;
+
+  return (
+    <div>
+      <div className="stacked-bar">
+        {modern > 0 && (
+          <div
+            className="stacked-bar__segment stacked-bar__segment--modern"
+            style={{ flex: modern }}
+            title={`Modern: ${modern.toLocaleString()} (${pct(modern)})`}
+          />
+        )}
+        {legacy > 0 && (
+          <div
+            className="stacked-bar__segment stacked-bar__segment--legacy"
+            style={{ flex: legacy }}
+            title={`Legacy: ${legacy.toLocaleString()} (${pct(legacy)})`}
+          />
+        )}
+        {other > 0 && (
+          <div
+            className="stacked-bar__segment stacked-bar__segment--other"
+            style={{ flex: other }}
+            title={`Other: ${other.toLocaleString()} (${pct(other)})`}
+          />
+        )}
+      </div>
+      <div className="stacked-bar__legend">
+        {modern > 0 && (
+          <span className="stacked-bar__legend-item stacked-bar__legend-item--modern">
+            <span className="stacked-bar__swatch" />
+            Modern · {modern.toLocaleString()} ({pct(modern)})
+          </span>
+        )}
+        {legacy > 0 && (
+          <span className="stacked-bar__legend-item stacked-bar__legend-item--legacy">
+            <span className="stacked-bar__swatch" />
+            Legacy · {legacy.toLocaleString()} ({pct(legacy)})
+          </span>
+        )}
+        {other > 0 && (
+          <span className="stacked-bar__legend-item stacked-bar__legend-item--other">
+            <span className="stacked-bar__swatch" />
+            Other · {other.toLocaleString()} ({pct(other)})
+          </span>
+        )}
+      </div>
+      <p className="stacked-bar__note">Modern = MSIX, MSIXBUNDLE, INTUNEWIN · Legacy = EXE, MSI, MSP, CAB, ISO, ZIP, 7Z</p>
+    </div>
+  );
+});
+
+const TopApps = memo(function TopApps({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
+  return (
+    <div className="dashboard-card">
+      <h2 className="dashboard-card__title">Most variants</h2>
+      <p className="dashboard-card__subtitle">Top 10 apps by version entry count</p>
+      <ul className="msix-apps__list">
+        {apps.map((app) => (
+          <li
+            key={app.name}
+            className="msix-apps__item"
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelectApp(app.name)}
+            onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+          >
+            <span className="msix-apps__name">{app.displayName}</span>
+            <span className="msix-apps__count">{app.versions.length}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+});
+
 interface UriMatch {
   appName: string;
   displayName: string;
@@ -109,7 +233,6 @@ interface UriIndexEntry {
 function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
   const [query, setQuery] = useState('');
 
-  // Pre-extract all HTTP URIs once per data load, not per keystroke
   const uriIndex = useMemo<UriIndexEntry[]>(() => {
     const index: UriIndexEntry[] = [];
     for (const app of apps) {
@@ -132,7 +255,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
       for (const uri of entry.uris) {
         if (uri.toLowerCase().includes(q)) {
           results.push({ appName: entry.appName, displayName: entry.displayName, matchedUri: uri, version: entry.version });
-          break; // one match per version row
+          break;
         }
       }
       if (results.length >= 50) break;
@@ -184,7 +307,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
 
       {matches.length > 0 && (
         <ul className="uri-lookup__results">
-          {matches.map((m, i) => {
+          {matches.map((m) => {
             const v = m.version;
             const meta = [v.Version, v.Architecture, v.Type ?? getFileType(v)].filter(Boolean).join(' · ');
             return (
@@ -321,52 +444,87 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
     [apps]
   );
 
-  const { archData, typeData, recentCount } = useMemo(() => {
+  const { archData, typeData, recentCount, arm64AppCount, hashCoveragePct, topApps, cadenceCounts, modernityGroups } = useMemo(() => {
     const archs: string[] = [];
     const types: string[] = [];
     const now = Date.now();
     const thresholdMs = recentThresholdHours * 3600 * 1000;
     let recentCount = 0;
+    let hashCount = 0;
+    const arm64AppNames = new Set<string>();
+    const cadenceCounts = new Array(30).fill(0) as number[];
+    let modern = 0, legacy = 0, other = 0;
 
     for (const app of apps) {
       if (app.lastUpdated) {
         try {
-          if (now - new Date(app.lastUpdated).getTime() <= thresholdMs) recentCount++;
+          const diff = now - new Date(app.lastUpdated).getTime();
+          if (diff <= thresholdMs) recentCount++;
+          const daysAgo = Math.floor(diff / 86400000);
+          if (daysAgo >= 0 && daysAgo < 30) cadenceCounts[daysAgo]++;
         } catch { /* ignore */ }
       }
       for (const v of app.versions) {
         if (v.Architecture) archs.push(String(v.Architecture));
-        types.push(getFileType(v));
+        if (v.Architecture === 'ARM64') arm64AppNames.add(app.name);
+        const ft = getFileType(v);
+        types.push(ft);
+        if (MODERN_TYPES.has(ft)) modern++;
+        else if (LEGACY_TYPES.has(ft)) legacy++;
+        else other++;
+        if (hasHashField(v)) hashCount++;
       }
     }
+
+    const topApps = [...apps]
+      .sort((a, b) => b.versions.length - a.versions.length)
+      .slice(0, 10);
 
     return {
       archData: tally(archs),
       typeData: tally(types),
       recentCount,
+      arm64AppCount: arm64AppNames.size,
+      hashCoveragePct: totalVersionCount > 0 ? Math.round((hashCount / totalVersionCount) * 100) : 0,
+      topApps,
+      cadenceCounts,
+      modernityGroups: { modern, legacy, other },
     };
-  }, [apps, recentThresholdHours]);
+  }, [apps, recentThresholdHours, totalVersionCount]);
 
   const uniqueArchCount = archData.length;
   const uniqueTypeCount = typeData.length;
 
   return (
     <div className="dashboard-page">
+      {/* Update cadence — full width */}
+      <div className="dashboard-card">
+        <h2 className="dashboard-card__title">Update cadence</h2>
+        <p className="dashboard-card__subtitle">Number of apps updated per day over the past 30 days</p>
+        <ColumnChart data={cadenceCounts} />
+      </div>
+
       {/* URI lookup */}
       <UriLookup apps={apps} onSelectApp={onSelectApp} />
 
-      {/* Stat cards */}
+      {/* Primary stat cards */}
       <div className="dashboard-stats">
         <StatCard label="Apps tracked" value={apps.length} />
         <StatCard label="Version entries" value={totalVersionCount} />
         <StatCard label="Architectures" value={uniqueArchCount} />
         <StatCard label="File types" value={uniqueTypeCount} />
-        {recentCount > 0 && (
-          <StatCard label="Updated recently" value={recentCount} sub="last 48 hours" />
-        )}
       </div>
 
-      {/* Charts row */}
+      {/* Insight stat cards */}
+      {(arm64AppCount > 0 || hashCoveragePct > 0 || recentCount > 0) && (
+        <div className="dashboard-stats dashboard-stats--insights">
+          {arm64AppCount > 0 && <StatCard label="ARM64 apps" value={arm64AppCount} sub="have ARM64 downloads" />}
+          {hashCoveragePct > 0 && <StatCard label="Hash coverage" value={`${hashCoveragePct}%`} sub="downloads include SHA256" />}
+          {recentCount > 0 && <StatCard label="Updated recently" value={recentCount} sub="last 48 hours" />}
+        </div>
+      )}
+
+      {/* Architecture + file type charts */}
       <div className="dashboard-charts">
         <div className="dashboard-card">
           <h2 className="dashboard-card__title">Architecture</h2>
@@ -385,13 +543,23 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
         </div>
       </div>
 
+      {/* Installer modernity + top apps */}
+      <div className="dashboard-charts">
+        <div className="dashboard-card">
+          <h2 className="dashboard-card__title">Installer modernity</h2>
+          <p className="dashboard-card__subtitle">Modern vs. legacy packaging formats across all version entries</p>
+          <ModernityBar {...modernityGroups} />
+        </div>
+
+        <TopApps apps={topApps} onSelectApp={onSelectApp} />
+      </div>
+
       {/* MSIX callout + apps list */}
       {msixApps.length > 0 && <MsixCallout count={msixApps.length} />}
       {msixApps.length > 0 && <MsixApps apps={msixApps} onSelectApp={onSelectApp} />}
 
       {/* Recent activity */}
       <RecentActivity apps={apps} onSelectApp={onSelectApp} />
-
     </div>
   );
 }
