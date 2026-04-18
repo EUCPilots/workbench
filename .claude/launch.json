@@ -3,13 +3,13 @@
   "configurations": [
     {
       "name": "apptracker-preview",
-      "runtimeExecutable": "/opt/homebrew/opt/node@24/bin/node",
+      "runtimeExecutable": "/usr/local/bin/node",
       "runtimeArgs": ["./node_modules/.bin/astro", "preview"],
       "port": 4321
     },
     {
       "name": "apptracker-dev",
-      "runtimeExecutable": "/opt/homebrew/opt/node@24/bin/node",
+      "runtimeExecutable": "/usr/local/bin/node",
       "runtimeArgs": ["./node_modules/.bin/astro", "dev"],
       "port": 4321
     }
