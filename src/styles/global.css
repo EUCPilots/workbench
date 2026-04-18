@@ -415,7 +415,7 @@ a:hover {
 
 .sidebar-nav {
   flex-shrink: 0;
-  padding: 8px 0;
+  padding: 8px;
   border-bottom: 1px solid var(--sidebar-border);
 }
 
@@ -423,18 +423,17 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 10px 12px;
   cursor: pointer;
   font-size: 14px;
   color: var(--text-primary);
-  border-left: 2px solid transparent;
   user-select: none;
   background: transparent;
   width: 100%;
-  border-right: none;
-  border-top: none;
-  border-bottom: none;
+  border: none;
+  border-radius: 6px;
   text-align: left;
+  position: relative;
   transition: background var(--duration-fast);
 }
 
@@ -443,10 +442,20 @@ a:hover {
 }
 
 .sidebar-nav__item--active {
-  border-left-color: var(--accent);
   background: var(--sidebar-active-bg);
   color: var(--accent);
   font-weight: var(--font-weight-semibold);
+}
+
+.sidebar-nav__item--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
 }
 
 /* =============================================
@@ -488,6 +497,8 @@ a:hover {
 }
 
 .apps-panel__count {
+  display: flex;
+  justify-content: space-between;
   padding: 0 16px 6px;
   font-size: var(--font-size-200);
   font-weight: 600;
