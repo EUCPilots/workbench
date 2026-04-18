@@ -129,7 +129,8 @@ export default function AppsSidebar({
   return (
     <div className="apps-panel">
       <p className="apps-panel__count">
-        Applications {apps.length.toLocaleString()} of {totalCount.toLocaleString()}
+        <span>Applications</span>
+        <span>{apps.length.toLocaleString()} of {totalCount.toLocaleString()}</span>
       </p>
 
       <div className="apps-panel__search">
@@ -137,10 +138,10 @@ export default function AppsSidebar({
           ref={searchRef}
           type="search"
           className="search-input"
-          placeholder="Search applications..."
+          placeholder="Search..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="Search applications"
+          aria-label="Search"
         />
       </div>
 
