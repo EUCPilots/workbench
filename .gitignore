@@ -60,3 +60,4 @@ _appdata/
 changed-files-hosted.txt
 changed-files-pwsh.txt
 combined-changed-files.txt
+public/appdata.json
