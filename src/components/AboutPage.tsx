@@ -26,6 +26,17 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.9',
+    date: '2026-04-18',
+    changes: [
+      'Added update cadence chart and installer modernity stacked bar to the dashboard, surfacing 30-day release frequency and modern vs. legacy installer breakdown',
+      'Added top apps by variant count and new insight stat cards (ARM64 coverage, SHA256 hash coverage) to the dashboard',
+      'Refined sidebar navigation spacing and replaced the left-border active marker with a rounded accent bar pseudo-element',
+      'Split app count display into separately styled spans and shortened the search input placeholder and aria-label',
+      'Updated project URLs',
+    ],
+  },
+  {
     version: '3.0.8',
     date: '2026-04-04',
     changes: [
