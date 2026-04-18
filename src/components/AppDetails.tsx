@@ -467,7 +467,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
               )}
             </div>
             <button
-              className="btn btn-outline"
+              className="btn btn-primary"
               onClick={() => exportToCSV(sortedVersions, appName)}
             >
               Export to CSV

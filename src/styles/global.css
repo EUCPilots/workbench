@@ -186,7 +186,7 @@
 
   --btn-primary-bg: var(--color-brand-background);
   --btn-primary-hover: var(--color-brand-background-hover);
-  --btn-primary-fg: #000000;
+  --btn-primary-fg: var(--f2-white);
   --btn-outline-bg: var(--color-neutral-background-3);
   --btn-outline-border: var(--color-neutral-stroke-1);
   --btn-outline-hover: var(--color-neutral-background-4);
@@ -965,7 +965,7 @@ a:hover {
 .version-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-300);
+  font-size: var(--font-size-200);
 }
 
 .version-table th {
