@@ -42,7 +42,7 @@ export default function AboutModal({ onClose }: AboutModalProps) {
           <p className="about-modal__text">
             Enterprise automation for Windows apps and image management with the latest version and
             downloads for common Windows applications via PowerShell. Discover more{' '}
-            <a href="https://eucpilots.com/evergreen-docs/about" target="_blank" rel="noopener noreferrer">
+            <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
               about Evergreen here
             </a>
             .

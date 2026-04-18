@@ -161,7 +161,7 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
         <p className="about-description__title">Description</p>
         <p className="about-description__body">
           Evergreen Workbench uses the{' '}
-          <a href="https://eucpilots.com/evergreen-docs/" target="_blank" rel="noopener noreferrer">
+          <a href="https://eucpilots.com/evergreen/" target="_blank" rel="noopener noreferrer">
             Evergreen
           </a>{' '}
           PowerShell module to track the latest versions and download URIs for {appCount} Windows
