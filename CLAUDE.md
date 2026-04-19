@@ -14,6 +14,15 @@ There are no lint or test commands configured.
 
 The `json/` directory (gitignored) is required at build time. It is fetched from `aaronparker/apptracker` in CI. For local builds, you need to provide app JSON files in `json/`.
 
+## Tech Stack
+
+- **Framework:** Astro (Static Site Generation with Islands architecture)
+- **UI Library:** React (interactive islands)
+- **Language:** TypeScript
+- **Build Tool:** Vite
+- **Icons:** `@fluentui/react-icons`
+- **Styling:** CSS custom properties (no Tailwind, no CSS-in-JS)
+
 ## Architecture
 
 **Evergreen Workbench** is a static-generated PWA for browsing application version data tracked by the [Evergreen PowerShell module](https://steveross.github.io/evergreen/). It deploys to GitHub Pages at `https://eucpilots.com/workbench/`.
@@ -33,6 +42,7 @@ In CI, the JSON files are sparse-cloned from `aaronparker/apptracker` with full 
 - **`src/components/AppDetails.tsx`** — Version table with sortable columns, architecture/type filters, copy-URI on click, and PowerShell snippet generation
 - **`src/components/DashboardPage.tsx`** — Stats cards and CSS bar charts (no charting library)
 - **`src/components/GlobalSearch.tsx`** — Ctrl+K overlay rendered via React Portal; searches app names and version fields
+- **`src/components/ThemeToggle.tsx`** — Light/dark mode switcher; persists preference to localStorage
 - **`src/styles/global.css`** — All styling via CSS custom properties for light/dark theming (no Tailwind, no CSS-in-JS)
 
 ### Routing & State
@@ -42,6 +52,14 @@ Routing is hash-based (`#AppName`). `AppsPage.tsx` is the single state owner —
 ### Keyboard Shortcuts
 
 `/` focuses sidebar search, `↑↓` navigates the app list, `f` toggles favorite, `?` shows shortcuts modal, `Ctrl+K` opens global search, `Escape` closes overlays.
+
+### Key Features
+
+- **Global Search (`Ctrl+K`):** Overlay search across all apps and version data via React Portal with background blur
+- **Two-Panel UI:** Sidebar + detail panel split view
+- **Theme Support:** Light/dark mode with Evergreen brand palette, persisted to localStorage
+- **Developer Utilities:** One-click "Copy URI" and auto-generated `Get-EvergreenApp` PowerShell snippets
+- **PWA:** Service worker with auto-update; installable as a desktop/mobile app
 
 ### Deployment
 
