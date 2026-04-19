@@ -273,6 +273,9 @@ a:hover {
   background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
 
 /* =============================================
    App Shell
@@ -519,6 +522,8 @@ a:hover {
   justify-content: space-between;
   gap: 6px;
   padding: 7px 12px 7px 16px;
+  margin: 1px 6px;
+  border-radius: var(--radius-large);
   cursor: pointer;
   font-size: 13px;
   color: var(--text-primary);
@@ -530,13 +535,17 @@ a:hover {
 }
 
 .app-list__item:hover {
-  background: var(--sidebar-hover-bg);
+  background: var(--accent-light);
 }
 
 .app-list__item--active {
-  background: var(--sidebar-active-bg);
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--btn-primary-fg);
   font-weight: var(--font-weight-semibold);
+}
+
+.app-list__item--active:hover {
+  background: var(--accent-hover);
 }
 
 .app-list__item-name {
@@ -593,7 +602,11 @@ a:hover {
 }
 
 .app-list__item--active .app-list__star {
-  color: var(--accent-hover);
+  color: var(--btn-primary-fg);
+}
+
+.app-list__item--active .app-list__star:hover {
+  background: rgba(0, 0, 0, 0.15);
 }
 
 /* Divider between pinned and rest */
