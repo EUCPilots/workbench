@@ -567,8 +567,16 @@ a:hover {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--status-positive);
+  background: var(--accent);
   pointer-events: none;
+}
+
+.app-list__item:not(.app-list__item--active):has(.app-list__star--active) .app-list__badge {
+  background: var(--accent);
+}
+
+.app-list__item--active .app-list__badge {
+  background: var(--btn-primary-fg);
 }
 
 /* Star / pin button */
