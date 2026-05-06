@@ -326,17 +326,24 @@ a:hover {
   width: 30px;
   height: 30px;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--sidebar-border);
   border-radius: 4px;
   background: transparent;
-  color: var(--header-text);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 16px;
-  transition: background var(--duration-fast);
+  transition: background var(--duration-fast), color var(--duration-fast), opacity var(--duration-fast);
+  margin-right: 4px;
 }
 
-.sidebar-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+.sidebar-toggle-btn:hover:not(:disabled) {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.sidebar-toggle-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .sidebar-toggle-btn__icon {
@@ -387,6 +394,7 @@ a:hover {
 
 .sidebar--closed {
   width: 0;
+  max-width: 0;
   border-right: none;
   overflow: hidden;
 }
@@ -416,49 +424,46 @@ a:hover {
   z-index: 25;
 }
 
-.sidebar-nav {
-  flex-shrink: 0;
-  padding: 8px;
-  border-bottom: 1px solid var(--sidebar-border);
-}
-
-.sidebar-nav__item {
+/* =============================================
+   Horizontal Tab Navigation
+   ============================================= */
+.top-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 0 12px;
+  height: 40px;
+  background: var(--sidebar-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+
+.top-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 100%;
   cursor: pointer;
-  font-size: 14px;
-  color: var(--text-primary);
+  font-size: 13px;
+  color: var(--text-secondary);
   user-select: none;
   background: transparent;
-  width: 100%;
   border: none;
-  border-radius: 6px;
-  text-align: left;
-  position: relative;
-  transition: background var(--duration-fast);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 0;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
 }
 
-.sidebar-nav__item:hover {
-  background: var(--sidebar-hover-bg);
+.top-nav__item:hover {
+  color: var(--text-primary);
 }
 
-.sidebar-nav__item--active {
-  background: var(--sidebar-active-bg);
+.top-nav__item--active {
   color: var(--accent);
   font-weight: var(--font-weight-semibold);
-}
-
-.sidebar-nav__item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 25%;
-  bottom: 25%;
-  width: 3px;
-  border-radius: 2px;
-  background: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 /* =============================================

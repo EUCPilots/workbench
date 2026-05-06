@@ -300,14 +300,6 @@ export default function AppsPage({ base }: AppsPageProps) {
       {/* Header */}
       <header className="app-header">
         <div className="app-header__left">
-          <button
-            className="sidebar-toggle-btn"
-            onClick={() => setSidebarOpen((o) => !o)}
-            aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
-            aria-expanded={sidebarOpen}
-          >
-            <NavigationRegular aria-hidden="true" className="sidebar-toggle-btn__icon" />
-          </button>
           <span className="app-header__title">Evergreen Workbench</span>
         </div>
         <div className="app-header__right">
@@ -334,10 +326,34 @@ export default function AppsPage({ base }: AppsPageProps) {
         </div>
       </header>
 
+      {/* Horizontal tab nav */}
+      <nav className="top-nav" aria-label="Main navigation">
+        <button
+          className="sidebar-toggle-btn"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={sidebarOpen}
+          disabled={tab !== 'apps'}
+        >
+          <NavigationRegular aria-hidden="true" className="sidebar-toggle-btn__icon" />
+        </button>
+        {NAV_TABS.map((t) => (
+          <button
+            key={t.id}
+            className={`top-nav__item${tab === t.id ? ' top-nav__item--active' : ''}`}
+            onClick={() => handleTabChange(t.id)}
+            aria-current={tab === t.id ? 'page' : undefined}
+          >
+            {t.icon}
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
       {/* Body */}
       <div className="app-body">
         {/* Mobile overlay backdrop */}
-        {isMobile && sidebarOpen && (
+        {isMobile && sidebarOpen && tab === 'apps' && (
           <div
             className="sidebar-backdrop"
             onClick={() => setSidebarOpen(false)}
@@ -345,59 +361,43 @@ export default function AppsPage({ base }: AppsPageProps) {
           />
         )}
 
-        {/* Sidebar */}
-        <aside
-          className={`sidebar${sidebarOpen ? ' sidebar--open' : ' sidebar--closed'}${isMobile ? ' sidebar--mobile' : ''}`}
-          onTouchStart={isMobile ? handleSidebarTouchStart : undefined}
-          onTouchEnd={isMobile ? handleSidebarTouchEnd : undefined}
-        >
-          <nav className="sidebar-nav" aria-label="Main navigation">
-            {NAV_TABS.map((t) => (
-              <button
-                key={t.id}
-                className={`sidebar-nav__item${tab === t.id ? ' sidebar-nav__item--active' : ''}`}
-                onClick={() => handleTabChange(t.id)}
-                aria-current={tab === t.id ? 'page' : undefined}
-              >
-                {t.icon}
-                {t.label}
-              </button>
-            ))}
-          </nav>
-
-          {tab === 'apps' && (
-            <>
-              {loading ? (
-                <div className="empty-state">
-                  <div className="loading-spinner" />
-                  <span className="empty-state__subtitle">Loading applications…</span>
-                </div>
-              ) : error ? (
-                <div className="empty-state">
-                  <span className="empty-state__title">Error loading data</span>
-                  <span className="empty-state__subtitle">{error}</span>
-                </div>
-              ) : (
-                <AppsSidebar
-                  apps={filteredApps}
-                  selectedApp={selectedApp}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  onSelectApp={handleSelectApp}
-                  totalCount={allApps.length}
-                  favourites={favourites}
-                  onToggleFavourite={handleToggleFavourite}
-                  searchRef={sidebarSearchRef}
-                  recentThresholdHours={recentThresholdHours}
-                  onThresholdChange={handleThresholdChange}
-                />
-              )}
-            </>
-          )}
-        </aside>
+        {/* Sidebar — Apps tab only */}
+        {tab === 'apps' && (
+          <aside
+            className={`sidebar${sidebarOpen ? ' sidebar--open' : ' sidebar--closed'}${isMobile ? ' sidebar--mobile' : ''}`}
+            onTouchStart={isMobile ? handleSidebarTouchStart : undefined}
+            onTouchEnd={isMobile ? handleSidebarTouchEnd : undefined}
+          >
+            {loading ? (
+              <div className="empty-state">
+                <div className="loading-spinner" />
+                <span className="empty-state__subtitle">Loading applications…</span>
+              </div>
+            ) : error ? (
+              <div className="empty-state">
+                <span className="empty-state__title">Error loading data</span>
+                <span className="empty-state__subtitle">{error}</span>
+              </div>
+            ) : (
+              <AppsSidebar
+                apps={filteredApps}
+                selectedApp={selectedApp}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                onSelectApp={handleSelectApp}
+                totalCount={allApps.length}
+                favourites={favourites}
+                onToggleFavourite={handleToggleFavourite}
+                searchRef={sidebarSearchRef}
+                recentThresholdHours={recentThresholdHours}
+                onThresholdChange={handleThresholdChange}
+              />
+            )}
+          </aside>
+        )}
 
         {/* Main content */}
-        <main id="main-content" className={`main-content${!sidebarOpen || isMobile ? ' main-content--expanded' : ''}`}>
+        <main id="main-content" className={`main-content${!sidebarOpen || isMobile || tab !== 'apps' ? ' main-content--expanded' : ''}`}>
           {tab === 'apps' && (
             <>
               {loading ? (
