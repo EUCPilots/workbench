@@ -26,6 +26,18 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.0.10',
+    date: '2026-05-06',
+    changes: [
+      'Replaced vertical sidebar navigation with a horizontal tab bar at the top of the page for cleaner layout',
+      'Sidebar is now hidden when viewing Dashboard or About tabs; the toggle button is disabled outside the Apps tab',
+      'App list items use the accent color for the active state background and rounded corners with tighter margins',
+      'Scrollbar thumb now highlights in the accent color on hover',
+      'Export button is now styled as a primary action button',
+      'Updated dependencies: Astro 6.2.2, Vite 8.0.10, React 19.2.5, vite-plugin-pwa 1.3.0',
+    ],
+  },
+  {
     version: '3.0.9',
     date: '2026-04-18',
     changes: [
