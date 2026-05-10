@@ -1,3 +1,11 @@
+import {
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Text,
+} from '@fluentui/react-components';
+
 interface AboutProps {
   appCount: number;
   versionCount: number;
@@ -147,37 +155,45 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
   return (
     <div className="about-page">
       <div className="about-card">
-        {INFO_ROWS.map((row) => (
-          <div className="about-card__row" key={row.label}>
-            <span className="about-card__label">{row.label}</span>
-            <span className="about-card__value">
-              {row.href ? (
-                <a href={row.href} target="_blank" rel="noopener noreferrer">
-                  {row.value}
-                </a>
-              ) : (
-                row.value
-              )}
-            </span>
-          </div>
-        ))}
-        <div className="about-card__row">
-          <span className="about-card__label">Applications tracked</span>
-          <span className="about-card__value">{appCount.toLocaleString()}</span>
-        </div>
-        <div className="about-card__row">
-          <span className="about-card__label">Unique installers</span>
-          <span className="about-card__value">{versionCount.toLocaleString()}</span>
-        </div>
-        <div className="about-card__row">
-          <span className="about-card__label">Data last generated</span>
-          <span className="about-card__value">
-            {new Date(generatedAt).toLocaleString(undefined, {
-              dateStyle: 'long',
-              timeStyle: 'short',
-            })}
-          </span>
-        </div>
+        <Table size="small" aria-label="Project information">
+          <TableBody>
+            {INFO_ROWS.map((row) => (
+              <TableRow key={row.label}>
+                <TableCell>
+                  <Text size={200} weight="semibold">{row.label}</Text>
+                </TableCell>
+                <TableCell>
+                  {row.href ? (
+                    <a href={row.href} target="_blank" rel="noopener noreferrer">
+                      {row.value}
+                    </a>
+                  ) : (
+                    <Text size={200}>{row.value}</Text>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Applications tracked</Text></TableCell>
+              <TableCell><Text size={200}>{appCount.toLocaleString()}</Text></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Unique installers</Text></TableCell>
+              <TableCell><Text size={200}>{versionCount.toLocaleString()}</Text></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Data last generated</Text></TableCell>
+              <TableCell>
+                <Text size={200}>
+                  {new Date(generatedAt).toLocaleString(undefined, {
+                    dateStyle: 'long',
+                    timeStyle: 'short',
+                  })}
+                </Text>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
 
       <div className="about-description">

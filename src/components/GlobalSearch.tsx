@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Button, Input } from '@fluentui/react-components';
 import { SearchRegular, HistoryRegular, AppGenericRegular, DismissRegular } from '@fluentui/react-icons';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -78,7 +79,6 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Open on Ctrl+K or /
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -92,7 +92,6 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Focus input when opened; toggle body class for background blur
   useEffect(() => {
     if (open) {
       setInputValue('');
@@ -108,13 +107,11 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     return () => document.body.classList.remove('search-open');
   }, [open]);
 
-  // Debounce: search computation lags 200ms behind typing
   useEffect(() => {
     const id = setTimeout(() => setQuery(inputValue), 200);
     return () => clearTimeout(id);
   }, [inputValue]);
 
-  // Pre-compute lowercased names once per data load, not per keystroke
   const appsWithLower = useMemo(
     () => apps.map((a) => ({ ...a, lowerName: a.name.toLowerCase(), lowerDisplayName: a.displayName.toLowerCase() })),
     [apps]
@@ -137,7 +134,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
           const val = String(v[key] ?? '');
           if (val && val.toLowerCase().includes(q)) {
             versionMatches.push({ field: label, value: val, versionIndex: i });
-            break; // one match per version row
+            break;
           }
         }
       }
@@ -156,7 +153,6 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   );
   const hiddenCount = allResults.length - results.length;
 
-  // Flat list of selectable items for keyboard nav
   const flatItems: Array<{ appName: string }> = useMemo(
     () => results.map((r) => ({ appName: r.appName })),
     [results]
@@ -202,13 +198,11 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     [flatItems, activeIndex, handleSelect]
   );
 
-  // Scroll active item into view
   useEffect(() => {
     const el = listRef.current?.querySelector(`[data-index="${activeIndex}"]`) as HTMLElement | null;
     el?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex]);
 
-  // Reset active index and showAll when results change
   useEffect(() => {
     setActiveIndex(0);
     setShowAll(false);
@@ -229,16 +223,17 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
 
   if (!open) {
     return (
-      <button
-        className="global-search-trigger"
+      <Button
+        appearance="outline"
+        icon={<SearchRegular />}
         onClick={() => setOpen(true)}
         aria-label="Open global search"
         title="Search (Ctrl+K)"
+        className="global-search-trigger"
       >
-        <SearchRegular aria-hidden="true" style={{ width: 15, height: 15 }} />
         <span className="global-search-trigger__label">Search</span>
         <kbd className="global-search-trigger__kbd">Ctrl K</kbd>
-      </button>
+      </Button>
     );
   }
 
@@ -266,26 +261,34 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     >
       <div className="global-search-modal" ref={modalRef}>
         <div className="global-search-input-row">
-          <SearchRegular aria-hidden="true" className="global-search-icon" style={{ width: 16, height: 16 }} />
-          <input
+          <Input
             ref={inputRef}
+            contentBefore={<SearchRegular aria-hidden="true" style={{ width: 16, height: 16 }} />}
+            contentAfter={
+              inputValue ? (
+                <Button
+                  appearance="subtle"
+                  size="small"
+                  icon={<DismissRegular style={{ width: 14, height: 14 }} />}
+                  onClick={() => { setInputValue(''); setQuery(''); }}
+                  aria-label="Clear search"
+                  className="global-search-clear"
+                />
+              ) : (
+                <kbd className="global-search-esc">Esc</kbd>
+              )
+            }
             className="global-search-input"
-            type="text"
             placeholder="Search apps, versions, URLs…"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(_e, data) => setInputValue(data.value)}
             onKeyDown={handleKeyDown}
             autoComplete="off"
             spellCheck={false}
             aria-autocomplete="list"
             aria-controls="global-search-results"
+            style={{ width: '100%' }}
           />
-          {inputValue && (
-            <button className="global-search-clear" onClick={() => { setInputValue(''); setQuery(''); }} aria-label="Clear search">
-              <DismissRegular aria-hidden="true" style={{ width: 14, height: 14 }} />
-            </button>
-          )}
-          <kbd className="global-search-esc">Esc</kbd>
         </div>
 
         {inputValue.trim() === '' && searchHistory.length === 0 && (
