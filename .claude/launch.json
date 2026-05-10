@@ -3,13 +3,13 @@
   "configurations": [
     {
       "name": "apptracker-preview",
-      "runtimeExecutable": "/Users/aaron/.nvm/versions/node/v24.14.1/bin/node",
+      "runtimeExecutable": "/usr/local/bin/node",
       "runtimeArgs": ["./node_modules/.bin/astro", "preview"],
       "port": 4321
     },
     {
       "name": "apptracker-dev",
-      "runtimeExecutable": "/Users/aaron/.nvm/versions/node/v24.14.1/bin/node",
+      "runtimeExecutable": "/usr/local/bin/node",
       "runtimeArgs": ["./node_modules/.bin/astro", "dev"],
       "port": 4321
     }
