@@ -3,6 +3,7 @@ import {
   DialogSurface,
   DialogTitle,
   DialogBody,
+  DialogContent,
   Button,
 } from '@fluentui/react-components';
 import { DismissRegular } from '@fluentui/react-icons';
@@ -28,7 +29,7 @@ interface KeyboardShortcutsModalProps {
 export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
   return (
     <Dialog open={open} onOpenChange={(_e, data) => { if (!data.open) onClose(); }}>
-      <DialogSurface>
+      <DialogSurface style={{ minWidth: '500px' }}>
         <DialogTitle
           action={
             <Button
@@ -42,23 +43,25 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
           Keyboard shortcuts
         </DialogTitle>
         <DialogBody>
-          <table className="shortcuts-table">
-            <tbody>
-              {SHORTCUTS.map((row, i) => (
-                <tr key={i}>
-                  <td className="shortcuts-table__keys">
-                    {row.keys.map((k, j) => (
-                      <span key={j}>
-                        <kbd className="kbd">{k}</kbd>
-                        {j < row.keys.length - 1 && <span className="shortcuts-table__plus"> + </span>}
-                      </span>
-                    ))}
-                  </td>
-                  <td className="shortcuts-table__desc">{row.description}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <DialogContent>
+            <table className="shortcuts-table">
+              <tbody>
+                {SHORTCUTS.map((row, i) => (
+                  <tr key={i}>
+                    <td className="shortcuts-table__keys">
+                      {row.keys.map((k, j) => (
+                        <span key={j}>
+                          <kbd className="kbd">{k}</kbd>
+                          {j < row.keys.length - 1 && <span className="shortcuts-table__plus"> + </span>}
+                        </span>
+                      ))}
+                    </td>
+                    <td className="shortcuts-table__desc">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </DialogContent>
         </DialogBody>
       </DialogSurface>
     </Dialog>

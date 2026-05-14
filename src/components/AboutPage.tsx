@@ -154,6 +154,21 @@ const CHANGELOG = [
 export default function AboutPage({ appCount, versionCount, generatedAt }: AboutProps) {
   return (
     <div className="about-page">
+      <div className="about-modal__body">
+        <img
+          src="/workbench/assets/images/evergreenbulb.png"
+          alt="Evergreen logo"
+          className="about-modal__logo"
+        />
+        <p className="about-modal__text">
+          Enterprise automation for Windows apps and image management with the latest version and
+          downloads for common Windows applications via PowerShell. Discover more{' '}
+          <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
+            about Evergreen here
+          </a>
+          .
+        </p>
+      </div>
       <div className="about-card">
         <Table size="small" aria-label="Project information">
           <TableBody>

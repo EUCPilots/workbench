@@ -22,7 +22,6 @@ import ThemeToggle from './ThemeToggle';
 import GlobalSearch from './GlobalSearch';
 import ErrorBoundary from './ErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
-import AboutModal from './AboutModal';
 
 interface AppVersion {
   Version?: string;
@@ -97,7 +96,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
   });
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
   const sidebarSearchRef = useRef<HTMLInputElement>(null);
   const swipeStartX = useRef<number | null>(null);
   const swipeStartY = useRef<number | null>(null);
@@ -302,7 +300,6 @@ export default function AppsPage({ base }: AppsPageProps) {
   return (
     <>
       <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
-      <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
 
       {/* Header */}
       <header className="app-header">
@@ -313,13 +310,6 @@ export default function AppsPage({ base }: AppsPageProps) {
           {appData && (
             <GlobalSearch apps={allApps} onSelect={handleGlobalSearchSelect} />
           )}
-          <Button
-            appearance="subtle"
-            icon={<InfoRegular />}
-            onClick={() => setShowAbout(true)}
-            aria-label="About Evergreen"
-            title="About Evergreen"
-          />
           <Button
             appearance="subtle"
             icon={<QuestionCircleRegular />}
