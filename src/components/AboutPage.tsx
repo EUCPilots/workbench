@@ -1,4 +1,6 @@
 import {
+  Card,
+  CardHeader,
   Table,
   TableBody,
   TableRow,
@@ -154,22 +156,25 @@ const CHANGELOG = [
 export default function AboutPage({ appCount, versionCount, generatedAt }: AboutProps) {
   return (
     <div className="about-page">
-      <div className="about-modal__body">
-        <img
-          src="/workbench/assets/images/evergreenbulb.png"
-          alt="Evergreen logo"
-          className="about-modal__logo"
-        />
-        <p className="about-modal__text">
-          Enterprise automation for Windows apps and image management with the latest version and
-          downloads for common Windows applications via PowerShell. Discover more{' '}
-          <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
-            about Evergreen here
-          </a>
-          .
-        </p>
-      </div>
-      <div className="about-card">
+      <Card>
+        <div className="about-modal__body">
+          <img
+            src="/workbench/assets/images/evergreenbulb.png"
+            alt="Evergreen logo"
+            className="about-modal__logo"
+          />
+          <p className="about-modal__text">
+            Enterprise automation for Windows apps and image management with the latest version and
+            downloads for common Windows applications via PowerShell. Discover more{' '}
+            <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
+              about Evergreen here
+            </a>
+            .
+          </p>
+        </div>
+      </Card>
+
+      <Card>
         <Table size="small" aria-label="Project information">
           <TableBody>
             {INFO_ROWS.map((row) => (
@@ -209,10 +214,10 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
             </TableRow>
           </TableBody>
         </Table>
-      </div>
+      </Card>
 
-      <div className="about-description">
-        <p className="about-description__title">Description</p>
+      <Card>
+        <CardHeader header={<Text weight="semibold">Description</Text>} />
         <p className="about-description__body">
           Evergreen Workbench uses the{' '}
           <a href="https://eucpilots.com/evergreen/" target="_blank" rel="noopener noreferrer">
@@ -222,10 +227,10 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
           applications. Application data is updated every 24 hours via a GitHub Actions workflow
           and published here as a static site.
         </p>
-      </div>
+      </Card>
 
-      <div className="about-description">
-        <p className="about-description__title">Change log</p>
+      <Card>
+        <CardHeader header={<Text weight="semibold">Change log</Text>} />
         {CHANGELOG.map((entry) => (
           <div key={entry.version} className="changelog-entry">
             <p className="changelog-version">
@@ -238,7 +243,7 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
             </ul>
           </div>
         ))}
-      </div>
+      </Card>
     </div>
   );
 }
