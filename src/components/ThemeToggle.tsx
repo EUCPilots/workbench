@@ -21,6 +21,7 @@ export default function ThemeToggle() {
   return (
     <ToggleButton
       appearance="subtle"
+      className="header-icon-btn"
       checked={dark}
       onClick={toggle}
       icon={dark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}

@@ -312,6 +312,7 @@ export default function AppsPage({ base }: AppsPageProps) {
           )}
           <Button
             appearance="subtle"
+            className="header-icon-btn"
             icon={<QuestionCircleRegular />}
             onClick={() => setShowShortcuts(true)}
             aria-label="Keyboard shortcuts"
@@ -335,7 +336,7 @@ export default function AppsPage({ base }: AppsPageProps) {
         <TabList
           selectedValue={tab}
           onTabSelect={handleTabSelect}
-          appearance="subtle"
+          appearance="transparent"
         >
           {NAV_TABS.map((t) => (
             <Tab key={t.id} value={t.id} icon={t.icon}>

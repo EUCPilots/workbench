@@ -29,7 +29,10 @@ interface KeyboardShortcutsModalProps {
 export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
   return (
     <Dialog open={open} onOpenChange={(_e, data) => { if (!data.open) onClose(); }}>
-      <DialogSurface style={{ minWidth: '500px' }}>
+      <DialogSurface
+        backdrop={{ style: { backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' } }}
+        style={{ minWidth: '500px' }}
+      >
         <DialogTitle
           action={
             <Button

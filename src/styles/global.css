@@ -59,6 +59,8 @@
   --colorNeutralForegroundOnBrand: #ffffff;
   --colorNeutralBackground3: #f0f0f0;
   --colorNeutralBackground5: #e0e0e0;
+  --colorRssStroke: #C55A11;
+  --colorRssBackground: #FDF0E8;
 }
 
 [data-theme="dark"] {
@@ -82,6 +84,8 @@
   --colorNeutralForegroundOnBrand: #000000;
   --colorNeutralBackground3: #333333;
   --colorNeutralBackground5: #3d3d3d;
+  --colorRssStroke: #E07A3A;
+  --colorRssBackground: color-mix(in srgb, #C55A11 12%, var(--colorNeutralBackground2));
 }
 
 /* =============================================
@@ -246,6 +250,24 @@ a:hover {
   line-height: 1.4;
 }
 
+/* Header icon buttons (help, theme toggle) — match search trigger style */
+.header-icon-btn {
+  height: 32px !important;
+  width: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--colorNeutralForegroundOnBrand) !important;
+  transition: background 0.1s ease;
+}
+
+.header-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
 .app-body {
   display: flex;
   flex: 1;
@@ -260,10 +282,12 @@ a:hover {
   align-items: center;
   gap: 4px;
   padding: 0 12px;
-  height: 40px;
+  height: 44px;
   background: var(--colorNeutralBackground2);
   border-bottom: 1px solid var(--colorNeutralStroke2);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* =============================================
@@ -556,9 +580,9 @@ a:hover {
 }
 
 .feed-subscribe-btn:hover {
-  border-color: var(--colorBrandBackground);
-  color: var(--colorBrandForeground1);
-  background: color-mix(in srgb, var(--colorBrandBackground) 8%, var(--colorNeutralBackground2));
+  border-color: var(--colorRssStroke);
+  color: var(--colorRssStroke);
+  background: var(--colorRssBackground);
 }
 
 .feed-subscribe-btn__label {
