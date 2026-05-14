@@ -36,6 +36,18 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.1.0',
+    date: '2026-05-14',
+    changes: [
+      'Integrated Fluent UI v9 (FluentProvider) as the top-level app wrapper, aligning theming with Fluent design tokens throughout',
+      'Replaced the About modal with a dedicated About page; About content is now accessible via the tab bar instead of a header button',
+      'Wrapped About page sections in Card components for consistent layout with the rest of the app',
+      'Unified brand CSS custom properties and fixed card and button layout inconsistencies',
+      'Fixed layout shrink, search UI alignment, and theme color regressions introduced during the Fluent migration',
+      'Styled header icons, dialog backdrop, and RSS feed button colors to match the Fluent theme',
+    ],
+  },
+  {
     version: '3.0.10',
     date: '2026-05-06',
     changes: [
