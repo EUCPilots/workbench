@@ -180,8 +180,13 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
             downloads for common Windows applications via PowerShell. Discover more{' '}
             <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
               about Evergreen here
-            </a>
-            .
+            </a>. Evergreen Workbench uses the{' '}
+            <a href="https://eucpilots.com/evergreen/" target="_blank" rel="noopener noreferrer">
+              Evergreen
+            </a>{' '}
+            PowerShell module to track the latest versions and download URIs for {appCount} Windows
+            applications. Application data is updated every 24 hours via a GitHub Actions workflow
+            and published here as a static site.
           </p>
         </div>
       </Card>
@@ -226,19 +231,6 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
             </TableRow>
           </TableBody>
         </Table>
-      </Card>
-
-      <Card>
-        <CardHeader header={<Text weight="semibold">Description</Text>} />
-        <p className="about-description__body">
-          Evergreen Workbench uses the{' '}
-          <a href="https://eucpilots.com/evergreen/" target="_blank" rel="noopener noreferrer">
-            Evergreen
-          </a>{' '}
-          PowerShell module to track the latest versions and download URIs for {appCount} Windows
-          applications. Application data is updated every 24 hours via a GitHub Actions workflow
-          and published here as a static site.
-        </p>
       </Card>
 
       <Card>
