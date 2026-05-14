@@ -1,4 +1,5 @@
 import { useMemo, useState, memo } from 'react';
+import { Card, CardHeader, Text, Input, Button } from '@fluentui/react-components';
 import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular } from '@fluentui/react-icons';
 
 interface AppVersion {
@@ -62,7 +63,7 @@ interface BarChartProps {
   colorVar?: string;
 }
 
-const BarChart = memo(function BarChart({ data, maxItems = 15, colorVar = '--accent' }: BarChartProps) {
+const BarChart = memo(function BarChart({ data, maxItems = 15, colorVar = '--colorBrandBackground' }: BarChartProps) {
   const rows = data.slice(0, maxItems);
   const max = rows[0]?.count ?? 1;
 
@@ -95,16 +96,17 @@ interface StatCardProps {
 
 const StatCard = memo(function StatCard({ label, value, sub }: StatCardProps) {
   return (
-    <div className="stat-card">
-      <span className="stat-card__value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
-      <span className="stat-card__label">{label}</span>
-      {sub && <span className="stat-card__sub">{sub}</span>}
-    </div>
+    <Card className="stat-card">
+      <Text size={800} weight="bold" style={{ color: 'var(--colorBrandForeground1)' }}>
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </Text>
+      <Text size={200} weight="semibold" block>{label}</Text>
+      {sub && <Text size={100} style={{ color: 'var(--colorNeutralForeground3)' }} block>{sub}</Text>}
+    </Card>
   );
 });
 
 const ColumnChart = memo(function ColumnChart({ data }: { data: number[] }) {
-  // data[0] = today, data[N-1] = oldest — reverse for left→right display
   const reversed = [...data].reverse();
   const max = Math.max(...reversed, 1);
 
@@ -194,9 +196,11 @@ const ModernityBar = memo(function ModernityBar({ modern, legacy, other }: Moder
 
 const TopApps = memo(function TopApps({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
   return (
-    <div className="dashboard-card">
-      <h2 className="dashboard-card__title">Most variants</h2>
-      <p className="dashboard-card__subtitle">Top 10 apps by version entry count</p>
+    <Card>
+      <CardHeader
+        header={<Text weight="semibold">Most variants</Text>}
+        description={<Text size={200}>Top 10 apps by version entry count</Text>}
+      />
       <ul className="msix-apps__list">
         {apps.map((app) => (
           <li
@@ -212,7 +216,7 @@ const TopApps = memo(function TopApps({ apps, onSelectApp }: { apps: AppEntry[];
           </li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 });
 
@@ -278,28 +282,33 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
   }
 
   return (
-    <div className="dashboard-card uri-lookup">
-      <h2 className="dashboard-card__title">URI lookup</h2>
-      <p className="dashboard-card__subtitle">Paste a download URL to find which app it belongs to</p>
+    <Card className="uri-lookup">
+      <CardHeader
+        header={<Text weight="semibold">URI lookup</Text>}
+        description={<Text size={200}>Paste a download URL to find which app it belongs to</Text>}
+      />
 
-      <div className="uri-lookup__input-row">
-        <SearchRegular aria-hidden="true" className="uri-lookup__icon" style={{ width: 15, height: 15 }} />
-        <input
-          className="uri-lookup__input"
-          type="text"
-          placeholder="https://example.com/installer.exe"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          spellCheck={false}
-          autoComplete="off"
-          aria-label="Search by download URL"
-        />
-        {query && (
-          <button className="uri-lookup__clear" onClick={() => setQuery('')} aria-label="Clear">
-            <DismissRegular aria-hidden="true" style={{ width: 14, height: 14 }} />
-          </button>
-        )}
-      </div>
+      <Input
+        contentBefore={<SearchRegular aria-hidden="true" style={{ width: 15, height: 15 }} />}
+        contentAfter={
+          query ? (
+            <Button
+              appearance="subtle"
+              size="small"
+              icon={<DismissRegular style={{ width: 14, height: 14 }} />}
+              onClick={() => setQuery('')}
+              aria-label="Clear"
+            />
+          ) : undefined
+        }
+        placeholder="https://example.com/installer.exe"
+        value={query}
+        onChange={(_e, data) => setQuery(data.value)}
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="Search by download URL"
+        style={{ fontFamily: 'Cascadia Code, Consolas, monospace', width: '100%' }}
+      />
 
       {hasQuery && matches.length === 0 && (
         <p className="uri-lookup__empty">No matching URI found.</p>
@@ -335,7 +344,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
           )}
         </ul>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -358,9 +367,11 @@ interface MsixAppsProps {
 
 const MsixApps = memo(function MsixApps({ apps, onSelectApp }: MsixAppsProps) {
   return (
-    <div className="dashboard-card">
-      <h2 className="dashboard-card__title">MSIX downloads</h2>
-      <p className="dashboard-card__subtitle">Apps that provide .msix installers ({apps.length})</p>
+    <Card>
+      <CardHeader
+        header={<Text weight="semibold">MSIX downloads</Text>}
+        description={<Text size={200}>Apps that provide .msix installers ({apps.length})</Text>}
+      />
       <ul className="msix-apps__list">
         {apps.map((app) => {
           const msixCount = app.versions.filter((v) => getFileType(v) === 'msix').length;
@@ -379,7 +390,7 @@ const MsixApps = memo(function MsixApps({ apps, onSelectApp }: MsixAppsProps) {
           );
         })}
       </ul>
-    </div>
+    </Card>
   );
 });
 
@@ -413,9 +424,11 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
   if (recent.length === 0) return null;
 
   return (
-    <div className="dashboard-card recent-activity">
-      <h2 className="dashboard-card__title">Recent activity</h2>
-      <p className="dashboard-card__subtitle">Apps updated in the past 48 hours ({recent.length})</p>
+    <Card className="recent-activity">
+      <CardHeader
+        header={<Text weight="semibold">Recent activity</Text>}
+        description={<Text size={200}>Apps updated in the past 48 hours ({recent.length})</Text>}
+      />
       <ul className="recent-activity__list">
         {recent.map((app) => (
           <li
@@ -431,7 +444,7 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
           </li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 });
 
@@ -498,11 +511,13 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
   return (
     <div className="dashboard-page">
       {/* Update cadence — full width */}
-      <div className="dashboard-card">
-        <h2 className="dashboard-card__title">Update cadence</h2>
-        <p className="dashboard-card__subtitle">Number of apps updated per day over the past 30 days</p>
+      <Card>
+        <CardHeader
+          header={<Text weight="semibold">Update cadence</Text>}
+          description={<Text size={200}>Number of apps updated per day over the past 30 days</Text>}
+        />
         <ColumnChart data={cadenceCounts} />
-      </div>
+      </Card>
 
       {/* URI lookup */}
       <UriLookup apps={apps} onSelectApp={onSelectApp} />
@@ -526,30 +541,32 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
 
       {/* Architecture + file type charts */}
       <div className="dashboard-charts">
-        <div className="dashboard-card">
-          <h2 className="dashboard-card__title">Architecture</h2>
-          <p className="dashboard-card__subtitle">
-            Version entries by CPU architecture
-          </p>
-          <BarChart data={archData} colorVar="--accent" />
-        </div>
+        <Card>
+          <CardHeader
+            header={<Text weight="semibold">Architecture</Text>}
+            description={<Text size={200}>Version entries by CPU architecture</Text>}
+          />
+          <BarChart data={archData} colorVar="--colorBrandBackground" />
+        </Card>
 
-        <div className="dashboard-card">
-          <h2 className="dashboard-card__title">File type</h2>
-          <p className="dashboard-card__subtitle">
-            Version entries by installer format
-          </p>
-          <BarChart data={typeData} maxItems={10} colorVar="--accent-hover" />
-        </div>
+        <Card>
+          <CardHeader
+            header={<Text weight="semibold">File type</Text>}
+            description={<Text size={200}>Version entries by installer format</Text>}
+          />
+          <BarChart data={typeData} maxItems={10} colorVar="--colorBrandBackgroundPressed" />
+        </Card>
       </div>
 
       {/* Installer modernity + top apps */}
       <div className="dashboard-charts">
-        <div className="dashboard-card">
-          <h2 className="dashboard-card__title">Installer modernity</h2>
-          <p className="dashboard-card__subtitle">Modern vs. legacy packaging formats across all version entries</p>
+        <Card>
+          <CardHeader
+            header={<Text weight="semibold">Installer modernity</Text>}
+            description={<Text size={200}>Modern vs. legacy packaging formats across all version entries</Text>}
+          />
           <ModernityBar {...modernityGroups} />
-        </div>
+        </Card>
 
         <TopApps apps={topApps} onSelectApp={onSelectApp} />
       </div>

@@ -1,5 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
+  Button,
+  Spinner,
+  TabList,
+  Tab,
+  type SelectTabData,
+} from '@fluentui/react-components';
+import {
   NavigationRegular,
   InfoRegular,
   QuestionCircleRegular,
@@ -15,7 +22,6 @@ import ThemeToggle from './ThemeToggle';
 import GlobalSearch from './GlobalSearch';
 import ErrorBoundary from './ErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
-import AboutModal from './AboutModal';
 
 interface AppVersion {
   Version?: string;
@@ -90,7 +96,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
   });
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
   const sidebarSearchRef = useRef<HTMLInputElement>(null);
   const swipeStartX = useRef<number | null>(null);
   const swipeStartY = useRef<number | null>(null);
@@ -149,7 +154,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     }));
   }, [appData]);
 
-  // Sync selection when the user navigates with browser back/forward
   useEffect(() => {
     function onHashChange() {
       const hash = window.location.hash.slice(1);
@@ -174,7 +178,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     );
   }, [allApps, debouncedQuery]);
 
-  // Mirrors the pinned-first order shown in the sidebar, used for arrow-key nav
   const orderedApps = useMemo(() => {
     const pinned = filteredApps.filter((a) => favourites.has(a.name));
     const rest = filteredApps.filter((a) => !favourites.has(a.name));
@@ -206,7 +209,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     });
   }, []);
 
-  // Keyboard navigation: / focuses sidebar search, ↑↓ moves through app list, ? opens shortcuts
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
@@ -255,10 +257,10 @@ export default function AppsPage({ base }: AppsPageProps) {
     [allApps, selectedApp]
   );
 
-  const NAV_TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: 'apps', label: 'Apps', icon: <AppsListRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
-    { id: 'dashboard', label: 'Dashboard', icon: <DataBarVerticalRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
-    { id: 'about', label: 'About', icon: <InfoRegular aria-hidden="true" style={{ width: 20, height: 20 }} /> },
+  const NAV_TABS: { id: Tab; label: string; icon: React.ReactElement }[] = [
+    { id: 'apps', label: 'Apps', icon: <AppsListRegular /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <DataBarVerticalRegular /> },
+    { id: 'about', label: 'About', icon: <InfoRegular /> },
   ];
 
   function handleThresholdChange(h: number) {
@@ -275,6 +277,10 @@ export default function AppsPage({ base }: AppsPageProps) {
     if (isMobile) setSidebarOpen(false);
   }
 
+  function handleTabSelect(_e: React.SyntheticEvent, data: SelectTabData) {
+    handleTabChange(data.value as Tab);
+  }
+
   function handleSidebarTouchStart(e: React.TouchEvent) {
     swipeStartX.current = e.touches[0].clientX;
     swipeStartY.current = e.touches[0].clientY;
@@ -286,7 +292,6 @@ export default function AppsPage({ base }: AppsPageProps) {
     const dy = e.changedTouches[0].clientY - swipeStartY.current;
     swipeStartX.current = null;
     swipeStartY.current = null;
-    // Left swipe: horizontal > 50px, vertical drift < half the horizontal
     if (dx < -50 && Math.abs(dy) < Math.abs(dx) / 2) {
       setSidebarOpen(false);
     }
@@ -294,8 +299,7 @@ export default function AppsPage({ base }: AppsPageProps) {
 
   return (
     <>
-      {showShortcuts && <KeyboardShortcutsModal onClose={() => setShowShortcuts(false)} />}
-      {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+      <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
       {/* Header */}
       <header className="app-header">
@@ -306,53 +310,44 @@ export default function AppsPage({ base }: AppsPageProps) {
           {appData && (
             <GlobalSearch apps={allApps} onSelect={handleGlobalSearchSelect} />
           )}
-          <button
-            className="shortcuts-help-btn"
-            onClick={() => setShowAbout(true)}
-            aria-label="About Evergreen"
-            title="About Evergreen"
-          >
-            <InfoRegular aria-hidden="true" />
-          </button>
-          <button
-            className="shortcuts-help-btn"
+          <Button
+            appearance="subtle"
+            className="header-icon-btn"
+            icon={<QuestionCircleRegular />}
             onClick={() => setShowShortcuts(true)}
             aria-label="Keyboard shortcuts"
             title="Keyboard shortcuts (?)"
-          >
-            <QuestionCircleRegular aria-hidden="true" />
-          </button>
+          />
           <ThemeToggle />
         </div>
       </header>
 
       {/* Horizontal tab nav */}
       <nav className="top-nav" aria-label="Main navigation">
-        <button
-          className="sidebar-toggle-btn"
+        <Button
+          appearance="subtle"
+          icon={<NavigationRegular />}
           onClick={() => setSidebarOpen((o) => !o)}
           aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
           aria-expanded={sidebarOpen}
           disabled={tab !== 'apps'}
+          className="sidebar-toggle-btn"
+        />
+        <TabList
+          selectedValue={tab}
+          onTabSelect={handleTabSelect}
+          appearance="transparent"
         >
-          <NavigationRegular aria-hidden="true" className="sidebar-toggle-btn__icon" />
-        </button>
-        {NAV_TABS.map((t) => (
-          <button
-            key={t.id}
-            className={`top-nav__item${tab === t.id ? ' top-nav__item--active' : ''}`}
-            onClick={() => handleTabChange(t.id)}
-            aria-current={tab === t.id ? 'page' : undefined}
-          >
-            {t.icon}
-            {t.label}
-          </button>
-        ))}
+          {NAV_TABS.map((t) => (
+            <Tab key={t.id} value={t.id} icon={t.icon}>
+              {t.label}
+            </Tab>
+          ))}
+        </TabList>
       </nav>
 
       {/* Body */}
       <div className="app-body">
-        {/* Mobile overlay backdrop */}
         {isMobile && sidebarOpen && tab === 'apps' && (
           <div
             className="sidebar-backdrop"
@@ -361,7 +356,6 @@ export default function AppsPage({ base }: AppsPageProps) {
           />
         )}
 
-        {/* Sidebar — Apps tab only */}
         {tab === 'apps' && (
           <aside
             className={`sidebar${sidebarOpen ? ' sidebar--open' : ' sidebar--closed'}${isMobile ? ' sidebar--mobile' : ''}`}
@@ -370,8 +364,7 @@ export default function AppsPage({ base }: AppsPageProps) {
           >
             {loading ? (
               <div className="empty-state">
-                <div className="loading-spinner" />
-                <span className="empty-state__subtitle">Loading applications…</span>
+                <Spinner size="medium" label="Loading applications…" />
               </div>
             ) : error ? (
               <div className="empty-state">
@@ -396,13 +389,12 @@ export default function AppsPage({ base }: AppsPageProps) {
           </aside>
         )}
 
-        {/* Main content */}
         <main id="main-content" className={`main-content${!sidebarOpen || isMobile || tab !== 'apps' ? ' main-content--expanded' : ''}`}>
           {tab === 'apps' && (
             <>
               {loading ? (
                 <div className="empty-state" style={{ flex: 1 }}>
-                  <div className="loading-spinner" />
+                  <Spinner size="medium" />
                 </div>
               ) : selectedEntry ? (
                 <ErrorBoundary key={selectedEntry.name} label="AppDetails">

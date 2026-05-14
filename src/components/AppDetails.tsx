@@ -1,5 +1,16 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
+  Button,
+  Checkbox,
+  Select,
+  Input,
+  Menu,
+  MenuTrigger,
+  MenuPopover,
+  MenuList,
+  MenuItemCheckbox,
+} from '@fluentui/react-components';
+import {
   ArrowLeftRegular,
   CopyRegular,
   RssRegular,
@@ -127,7 +138,7 @@ function initFileTypes(name: string, types: string[]): Set<string> {
 
 export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack, base }: AppDetailsProps) {
   const feedUrl = `${base}feeds/${appName}.xml`;
-  // Derive unique filter values from data
+
   const architectures = useMemo(() => {
     const set = new Set<string>();
     versions.forEach((v) => {
@@ -149,7 +160,6 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     () => initFileTypes(appName, fileTypes)
   );
 
-  // Reset filters when app changes
   useEffect(() => {
     setSelectedArchitectures(initArchitectures(appName, architectures));
     setSelectedFileTypes(initFileTypes(appName, fileTypes));
@@ -195,11 +205,7 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     saveFilters(appName, archs, types);
   }
 
-  // Determine which columns to show based on the data.
-  // Priority columns appear first in a fixed order; any additional keys found
-  // in the data are appended alphabetically after them.
   const columns = useMemo(() => {
-    // Preserve the natural key order as found in the JSON data (first-seen wins)
     const ordered: string[] = [];
     const seen = new Set<string>();
     versions.forEach((v) =>
@@ -211,19 +217,6 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
   }, [versions]);
 
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => loadHiddenColumns(appName));
-  const [colPickerOpen, setColPickerOpen] = useState(false);
-  const colPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!colPickerOpen) return;
-    function onPointerDown(e: PointerEvent) {
-      if (colPickerRef.current && !colPickerRef.current.contains(e.target as Node)) {
-        setColPickerOpen(false);
-      }
-    }
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [colPickerOpen]);
 
   const visibleColumns = useMemo(
     () => columns.filter((c) => !hiddenColumns.has(c)),
@@ -243,16 +236,6 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     }
     return opts;
   }, [columns, filteredVersions]);
-
-  function toggleColumn(col: string) {
-    setHiddenColumns((prev) => {
-      const next = new Set(prev);
-      if (next.has(col)) next.delete(col);
-      else next.add(col);
-      saveHiddenColumns(appName, next);
-      return next;
-    });
-  }
 
   const [sortCol, setSortCol] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -314,7 +297,6 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     return [...columnFilteredVersions].sort((a, b) => {
       const av = String(a[sortCol] ?? '');
       const bv = String(b[sortCol] ?? '');
-      // Numeric sort for Version and Size columns
       const an = parseFloat(av);
       const bn = parseFloat(bv);
       let cmp = !isNaN(an) && !isNaN(bn) ? an - bn : av.localeCompare(bv);
@@ -349,9 +331,12 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
     <div className="details-panel">
       <div className="details-panel__header">
         {onBack && (
-          <button className="back-btn" onClick={onBack} aria-label="Back to app list">
-            <ArrowLeftRegular aria-hidden="true" />
-          </button>
+          <Button
+            appearance="subtle"
+            icon={<ArrowLeftRegular />}
+            onClick={onBack}
+            aria-label="Back to app list"
+          />
         )}
         <span className="details-panel__title">{displayName}</span>
         <button
@@ -389,14 +374,12 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
               <span className="filter-group__label">Architecture</span>
               <div className="filter-group__options">
                 {architectures.map((arch) => (
-                  <label className="checkbox-label" key={arch}>
-                    <input
-                      type="checkbox"
-                      checked={selectedArchitectures.has(arch)}
-                      onChange={() => toggleArch(arch)}
-                    />
-                    {arch}
-                  </label>
+                  <Checkbox
+                    key={arch}
+                    label={arch}
+                    checked={selectedArchitectures.has(arch)}
+                    onChange={() => toggleArch(arch)}
+                  />
                 ))}
               </div>
             </div>
@@ -407,21 +390,18 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
               <span className="filter-group__label">Type</span>
               <div className="filter-group__options">
                 {fileTypes.map((ft) => (
-                  <label className="checkbox-label" key={ft}>
-                    <input
-                      type="checkbox"
-                      checked={selectedFileTypes.has(ft)}
-                      onChange={() => toggleFileType(ft)}
-                    />
-                    {ft}
-                  </label>
+                  <Checkbox
+                    key={ft}
+                    label={ft}
+                    checked={selectedFileTypes.has(ft)}
+                    onChange={() => toggleFileType(ft)}
+                  />
                 ))}
               </div>
             </div>
           )}
         </div>
 
-        {/* Copy error notice */}
         {copyError && (
           <div className="copy-error-notice" role="alert">
             Copy failed — select the text manually to copy.
@@ -435,43 +415,46 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
           </span>
           <div className="results-bar__actions">
             {hasColumnSearch && (
-              <button className="btn btn-outline" onClick={clearAllSearch}>
+              <Button appearance="outline" size="small" onClick={clearAllSearch}>
                 Clear search
-              </button>
+              </Button>
             )}
-            <button className="btn btn-outline" onClick={clearFilters}>
+            <Button appearance="outline" size="small" onClick={clearFilters}>
               Clear filters
-            </button>
-            <div className="col-picker" ref={colPickerRef}>
-              <button
-                className="btn btn-outline"
-                onClick={() => setColPickerOpen((o) => !o)}
-                aria-expanded={colPickerOpen}
-                aria-haspopup="listbox"
-              >
-                Columns{hiddenColumns.size > 0 ? ` (${hiddenColumns.size} hidden)` : ''}
-              </button>
-              {colPickerOpen && (
-                <div className="col-picker__dropdown" role="listbox" aria-label="Toggle column visibility">
+            </Button>
+
+            {/* Column visibility picker */}
+            <Menu>
+              <MenuTrigger disableButtonEnhancement>
+                <Button appearance="outline" size="small" aria-haspopup="listbox">
+                  Columns{hiddenColumns.size > 0 ? ` (${hiddenColumns.size} hidden)` : ''}
+                </Button>
+              </MenuTrigger>
+              <MenuPopover>
+                <MenuList
+                  checkedValues={{ columns: columns.filter((c) => !hiddenColumns.has(c)) }}
+                  onCheckedValueChange={(_e, { checkedItems }) => {
+                    const next = new Set(columns.filter((c) => !checkedItems.includes(c)));
+                    setHiddenColumns(next);
+                    saveHiddenColumns(appName, next);
+                  }}
+                >
                   {columns.map((col) => (
-                    <label key={col} className="col-picker__item">
-                      <input
-                        type="checkbox"
-                        checked={!hiddenColumns.has(col)}
-                        onChange={() => toggleColumn(col)}
-                      />
+                    <MenuItemCheckbox key={col} name="columns" value={col}>
                       {col}
-                    </label>
+                    </MenuItemCheckbox>
                   ))}
-                </div>
-              )}
-            </div>
-            <button
-              className="btn btn-primary"
+                </MenuList>
+              </MenuPopover>
+            </Menu>
+
+            <Button
+              appearance="primary"
+              size="small"
               onClick={() => exportToCSV(sortedVersions, appName)}
             >
               Export to CSV
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -500,27 +483,28 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                       </span>
                     </button>
                     {DROPDOWN_FILTER_COLS.has(col) && dropdownOptions[col]?.length ? (
-                      <select
-                        className="th-search-input th-search-select"
+                      <Select
+                        size="small"
                         value={columnSearch[col] ?? ''}
-                        onChange={(e) => handleColumnSearch(col, e.target.value)}
+                        onChange={(_e, data) => handleColumnSearch(col, data.value)}
                         onClick={(e) => e.stopPropagation()}
                         aria-label={`Filter ${col}`}
+                        style={{ width: '100%' }}
                       >
                         <option value="">All</option>
                         {dropdownOptions[col].map((opt) => (
                           <option key={opt} value={opt}>{opt}</option>
                         ))}
-                      </select>
+                      </Select>
                     ) : (
-                      <input
-                        className="th-search-input"
-                        type="text"
+                      <Input
+                        size="small"
                         placeholder="Filter…"
                         value={columnSearch[col] ?? ''}
-                        onChange={(e) => handleColumnSearch(col, e.target.value)}
+                        onChange={(_e, data) => handleColumnSearch(col, data.value)}
                         onClick={(e) => e.stopPropagation()}
                         aria-label={`Search ${col}`}
+                        style={{ width: '100%' }}
                       />
                     )}
                   </th>
@@ -530,13 +514,12 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
             <tbody>
               {sortedVersions.length === 0 ? (
                 <tr>
-                  <td colSpan={visibleColumns.length} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                  <td colSpan={visibleColumns.length} style={{ textAlign: 'center', padding: '24px', color: 'var(--colorNeutralForeground3)' }}>
                     No results match the current filters.
                   </td>
                 </tr>
               ) : (
                 sortedVersions.map((v, i) => {
-                  // Find the first URL value in this row for row-click copy
                   const rowUri = columns
                     .map((col) => v[col])
                     .find((val): val is string => typeof val === 'string' && /^https?:\/\//i.test(val));

@@ -1,3 +1,13 @@
+import {
+  Card,
+  CardHeader,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Text,
+} from '@fluentui/react-components';
+
 interface AboutProps {
   appCount: number;
   versionCount: number;
@@ -25,6 +35,18 @@ const INFO_ROWS = [
 ];
 
 const CHANGELOG = [
+  {
+    version: '3.1.0',
+    date: '2026-05-14',
+    changes: [
+      'Integrated Fluent UI v9 (FluentProvider) as the top-level app wrapper, aligning theming with Fluent design tokens throughout',
+      'Replaced the About modal with a dedicated About page; About content is now accessible via the tab bar instead of a header button',
+      'Wrapped About page sections in Card components for consistent layout with the rest of the app',
+      'Unified brand CSS custom properties and fixed card and button layout inconsistencies',
+      'Fixed layout shrink, search UI alignment, and theme color regressions introduced during the Fluent migration',
+      'Styled header icons, dialog backdrop, and RSS feed button colors to match the Fluent theme',
+    ],
+  },
   {
     version: '3.0.10',
     date: '2026-05-06',
@@ -146,42 +168,68 @@ const CHANGELOG = [
 export default function AboutPage({ appCount, versionCount, generatedAt }: AboutProps) {
   return (
     <div className="about-page">
-      <div className="about-card">
-        {INFO_ROWS.map((row) => (
-          <div className="about-card__row" key={row.label}>
-            <span className="about-card__label">{row.label}</span>
-            <span className="about-card__value">
-              {row.href ? (
-                <a href={row.href} target="_blank" rel="noopener noreferrer">
-                  {row.value}
-                </a>
-              ) : (
-                row.value
-              )}
-            </span>
-          </div>
-        ))}
-        <div className="about-card__row">
-          <span className="about-card__label">Applications tracked</span>
-          <span className="about-card__value">{appCount.toLocaleString()}</span>
+      <Card>
+        <div className="about-modal__body">
+          <img
+            src="/workbench/assets/images/evergreenbulb.png"
+            alt="Evergreen logo"
+            className="about-modal__logo"
+          />
+          <p className="about-modal__text">
+            Enterprise automation for Windows apps and image management with the latest version and
+            downloads for common Windows applications via PowerShell. Discover more{' '}
+            <a href="https://eucpilots.com/evergreen/about" target="_blank" rel="noopener noreferrer">
+              about Evergreen here
+            </a>
+            .
+          </p>
         </div>
-        <div className="about-card__row">
-          <span className="about-card__label">Unique installers</span>
-          <span className="about-card__value">{versionCount.toLocaleString()}</span>
-        </div>
-        <div className="about-card__row">
-          <span className="about-card__label">Data last generated</span>
-          <span className="about-card__value">
-            {new Date(generatedAt).toLocaleString(undefined, {
-              dateStyle: 'long',
-              timeStyle: 'short',
-            })}
-          </span>
-        </div>
-      </div>
+      </Card>
 
-      <div className="about-description">
-        <p className="about-description__title">Description</p>
+      <Card>
+        <Table size="small" aria-label="Project information">
+          <TableBody>
+            {INFO_ROWS.map((row) => (
+              <TableRow key={row.label}>
+                <TableCell>
+                  <Text size={200} weight="semibold">{row.label}</Text>
+                </TableCell>
+                <TableCell>
+                  {row.href ? (
+                    <a href={row.href} target="_blank" rel="noopener noreferrer">
+                      {row.value}
+                    </a>
+                  ) : (
+                    <Text size={200}>{row.value}</Text>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Applications tracked</Text></TableCell>
+              <TableCell><Text size={200}>{appCount.toLocaleString()}</Text></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Unique installers</Text></TableCell>
+              <TableCell><Text size={200}>{versionCount.toLocaleString()}</Text></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><Text size={200} weight="semibold">Data last generated</Text></TableCell>
+              <TableCell>
+                <Text size={200}>
+                  {new Date(generatedAt).toLocaleString(undefined, {
+                    dateStyle: 'long',
+                    timeStyle: 'short',
+                  })}
+                </Text>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Card>
+
+      <Card>
+        <CardHeader header={<Text weight="semibold">Description</Text>} />
         <p className="about-description__body">
           Evergreen Workbench uses the{' '}
           <a href="https://eucpilots.com/evergreen/" target="_blank" rel="noopener noreferrer">
@@ -191,10 +239,10 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
           applications. Application data is updated every 24 hours via a GitHub Actions workflow
           and published here as a static site.
         </p>
-      </div>
+      </Card>
 
-      <div className="about-description">
-        <p className="about-description__title">Change log</p>
+      <Card>
+        <CardHeader header={<Text weight="semibold">Change log</Text>} />
         {CHANGELOG.map((entry) => (
           <div key={entry.version} className="changelog-entry">
             <p className="changelog-version">
@@ -207,7 +255,7 @@ export default function AboutPage({ appCount, versionCount, generatedAt }: About
             </ul>
           </div>
         ))}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useRef, memo } from 'react';
+import { Button, ToggleButton, SearchBox } from '@fluentui/react-components';
 import { StarRegular, StarFilled } from '@fluentui/react-icons';
 
 function isRecent(lastUpdated: string | null, thresholdMs: number): boolean {
@@ -32,15 +33,9 @@ interface AppsSidebarProps {
   totalCount: number;
   favourites: Set<string>;
   onToggleFavourite: (name: string) => void;
-  searchRef?: React.RefObject<HTMLInputElement>;
+  searchRef?: React.RefObject<HTMLInputElement | null>;
   recentThresholdHours: number;
   onThresholdChange: (h: number) => void;
-}
-
-function StarIcon({ filled }: { filled: boolean }) {
-  return filled
-    ? <StarFilled aria-hidden="true" style={{ width: 13, height: 13 }} />
-    : <StarRegular aria-hidden="true" style={{ width: 13, height: 13 }} />;
 }
 
 interface AppListItemProps {
@@ -68,14 +63,15 @@ const AppListItem = memo(function AppListItem({ app, isActive, isFav, onSelect, 
         {recent && (
           <span className="app-list__badge" aria-label="Updated recently" title="Updated in the last 48 hours" />
         )}
-        <button
+        <Button
+          appearance="subtle"
+          size="small"
+          icon={isFav ? <StarFilled aria-hidden="true" /> : <StarRegular aria-hidden="true" />}
           className={`app-list__star${isFav ? ' app-list__star--active' : ''}`}
           onClick={(e) => { e.stopPropagation(); onToggleFavourite(app.name); }}
           aria-label={isFav ? `Unpin ${app.displayName}` : `Pin ${app.displayName}`}
           title={isFav ? 'Remove from pinned' : 'Pin to top'}
-        >
-          <StarIcon filled={isFav} />
-        </button>
+        />
       </span>
     </li>
   );
@@ -103,7 +99,6 @@ export default function AppsSidebar({
     return { pinned, rest };
   }, [apps, favourites]);
 
-  // Scroll the active item into view when selection changes via keyboard
   useEffect(() => {
     if (!selectedApp || !listRef.current) return;
     const el = listRef.current.querySelector(
@@ -134,14 +129,13 @@ export default function AppsSidebar({
       </p>
 
       <div className="apps-panel__search">
-        <input
+        <SearchBox
           ref={searchRef}
-          type="search"
-          className="search-input"
           placeholder="Search..."
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(_e, data) => onSearchChange(data.value)}
           aria-label="Search"
+          style={{ width: '100%' }}
         />
       </div>
 
@@ -159,14 +153,15 @@ export default function AppsSidebar({
         <span className="apps-panel__settings-label">Recent:</span>
         <div className="apps-panel__settings-presets">
           {THRESHOLD_PRESETS.map(({ label, hours }) => (
-            <button
+            <ToggleButton
               key={hours}
-              className={`apps-panel__preset-btn${recentThresholdHours === hours ? ' apps-panel__preset-btn--active' : ''}`}
+              size="small"
+              checked={recentThresholdHours === hours}
               onClick={() => onThresholdChange(hours)}
               title={`Mark apps updated in the last ${label} as recent`}
             >
               {label}
-            </button>
+            </ToggleButton>
           ))}
         </div>
       </div>
