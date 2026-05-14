@@ -224,7 +224,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
   if (!open) {
     return (
       <Button
-        appearance="outline"
+        appearance="subtle"
         icon={<SearchRegular />}
         onClick={() => setOpen(true)}
         aria-label="Open global search"

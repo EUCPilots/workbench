@@ -25,7 +25,7 @@ export default function FluentApp({ base }: FluentAppProps) {
   return (
     <FluentProvider
       theme={isDark ? evergreenDarkTheme : evergreenLightTheme}
-      style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
     >
       <AppsPage base={base} />
     </FluentProvider>

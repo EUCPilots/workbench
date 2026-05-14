@@ -1,22 +1,22 @@
 import { createLightTheme, createDarkTheme, type BrandVariants } from '@fluentui/react-components';
 
 const evergreenBrand: BrandVariants = {
-  10: '#012523',
-  20: '#013d37',
-  30: '#01564d',
-  40: '#016e61',
-  50: '#008575',
-  60: '#009485',
-  70: '#00a897',
-  80: '#26b9a9',
-  90: '#4dcabb',
-  100: '#73dbce',
-  110: '#99ece0',
-  120: '#b3f2eb',
-  130: '#c6f5f0',
-  140: '#d9f7f3',
-  150: '#ecfaf8',
-  160: '#f5fdfc',
+  10: '#011a18',
+  20: '#012523',
+  30: '#013d37',
+  40: '#01564d',
+  50: '#016e61',
+  60: '#008575',
+  70: '#009485',
+  80: '#00a897',
+  90: '#26b9a9',
+  100: '#4dcabb',
+  110: '#73dbce',
+  120: '#99ece0',
+  130: '#b3f2eb',
+  140: '#c6f5f0',
+  150: '#d9f7f3',
+  160: '#ecfaf8',
 };
 
 export const evergreenLightTheme = createLightTheme(evergreenBrand);

@@ -161,6 +161,55 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* Global search trigger button (header) */
+.global-search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px 0 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--colorNeutralForegroundOnBrand) !important;
+  font-family: var(--fontFamilyBase) !important;
+  font-size: var(--fontSizeBase200) !important;
+  font-weight: var(--fontWeightRegular) !important;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 160px;
+  transition: background 0.1s ease;
+}
+
+.global-search-trigger:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.global-search-trigger__label {
+  flex: 1;
+  font-size: var(--fontSizeBase200);
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorNeutralForegroundOnBrand);
+  opacity: 0.85;
+}
+
+.global-search-trigger__kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--fontFamilyBase);
+  font-size: 11px;
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorNeutralForegroundOnBrand);
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
 .app-body {
   display: flex;
   flex: 1;
@@ -1019,6 +1068,11 @@ body.search-open #root {
   gap: 20px;
 }
 
+/* Prevent Fluent Cards (overflow:hidden) from shrinking to zero in the flex column */
+.dashboard-page > * {
+  flex-shrink: 0;
+}
+
 /* Stat cards row — primary stats always 4 equal columns */
 .dashboard-stats {
   display: grid;
@@ -1036,6 +1090,7 @@ body.search-open #root {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 100%;
 }
 
 /* Chart cards grid */
