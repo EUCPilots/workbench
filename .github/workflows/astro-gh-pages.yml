@@ -1,7 +1,7 @@
 name: 'Deploy Astro site to GitHub Pages'
 
 on:
-  # Rebuild daily after aaronparker/apptracker update-apps workflow has run.
+  # Rebuild daily after eucpilots/apptracker update-apps workflow has run.
   # update-hosted.yml runs at 11:00 UTC; update-apps.yml chains off it.
   # 13:00 UTC gives ~2 hours for the upstream data commit to complete.
   schedule:
@@ -37,12 +37,12 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Fetch app JSON data from aaronparker/apptracker
+      - name: Fetch app JSON data from eucpilots/apptracker
         run: |
           # Blobless sparse clone: downloads full commit history but only the
           # json/ directory blobs. This gives git log accurate lastUpdated dates
           # without downloading the rest of the repository content.
-          git clone --filter=blob:none --sparse https://github.com/aaronparker/apptracker.git ${{ github.workspace }}/_appdata
+          git clone --filter=blob:none --sparse https://github.com/eucpilots/apptracker.git ${{ github.workspace }}/_appdata
           cd ${{ github.workspace }}/_appdata && git sparse-checkout set json
           mkdir -p ${{ github.workspace }}/json
           cp ${{ github.workspace }}/_appdata/json/*.json ${{ github.workspace }}/json/
@@ -65,7 +65,7 @@ jobs:
         env:
           NODE_ENV: production
           # Point git log at the cloned source repo so lastUpdated dates are
-          # resolved from aaronparker/apptracker's commit history, not this repo.
+          # resolved from eucpilots/apptracker's commit history, not this repo.
           JSON_GIT_DIR: ${{ github.workspace }}/_appdata
 
       - name: Upload artifact
