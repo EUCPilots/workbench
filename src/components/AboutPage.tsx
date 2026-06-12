@@ -36,6 +36,14 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.1.1',
+    date: '2026-06-12',
+    changes: [
+      'Added last-updated filter for apps with configurable timeframe presets (All, 24h, 48h, 72h, 1w) and persistence to localStorage',
+      'Improved version table row key stability by including Release, Date, and Size fields alongside Version, Architecture, URI, Type, and Language to reduce visual state collisions after sorting',
+    ],
+  },
+  {
     version: '3.1.0',
     date: '2026-05-14',
     changes: [
@@ -56,7 +64,6 @@ const CHANGELOG = [
       'App list items use the accent color for the active state background and rounded corners with tighter margins',
       'Scrollbar thumb now highlights in the accent color on hover',
       'Export button is now styled as a primary action button',
-      'Updated dependencies: Astro 6.2.2, Vite 8.0.10, React 19.2.5, vite-plugin-pwa 1.3.0',
     ],
   },
   {
@@ -77,7 +84,6 @@ const CHANGELOG = [
       'Migrated global styling to Fluent design tokens for more consistent theming across the app',
       'Replaced custom icon assets with Fluent UI React Icons throughout the interface',
       'Refined UI polish by removing the app count display and adjusting version table header spacing',
-      'Updated build and tooling dependencies, including TypeScript 6.0.2 and lodash 4.18.1, plus CI Node.js updates',
     ],
   },
   {
