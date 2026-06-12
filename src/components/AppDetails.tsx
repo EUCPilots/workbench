@@ -523,7 +523,16 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
                   const rowUri = columns
                     .map((col) => v[col])
                     .find((val): val is string => typeof val === 'string' && /^https?:\/\//i.test(val));
-                  const trKey = [v.Version, v.Architecture, v.URI ?? '', v.Type ?? '', v.Language ?? ''].join('|') || String(i);
+                  const trKey = [
+                    v.Version,
+                    v.Architecture,
+                    v.URI ?? '',
+                    v.Type ?? '',
+                    v.Language ?? '',
+                    String(v.Release ?? ''),
+                    String(v.Date ?? ''),
+                    String(v.Size ?? ''),
+                  ].join('|') || String(i);
                   const isCopied = copiedRow === rowUri;
                   return (
                     <tr
