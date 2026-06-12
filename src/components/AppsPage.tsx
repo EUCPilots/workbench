@@ -62,6 +62,15 @@ interface AppsPageProps {
   base: string;
 }
 
+function isUpdatedWithin(lastUpdated: string | null, hours: number): boolean {
+  if (!lastUpdated) return false;
+  try {
+    return Date.now() - new Date(lastUpdated).getTime() <= hours * 3600 * 1000;
+  } catch {
+    return false;
+  }
+}
+
 export default function AppsPage({ base }: AppsPageProps) {
   const [tab, setTab] = useState<Tab>(() => {
     if (typeof window === 'undefined') return 'apps';
@@ -93,6 +102,16 @@ export default function AppsPage({ base }: AppsPageProps) {
       return isNaN(n) ? 48 : n;
     } catch {
       return 48;
+    }
+  });
+  const [lastUpdatedFilterHours, setLastUpdatedFilterHours] = useState<number | null>(() => {
+    try {
+      const saved = localStorage.getItem('lastUpdatedFilterHours');
+      if (!saved || saved === 'all') return null;
+      const n = parseInt(saved, 10);
+      return isNaN(n) ? null : n;
+    } catch {
+      return null;
     }
   });
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -170,19 +189,31 @@ export default function AppsPage({ base }: AppsPageProps) {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, [allApps]);
 
+  const timeFilteredApps = useMemo(() => {
+    if (lastUpdatedFilterHours === null) return allApps;
+    return allApps.filter((a) => isUpdatedWithin(a.lastUpdated, lastUpdatedFilterHours));
+  }, [allApps, lastUpdatedFilterHours]);
+
   const filteredApps = useMemo(() => {
-    if (!debouncedQuery.trim()) return allApps;
+    if (!debouncedQuery.trim()) return timeFilteredApps;
     const q = debouncedQuery.toLowerCase();
-    return allApps.filter(
+    return timeFilteredApps.filter(
       (a) => a.name.toLowerCase().includes(q) || a.displayName.toLowerCase().includes(q)
     );
-  }, [allApps, debouncedQuery]);
+  }, [timeFilteredApps, debouncedQuery]);
 
   const orderedApps = useMemo(() => {
     const pinned = filteredApps.filter((a) => favourites.has(a.name));
     const rest = filteredApps.filter((a) => !favourites.has(a.name));
     return [...pinned, ...rest];
   }, [filteredApps, favourites]);
+
+  useEffect(() => {
+    if (orderedApps.length === 0) return;
+    if (!selectedApp || !orderedApps.some((a) => a.name === selectedApp)) {
+      setSelectedApp(orderedApps[0].name);
+    }
+  }, [orderedApps, selectedApp]);
 
   const handleSelectApp = useCallback((name: string) => {
     setSelectedApp(name);
@@ -266,6 +297,14 @@ export default function AppsPage({ base }: AppsPageProps) {
   function handleThresholdChange(h: number) {
     setRecentThresholdHours(h);
     localStorage.setItem('recentThresholdHours', String(h));
+  }
+
+  function handleLastUpdatedFilterChange(hours: number | null) {
+    setLastUpdatedFilterHours(hours);
+    localStorage.setItem('lastUpdatedFilterHours', hours === null ? 'all' : String(hours));
+    if (hours !== null) {
+      handleThresholdChange(hours);
+    }
   }
 
   function handleTabChange(t: Tab) {
@@ -382,8 +421,8 @@ export default function AppsPage({ base }: AppsPageProps) {
                 favourites={favourites}
                 onToggleFavourite={handleToggleFavourite}
                 searchRef={sidebarSearchRef}
-                recentThresholdHours={recentThresholdHours}
-                onThresholdChange={handleThresholdChange}
+                lastUpdatedFilterHours={lastUpdatedFilterHours}
+                onLastUpdatedFilterChange={handleLastUpdatedFilterChange}
               />
             )}
           </aside>

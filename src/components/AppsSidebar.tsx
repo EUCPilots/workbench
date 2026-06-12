@@ -16,6 +16,7 @@ const THRESHOLD_PRESETS = [
   { label: '48h', hours: 48 },
   { label: '72h', hours: 72 },
   { label: '1w', hours: 168 },
+  { label: 'All', hours: null },
 ];
 
 interface AppItem {
@@ -34,8 +35,8 @@ interface AppsSidebarProps {
   favourites: Set<string>;
   onToggleFavourite: (name: string) => void;
   searchRef?: React.RefObject<HTMLInputElement | null>;
-  recentThresholdHours: number;
-  onThresholdChange: (h: number) => void;
+  lastUpdatedFilterHours: number | null;
+  onLastUpdatedFilterChange: (h: number | null) => void;
 }
 
 interface AppListItemProps {
@@ -44,11 +45,11 @@ interface AppListItemProps {
   isFav: boolean;
   onSelect: (name: string) => void;
   onToggleFavourite: (name: string) => void;
-  thresholdMs: number;
+  thresholdMs: number | null;
 }
 
 const AppListItem = memo(function AppListItem({ app, isActive, isFav, onSelect, onToggleFavourite, thresholdMs }: AppListItemProps) {
-  const recent = isRecent(app.lastUpdated, thresholdMs);
+  const recent = thresholdMs !== null && isRecent(app.lastUpdated, thresholdMs);
   return (
     <li
       data-name={app.name}
@@ -61,7 +62,7 @@ const AppListItem = memo(function AppListItem({ app, isActive, isFav, onSelect, 
       <span className="app-list__item-name">{app.displayName}</span>
       <span className="app-list__item-actions">
         {recent && (
-          <span className="app-list__badge" aria-label="Updated recently" title="Updated in the last 48 hours" />
+          <span className="app-list__badge" aria-label="Updated recently" title="Updated in the selected timeframe" />
         )}
         <Button
           appearance="subtle"
@@ -87,10 +88,10 @@ export default function AppsSidebar({
   favourites,
   onToggleFavourite,
   searchRef,
-  recentThresholdHours,
-  onThresholdChange,
+  lastUpdatedFilterHours,
+  onLastUpdatedFilterChange,
 }: AppsSidebarProps) {
-  const thresholdMs = recentThresholdHours * 3600 * 1000;
+  const thresholdMs = lastUpdatedFilterHours === null ? null : lastUpdatedFilterHours * 3600 * 1000;
   const listRef = useRef<HTMLUListElement>(null);
 
   const { pinned, rest } = useMemo(() => {
@@ -154,11 +155,11 @@ export default function AppsSidebar({
         <div className="apps-panel__settings-presets">
           {THRESHOLD_PRESETS.map(({ label, hours }) => (
             <ToggleButton
-              key={hours}
+              key={label}
               size="small"
-              checked={recentThresholdHours === hours}
-              onClick={() => onThresholdChange(hours)}
-              title={`Mark apps updated in the last ${label} as recent`}
+              checked={lastUpdatedFilterHours === hours}
+              onClick={() => onLastUpdatedFilterChange(hours)}
+              title={hours === null ? 'Show all applications' : `Show apps updated in the last ${label}`}
             >
               {label}
             </ToggleButton>
