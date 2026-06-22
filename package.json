@@ -8,7 +8,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.7",
+    "@astrojs/react": "^6.0.0",
     "@fluentui/react-components": "^9.74.1",
     "@fluentui/react-icons": "^2.0.330",
     "astro": "^6.4.7",
