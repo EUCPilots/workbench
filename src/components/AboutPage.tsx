@@ -36,6 +36,13 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.1.2',
+    date: '2026-06-28',
+    changes: [
+      'Added Applications by age report on the Dashboard, showing the applications by release date age from 180, 270, 360, 450, 540, 730 days.',
+    ],
+  },
+  {
     version: '3.1.1',
     date: '2026-06-12',
     changes: [
