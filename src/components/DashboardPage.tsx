@@ -1,6 +1,7 @@
 import { useMemo, useState, memo } from 'react';
 import { Card, CardHeader, Text, Input, Button } from '@fluentui/react-components';
-import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular } from '@fluentui/react-icons';
+import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular, GlobeRegular } from '@fluentui/react-icons';
+import { FaGithub } from 'react-icons/fa';
 
 interface AppVersion {
   Version?: string;
@@ -28,6 +29,7 @@ interface DashboardPageProps {
 
 const MODERN_TYPES = new Set(['msix', 'msixbundle', 'intunewin']);
 const LEGACY_TYPES = new Set(['exe', 'msi', 'msp', 'cab', 'iso', 'zip', '7z']);
+const AGE_THRESHOLDS_DAYS = [180, 270, 360, 450, 540, 730] as const;
 
 function getFileType(v: AppVersion): string {
   if (v.Type && typeof v.Type === 'string' && v.Type.trim()) return v.Type.trim().toLowerCase();
@@ -413,6 +415,38 @@ interface RecentActivityProps {
   onSelectApp: (name: string) => void;
 }
 
+function formatLastUpdatedDate(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(iso));
+  } catch {
+    return '';
+  }
+}
+
+function getAppUri(app: AppEntry): string | null {
+  for (const version of app.versions) {
+    if (typeof version.URI === 'string' && version.URI.trim().length > 0) {
+      return version.URI.trim();
+    }
+  }
+  return null;
+}
+
+function isGithubUri(uri: string | null): boolean {
+  if (!uri) return false;
+
+  try {
+    const parsed = new URL(uri);
+    return parsed.protocol === 'https:' && parsed.hostname.toLowerCase() === 'github.com';
+  } catch {
+    return uri.toLowerCase().startsWith('https://github.com');
+  }
+}
+
 const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: RecentActivityProps) {
   const recent = useMemo(() => {
     const cutoff = Date.now() - 48 * 3600 * 1000;
@@ -449,6 +483,27 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
 });
 
 export default function DashboardPage({ apps, totalVersionCount, onSelectApp, recentThresholdHours }: DashboardPageProps) {
+  const [ageThresholdDays, setAgeThresholdDays] = useState<number>(180);
+
+  const agedApps = useMemo(() => {
+    const now = Date.now();
+
+    return apps
+      .flatMap((app) => {
+        if (!app.lastUpdated) return [];
+
+        const parsed = new Date(app.lastUpdated).getTime();
+        if (Number.isNaN(parsed)) return [];
+        const sourceUri = getAppUri(app);
+
+        const ageDays = Math.floor((now - parsed) / 86400000);
+        if (ageDays < ageThresholdDays || ageDays < 0) return [];
+
+        return [{ ...app, ageDays, sourceUri, sourceIsGithub: isGithubUri(sourceUri) }];
+      })
+      .sort((a, b) => b.ageDays - a.ageDays || a.displayName.localeCompare(b.displayName));
+  }, [apps, ageThresholdDays]);
+
   const msixApps = useMemo(
     () =>
       apps
@@ -577,6 +632,74 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
 
       {/* Recent activity */}
       <RecentActivity apps={apps} onSelectApp={onSelectApp} />
+
+      {/* Applications by age */}
+      <Card>
+        <CardHeader
+          header={<Text weight="semibold">Applications by age</Text>}
+          description={<Text size={200}>List apps older than a selected age threshold</Text>}
+        />
+
+        <div className="age-table__controls" role="group" aria-label="Application age filter">
+          <Text size={200} className="age-table__controls-label">Older than</Text>
+          <div className="age-table__buttons">
+            {AGE_THRESHOLDS_DAYS.map((days) => (
+              <Button
+                key={days}
+                size="small"
+                appearance={ageThresholdDays === days ? 'primary' : 'outline'}
+                onClick={() => setAgeThresholdDays(days)}
+                aria-pressed={ageThresholdDays === days}
+              >
+                {days} days
+              </Button>
+            ))}
+          </div>
+          <Text size={200} className="age-table__count">
+            {agedApps.length.toLocaleString()} app{agedApps.length !== 1 ? 's' : ''}
+          </Text>
+        </div>
+
+        {agedApps.length === 0 ? (
+          <p className="age-table__empty">No applications match this age threshold.</p>
+        ) : (
+          <div className="table-wrapper age-table__wrapper">
+            <table className="version-table age-table" aria-label="Applications by age">
+              <thead>
+                <tr>
+                  <th scope="col">Application</th>
+                  <th scope="col">Age (days)</th>
+                  <th scope="col">Last update</th>
+                  <th scope="col" className="age-table__source-header">Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                {agedApps.map((app) => (
+                  <tr
+                    key={app.name}
+                    className="age-table__row"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onSelectApp(app.name)}
+                    onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+                  >
+                    <td>{app.displayName}</td>
+                    <td>{app.ageDays.toLocaleString()}</td>
+                    <td>{formatLastUpdatedDate(app.lastUpdated!)}</td>
+                    <td className="age-table__source-cell">
+                      {app.sourceIsGithub ? (
+                        <FaGithub className="age-table__source-icon" aria-label="GitHub source" title="GitHub source" />
+                      ) : (
+                        <GlobeRegular className="age-table__source-icon" aria-label="Non-GitHub source" title="Non-GitHub source" />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

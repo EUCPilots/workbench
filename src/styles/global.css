@@ -1292,6 +1292,60 @@ body.search-open #root {
   flex-shrink: 0;
 }
 
+/* Applications by age table */
+.age-table__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.age-table__controls-label {
+  color: var(--colorNeutralForeground2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.age-table__buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.age-table__count {
+  color: var(--colorNeutralForeground3);
+  margin-left: auto;
+}
+
+.age-table__wrapper {
+  margin-top: 4px;
+}
+
+.age-table__row {
+  cursor: pointer;
+}
+
+.age-table__source-header {
+  text-align: center;
+}
+
+.age-table__source-cell {
+  text-align: center;
+}
+
+.age-table__source-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--colorNeutralForeground2);
+  vertical-align: middle;
+}
+
+.age-table__empty {
+  font-size: 13px;
+  color: var(--colorNeutralForeground3);
+  margin-top: 4px;
+}
+
 /* =============================================
    MSIX callout
    ============================================= */
@@ -1520,6 +1574,14 @@ body.search-open #root {
 
   .dashboard-charts {
     grid-template-columns: 1fr;
+  }
+
+  .age-table__controls {
+    align-items: flex-start;
+  }
+
+  .age-table__count {
+    margin-left: 0;
   }
 
   .bar-chart__row {
