@@ -27,7 +27,7 @@ interface DashboardPageProps {
   recentThresholdHours: number;
 }
 
-const MODERN_TYPES = new Set(['msix', 'msixbundle', 'intunewin']);
+const MODERN_TYPES = new Set(['msix', 'msixbundle', 'appx']);
 const LEGACY_TYPES = new Set(['exe', 'msi', 'msp', 'cab', 'iso', 'zip', '7z']);
 const AGE_THRESHOLDS_DAYS = [180, 270, 360, 450, 540, 730] as const;
 
@@ -356,7 +356,7 @@ function MsixCallout({ count }: { count: number }) {
       <LockClosedRegular aria-hidden="true" style={{ width: 16, height: 16, flexShrink: 0 }} />
       <p style={{ margin: 0 }}>
         <strong>{count} application{count !== 1 ? 's' : ''}</strong> in this feed provide downloads in{' '}
-        <strong>.msix</strong> format — the modern Windows packaging format for Microsoft Store and sideloaded deployment.
+        <strong>.msix</strong>, <strong>.msixbundle</strong>, or <strong>.appx</strong> formats - modern Windows packaging for Microsoft Store and sideloaded deployment.
       </p>
     </div>
   );
@@ -372,11 +372,11 @@ const MsixApps = memo(function MsixApps({ apps, onSelectApp }: MsixAppsProps) {
     <Card>
       <CardHeader
         header={<Text weight="semibold">MSIX downloads</Text>}
-        description={<Text size={200}>Apps that provide .msix installers ({apps.length})</Text>}
+        description={<Text size={200}>Apps that provide .msix, .msixbundle, or .appx installers ({apps.length})</Text>}
       />
       <ul className="msix-apps__list">
         {apps.map((app) => {
-          const msixCount = app.versions.filter((v) => getFileType(v) === 'msix').length;
+          const msixCount = app.versions.filter((v) => MODERN_TYPES.has(getFileType(v))).length;
           return (
             <li
               key={app.name}
@@ -507,7 +507,7 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
   const msixApps = useMemo(
     () =>
       apps
-        .filter((app) => app.versions.some((v) => getFileType(v) === 'msix'))
+        .filter((app) => app.versions.some((v) => MODERN_TYPES.has(getFileType(v))))
         .sort((a, b) => a.displayName.localeCompare(b.displayName)),
     [apps]
   );
