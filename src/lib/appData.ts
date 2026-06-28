@@ -39,8 +39,16 @@ function loadDisplayNameMap(): Map<string, string> {
   }
 }
 
+type AppDataModule = AppVersion[] | AppVersion | null | undefined;
+
+function normalizeVersions(data: AppDataModule): AppVersion[] {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') return [data];
+  return [];
+}
+
 // Load all JSON files at build time (excluding supported-apps.json)
-const modules = import.meta.glob<{ default: AppVersion[] }>('/json/*.json', { eager: true });
+const modules = import.meta.glob<{ default: AppDataModule }>('/json/*.json', { eager: true });
 
 /**
  * Build a map of lowercase app name → ISO commit date by parsing a single
@@ -94,7 +102,7 @@ export function getApps(): AppRecord[] {
       const name = basename(path, '.json').replace('/json/', '');
       const displayName = displayNameMap.get(name.toLowerCase()) ?? name;
       const lastUpdated = dateMap.get(name.toLowerCase()) ?? null;
-      return { name, displayName, versions: mod.default ?? [], lastUpdated };
+      return { name, displayName, versions: normalizeVersions(mod.default), lastUpdated };
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }));
 }
