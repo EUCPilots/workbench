@@ -191,7 +191,7 @@ const ModernityBar = memo(function ModernityBar({ modern, legacy, other }: Moder
           </span>
         )}
       </div>
-      <p className="stacked-bar__note">Modern = MSIX, MSIXBUNDLE, INTUNEWIN · Legacy = EXE, MSI, MSP, CAB, ISO, ZIP, 7Z</p>
+      <p className="stacked-bar__note">Modern = MSIX, MSIXBUNDLE · Legacy = EXE, MSI, MSP, CAB, ISO, ZIP, 7Z</p>
     </div>
   );
 });
