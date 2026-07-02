@@ -40,9 +40,9 @@ interface AppDetailsProps {
 }
 
 const DROPDOWN_FILTER_COLS = new Set([
-  'Release', 'Channel', 'ImageType', 'InstallerType',
-  'Type', 'Architecture', 'Platform', 'BundleType', 'Lts',
-  'Ring', 'Language', 'Throttle',
+  'Release', 'Channel', 'ImageType', 'InstallerType', 'Stream',
+  'Type', 'Architecture', 'Platform', 'BundleType', 'LTS', 'Edition',
+  'Ring', 'Language', 'Throttle', 'Track', 'Product'
 ]);
 
 function getFileType(v: AppVersion): string {
