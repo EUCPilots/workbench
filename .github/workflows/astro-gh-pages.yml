@@ -30,6 +30,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Suppress Node.js runtime deprecation from transitive tooling
+      # (whatwg-url -> tr46 -> punycode) until upstream dependencies update.
+      NODE_OPTIONS: --disable-warning=DEP0040
 
     steps:
       - name: Checkout
