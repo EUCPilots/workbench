@@ -375,7 +375,7 @@ export default function AppDetails({ appName, displayName, link, versions, lastU
             title={`About ${displayName}`}
             aria-label={`About ${displayName}`}
           >
-            About
+            About App
           </a>
         )}
       </div>

@@ -23,7 +23,7 @@ export interface AppRecord {
 interface SupportedApp {
   Name: string;
   Application: string;
-  Link?: string;
+  Link: string;
 }
 
 // Load supported-apps.json at build time. The file is fetched from
@@ -37,7 +37,7 @@ function loadSupportedAppMap(): Map<string, { application: string; link: string 
         a.Name.toLowerCase(),
         {
           application: a.Application,
-          link: a.Link?.trim() ? a.Link.trim() : null,
+          link: a.Link.trim() || null,
         },
       ])
     );
