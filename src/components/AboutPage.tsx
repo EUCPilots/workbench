@@ -36,6 +36,14 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.1.3',
+    date: '2026-07-12',
+    changes: [
+      'Improved header control icon hover visibility by replacing the low-contrast green hover icon color on Search, Keyboard shortcuts, and Theme toggle buttons with a higher-contrast color.',
+      'Adds Link metadata from supported-apps.json through appData and AppsPage into AppDetails, then renders a new “About” button in the app header when a link exists.'
+    ],
+  },
+  {
     version: '3.1.2',
     date: '2026-06-28',
     changes: [
