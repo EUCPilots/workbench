@@ -520,6 +520,30 @@ a:hover {
   background: color-mix(in srgb, var(--colorBrandBackground) 8%, var(--colorNeutralBackground2));
 }
 
+.details-panel__about-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--radius-medium);
+  background: var(--colorNeutralBackground2);
+  color: var(--colorNeutralForeground3);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+}
+
+.details-panel__about-btn:hover {
+  border-color: var(--colorBrandBackground);
+  color: var(--colorBrandForeground1);
+  background: color-mix(in srgb, var(--colorBrandBackground) 8%, var(--colorNeutralBackground2));
+  text-decoration: none;
+}
+
 /* PowerShell copy button in the app header */
 .ps-copy-btn {
   display: inline-flex;

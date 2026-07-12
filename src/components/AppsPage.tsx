@@ -36,6 +36,7 @@ interface AppVersion {
 interface AppRecord {
   name: string;
   displayName: string;
+  link: string | null;
   versions: AppVersion[];
   lastUpdated: string | null;
 }
@@ -52,6 +53,7 @@ interface AppData {
 interface AppEntry {
   name: string;
   displayName: string;
+  link: string | null;
   versions: AppVersion[];
   lastUpdated: string | null;
 }
@@ -168,6 +170,7 @@ export default function AppsPage({ base }: AppsPageProps) {
     return appData.apps.map((a) => ({
       name: a.name,
       displayName: a.displayName,
+      link: a.link,
       versions: a.versions,
       lastUpdated: a.lastUpdated,
     }));
@@ -441,6 +444,7 @@ export default function AppsPage({ base }: AppsPageProps) {
                     key={selectedEntry.name}
                     appName={selectedEntry.name}
                     displayName={selectedEntry.displayName}
+                    link={selectedEntry.link}
                     versions={selectedEntry.versions}
                     lastUpdated={selectedEntry.lastUpdated}
                     onBack={isMobile ? () => setSidebarOpen(true) : undefined}

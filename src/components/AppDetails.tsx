@@ -33,6 +33,7 @@ interface AppVersion {
 interface AppDetailsProps {
   appName: string;
   displayName: string;
+  link: string | null;
   versions: AppVersion[];
   lastUpdated: string | null;
   onBack?: () => void;
@@ -136,8 +137,9 @@ function initFileTypes(name: string, types: string[]): Set<string> {
   return new Set(types);
 }
 
-export default function AppDetails({ appName, displayName, versions, lastUpdated, onBack, base }: AppDetailsProps) {
+export default function AppDetails({ appName, displayName, link, versions, lastUpdated, onBack, base }: AppDetailsProps) {
   const feedUrl = `${base}feeds/${appName}.xml`;
+  const formattedUpdated = formatDate(lastUpdated);
 
   const architectures = useMemo(() => {
     const set = new Set<string>();
@@ -361,8 +363,20 @@ export default function AppDetails({ appName, displayName, versions, lastUpdated
           <RssRegular aria-hidden="true" style={{ width: 13, height: 13 }} />
           <span className="feed-subscribe-btn__label">RSS</span>
         </a>
-        {formatDate(lastUpdated) && (
-          <span className="details-panel__updated">Updated {formatDate(lastUpdated)}</span>
+        {formattedUpdated && (
+          <span className="details-panel__updated">Updated {formattedUpdated}</span>
+        )}
+        {link && (
+          <a
+            className="details-panel__about-btn"
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`About ${displayName}`}
+            aria-label={`About ${displayName}`}
+          >
+            About
+          </a>
         )}
       </div>
 

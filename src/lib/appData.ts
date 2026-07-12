@@ -15,6 +15,7 @@ export interface AppVersion {
 export interface AppRecord {
   name: string;
   displayName: string;
+  link: string | null;
   versions: AppVersion[];
   lastUpdated: string | null;
 }
@@ -22,17 +23,23 @@ export interface AppRecord {
 interface SupportedApp {
   Name: string;
   Application: string;
-  Link: string;
+  Link?: string;
 }
 
-// Load supported-apps.json at build time.  The file is fetched from
+// Load supported-apps.json at build time. The file is fetched from
 // aaronparker/apptracker by the CI workflow; falls back to an empty map
-// so local builds without the file still succeed (displayName = name).
-function loadDisplayNameMap(): Map<string, string> {
+// so local builds without the file still succeed (displayName = name, link = null).
+function loadSupportedAppMap(): Map<string, { application: string; link: string | null }> {
   try {
     const raw = readFileSync(join(process.cwd(), 'json', 'supported-apps.json'), 'utf-8');
-    return new Map<string, string>(
-      (JSON.parse(raw) as SupportedApp[]).map((a) => [a.Name.toLowerCase(), a.Application])
+    return new Map<string, { application: string; link: string | null }>(
+      (JSON.parse(raw) as SupportedApp[]).map((a) => [
+        a.Name.toLowerCase(),
+        {
+          application: a.Application,
+          link: a.Link?.trim() ? a.Link.trim() : null,
+        },
+      ])
     );
   } catch {
     return new Map();
@@ -92,7 +99,7 @@ function buildDateMapFromGit(): Map<string, string> {
   return map;
 }
 
-const displayNameMap = loadDisplayNameMap();
+const supportedAppMap = loadSupportedAppMap();
 const dateMap = buildDateMapFromGit();
 
 export function getApps(): AppRecord[] {
@@ -100,9 +107,11 @@ export function getApps(): AppRecord[] {
     .filter(([path]) => !path.endsWith('/supported-apps.json'))
     .map(([path, mod]) => {
       const name = basename(path, '.json').replace('/json/', '');
-      const displayName = displayNameMap.get(name.toLowerCase()) ?? name;
+      const supportedApp = supportedAppMap.get(name.toLowerCase());
+      const displayName = supportedApp?.application ?? name;
+      const link = supportedApp?.link ?? null;
       const lastUpdated = dateMap.get(name.toLowerCase()) ?? null;
-      return { name, displayName, versions: normalizeVersions(mod.default), lastUpdated };
+      return { name, displayName, link, versions: normalizeVersions(mod.default), lastUpdated };
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }));
 }
