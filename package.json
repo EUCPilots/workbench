@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^6.0.1",
-    "@fluentui/react-components": "^9.74.3",
+    "@fluentui/react-components": "^9.74.4",
     "@fluentui/react-icons": "^2.0.333",
     "astro": "^7.0.9",
     "react": "^19.2.7",
