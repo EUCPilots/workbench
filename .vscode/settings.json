@@ -101,5 +101,8 @@
         "Wireshark",
         "xcopy",
         "Zotero"
-    ]
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "npm install": true
+    }
 }
