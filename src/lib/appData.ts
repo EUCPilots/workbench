@@ -48,7 +48,7 @@ function loadSupportedAppMap(): Map<string, { application: string; link: string 
 
 type AppDataModule = AppVersion[] | AppVersion | null | undefined;
 
-function normalizeVersions(data: AppDataModule): AppVersion[] {
+export function normalizeVersions(data: AppDataModule): AppVersion[] {
   if (Array.isArray(data)) return data;
   if (data && typeof data === 'object') return [data];
   return [];
