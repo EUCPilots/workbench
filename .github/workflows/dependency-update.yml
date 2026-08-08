@@ -1,0 +1,77 @@
+name: Weekly dependency update
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --disable-warning=DEP0040
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fetch app JSON data from eucpilots/apptracker
+        run: |
+          git clone --filter=blob:none --sparse https://github.com/eucpilots/apptracker.git ${{ github.workspace }}/_appdata
+          cd ${{ github.workspace }}/_appdata && git sparse-checkout set json
+          mkdir -p ${{ github.workspace }}/json
+          cp ${{ github.workspace }}/_appdata/json/*.json ${{ github.workspace }}/json/
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install current dependencies
+        run: npm ci --force
+
+      - name: Update dependency ranges
+        run: npx npm-check-updates -u
+
+      - name: Rebuild lock file
+        run: npm install --force
+
+      - name: Validate updated dependencies
+        run: npm run ci:validate
+        env:
+          JSON_GIT_DIR: ${{ github.workspace }}/_appdata
+
+      - name: Check for dependency file changes
+        id: changes
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore: weekly dependency update"
+
+      - name: Push to main
+        if: steps.changes.outputs.changed == 'true'
+        run: git push origin HEAD:main
+
+      - name: No dependency changes
+        if: steps.changes.outputs.changed == 'false'
+        run: echo "No package.json or package-lock.json updates available."
