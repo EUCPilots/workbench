@@ -2,9 +2,9 @@
 name: Evergreen Workbench
 description: Clean, modern admin dashboard for trusted application version tracking
 colors:
-  primary: "#009485"
-  primary-dark: "#008575"
-  primary-pressed: "#016e61"
+  primary: "#00766f"
+  primary-dark: "#006b63"
+  primary-pressed: "#005d57"
   primary-light: "#d9f7f3"
   primary-dark-light: "#0d2926"
   neutral-bg-primary: "#ffffff"
@@ -93,9 +93,9 @@ The palette divides into three roles: a vibrant signature green for brand and ac
 
 ### Primary (Evergreen Green)
 
-- **Evergreen Vibrant** (#009485): The signature brand color. Used on primary buttons, active navigation states, hover effects, the top navigation bar background, and any element requiring maximum visual emphasis. Its vibrant character defines the brand presence and commands trust.
-- **Evergreen Dark** (#008575): Hover state for primary buttons and pressed navigation items. Slightly deeper, maintaining the forward-facing energy.
-- **Evergreen Pressed** (#016e61): Pressed/active state for buttons and toggles. The deepest variant, establishing clear state feedback.
+- **Evergreen Vibrant** (#00766f): The signature brand color. Used on primary buttons, active navigation states, hover effects, the top navigation bar background, and any element requiring maximum visual emphasis. Its vibrant character defines the brand presence and commands trust while preserving WCAG color contrast for text on light surfaces.
+- **Evergreen Dark** (#006b63): Hover state for primary buttons and pressed navigation items. Slightly deeper, maintaining the forward-facing energy.
+- **Evergreen Pressed** (#005d57): Pressed/active state for buttons and toggles. The deepest variant, establishing clear state feedback.
 - **Evergreen Light** (#d9f7f3): Very light tint used as secondary background or badge fills. Provides visual hierarchy without competing with text.
 - **Evergreen Dark Light** (#0d2926): The light-mode dark variant of the light tint. Used in dark theme backgrounds.
 
