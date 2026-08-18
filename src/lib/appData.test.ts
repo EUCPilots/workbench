@@ -58,4 +58,19 @@ describe('brand colors', () => {
     const green = (match?.[1] ?? '#000000').toLowerCase();
     expect(contrastRatio(green, '#ffffff')).toBeGreaterThanOrEqual(4.5);
   });
+
+  it('uses a dark green background that keeps secondary text readable in dark mode', () => {
+    const css = readFileSync(new URL('../styles/global.css', import.meta.url), 'utf8');
+    const darkBlock = css.match(/\[data-theme="dark"\][\s\S]*?\}/);
+    const backgroundMatch = darkBlock?.[0].match(/--colorBrandBackground:\s*(#[0-9a-fA-F]{6})/);
+    const secondaryTextMatch = darkBlock?.[0].match(/--colorNeutralForeground2:\s*(#[0-9a-fA-F]{6})/);
+
+    expect(darkBlock).not.toBeNull();
+    expect(backgroundMatch).not.toBeNull();
+    expect(secondaryTextMatch).not.toBeNull();
+
+    const background = (backgroundMatch?.[1] ?? '#000000').toLowerCase();
+    const secondaryText = (secondaryTextMatch?.[1] ?? '#000000').toLowerCase();
+    expect(contrastRatio(background, secondaryText)).toBeGreaterThanOrEqual(4.5);
+  });
 });

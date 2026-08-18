@@ -77,11 +77,11 @@
   --colorNeutralForeground2: #d6d6d6;
   --colorNeutralForeground3: #adadad;
   --colorBrandForeground1: #4db8ad;
-  --colorBrandBackground: #4db8ad;
+  --colorBrandBackground: #005d57;
   --colorBrandBackground2: #0d2926;
-  --colorBrandBackgroundHover: #37b3a5;
-  --colorBrandBackgroundPressed: #26a899;
-  --colorNeutralForegroundOnBrand: #000000;
+  --colorBrandBackgroundHover: #004f4a;
+  --colorBrandBackgroundPressed: #003f3b;
+  --colorNeutralForegroundOnBrand: #ffffff;
   --colorNeutralBackground3: #333333;
   --colorNeutralBackground5: #3d3d3d;
   --colorRssStroke: #E07A3A;
