@@ -73,4 +73,14 @@ describe('brand colors', () => {
     const secondaryText = (secondaryTextMatch?.[1] ?? '#000000').toLowerCase();
     expect(contrastRatio(background, secondaryText)).toBeGreaterThanOrEqual(4.5);
   });
+
+  it('labels the listbox and dialog widgets for assistive technologies', () => {
+    const sidebarSource = readFileSync(new URL('../components/AppsSidebar.tsx', import.meta.url), 'utf8');
+    const searchSource = readFileSync(new URL('../components/GlobalSearch.tsx', import.meta.url), 'utf8');
+
+    expect(sidebarSource).toContain('role="listbox"');
+    expect(sidebarSource).toContain('aria-labelledby="apps-list-label"');
+    expect(searchSource).toContain('role="dialog"');
+    expect(searchSource).toContain('aria-labelledby="global-search-title"');
+  });
 });

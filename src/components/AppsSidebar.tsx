@@ -124,7 +124,7 @@ export default function AppsSidebar({
 
   return (
     <div className="apps-panel">
-      <p className="apps-panel__count">
+      <p className="apps-panel__count" id="apps-list-label">
         <span>Applications</span>
         <span>{apps.length.toLocaleString()} of {totalCount.toLocaleString()}</span>
       </p>
@@ -140,7 +140,13 @@ export default function AppsSidebar({
         />
       </div>
 
-      <ul ref={listRef} className="app-list" role="listbox" aria-label="Application list">
+      <ul
+        ref={listRef}
+        className="app-list"
+        role="listbox"
+        aria-label="Application list"
+        aria-labelledby="apps-list-label"
+      >
         {pinned.length > 0 && (
           <>
             {pinned.map(renderItem)}

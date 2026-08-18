@@ -257,9 +257,13 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
       onKeyDown={handleOverlayKeyDown}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="global-search-title"
       aria-label="Global search"
     >
       <div className="global-search-modal" ref={modalRef}>
+        <div className="global-search-header">
+          <h2 id="global-search-title" className="global-search-title">Search applications</h2>
+        </div>
         <div className="global-search-input-row">
           <Input
             ref={inputRef}

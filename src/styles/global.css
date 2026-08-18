@@ -937,7 +937,18 @@ body.search-open #root {
   animation: search-modal-in 200ms var(--easing-ease-out-expo);
 }
 
-/* Input row */
+/* Header + Input row */
+.global-search-header {
+  padding: 12px 16px 0;
+}
+
+.global-search-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+}
+
 .global-search-input-row {
   display: flex;
   align-items: center;
