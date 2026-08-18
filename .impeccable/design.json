@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-19T09:04:05Z",
+  "title": "Design System: Evergreen Workbench",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Evergreen Vibrant",
+        "canonical": "#009485",
+        "tonalRamp": ["#004d44", "#005a52", "#006961", "#007870", "#009485", "#00a99a", "#00c4ad", "#4db8ad", "#80cdc3", "#b3e1d9"]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Evergreen Dark",
+        "canonical": "#008575",
+        "tonalRamp": []
+      },
+      "primary-light": {
+        "role": "primary",
+        "displayName": "Evergreen Light",
+        "canonical": "#d9f7f3",
+        "tonalRamp": []
+      },
+      "neutral-bg-primary": {
+        "role": "neutral",
+        "displayName": "White Prime",
+        "canonical": "#ffffff",
+        "tonalRamp": []
+      },
+      "neutral-fg-primary": {
+        "role": "neutral",
+        "displayName": "Charcoal 900",
+        "canonical": "#242424",
+        "tonalRamp": []
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines; title bar headings. Used sparingly for maximum impact."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers, modal titles, card titles. Clear visual breaks between sections."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Main content, table cells, descriptions. Optimized for on-screen reading at 14px."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels, badges, chips, filter toggles. 12px semibold for emphasis despite smaller size."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "fast",
+        "value": "150ms cubic-bezier(0.45, 0, 0.55, 1)",
+        "purpose": "Quick feedback for hover and state transitions."
+      },
+      {
+        "name": "normal",
+        "value": "200ms cubic-bezier(0.45, 0, 0.55, 1)",
+        "purpose": "Standard transition for UI changes and animations."
+      },
+      {
+        "name": "sidebar-mobile",
+        "value": "200ms ease",
+        "purpose": "Sidebar slide-in/out on mobile; smooth and confident."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "0px", "description": "Default, narrow screens" },
+      { "name": "tablet", "value": "768px", "description": "Medium screens; two-column layout available" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Highest-priority action button. Used for save, submit, apply, and primary CTAs.",
+      "html": "<button class=\"ds-btn-primary\">Apply Changes</button>",
+      "css": ".ds-btn-primary { background: #009485; color: #ffffff; padding: 8px 12px; border: none; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: background 150ms cubic-bezier(0.45, 0, 0.55, 1); } .ds-btn-primary:hover { background: #008575; } .ds-btn-primary:active { background: #016e61; } .ds-btn-primary:focus-visible { outline: 2px solid #009485; outline-offset: 2px; }"
+    },
+    {
+      "name": "Subtle Button",
+      "kind": "button",
+      "refersTo": "button-subtle",
+      "description": "Secondary action or icon button. Used in headers and for less prominent actions.",
+      "html": "<button class=\"ds-btn-subtle\">⋆ Favorite</button>",
+      "css": ".ds-btn-subtle { background: transparent; color: #009485; padding: 8px 12px; border: none; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: background 150ms ease; } .ds-btn-subtle:hover { background: #f5f5f5; } .ds-btn-subtle:active { background: #e0e0e0; } .ds-btn-subtle:focus-visible { outline: 2px solid #009485; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-base",
+      "description": "Standard text input for search, filter, and form entry. Border appears on focus.",
+      "html": "<input type=\"text\" class=\"ds-input\" placeholder=\"Search applications...\" />",
+      "css": ".ds-input { background: #ffffff; color: #242424; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input:focus { outline: none; border-color: #009485; box-shadow: inset 0 0 0 1px #009485; } .ds-input::placeholder { color: #616161; font-style: italic; }"
+    },
+    {
+      "name": "Toggle Button (Chip)",
+      "kind": "button",
+      "refersTo": "chip-toggle",
+      "description": "Filter toggle or small switch. Selected state is green.",
+      "html": "<button class=\"ds-chip\" data-selected=\"false\">24h</button>",
+      "css": ".ds-chip { background: transparent; color: #242424; border: 1px solid #e0e0e0; padding: 4px 8px; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 150ms ease; } .ds-chip:hover { background: #f5f5f5; } .ds-chip[data-selected=\"true\"] { background: #009485; color: #ffffff; border-color: #009485; } .ds-chip:focus-visible { outline: 2px solid #009485; outline-offset: -2px; }"
+    },
+    {
+      "name": "Navigation Tab",
+      "kind": "nav",
+      "refersTo": "tab-nav",
+      "description": "Horizontal tab navigation. Active tab is green with underline.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab ds-tab--active\">Applications</button><button class=\"ds-tab\">Dashboard</button></div>",
+      "css": ".ds-tabs { display: flex; gap: 4px; background: #fafafa; border-bottom: 1px solid #e0e0e0; } .ds-tab { background: transparent; color: #424242; padding: 12px 16px; border: none; border-bottom: 2px solid transparent; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: all 150ms ease; } .ds-tab:hover { color: #009485; } .ds-tab--active { color: #009485; border-bottom-color: #009485; font-weight: 600; } .ds-tab:focus-visible { outline: 2px solid #009485; outline-offset: -2px; }"
+    },
+    {
+      "name": "List Item",
+      "kind": "custom",
+      "refersTo": "list-item",
+      "description": "Application list item in sidebar. Active item has green left border and light background.",
+      "html": "<li class=\"ds-list-item ds-list-item--active\"><span>Microsoft Edge</span><span class=\"ds-list-item__actions\"><button class=\"ds-list-star\">★</button></span></li>",
+      "css": ".ds-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; color: #242424; background: transparent; border-left: 4px solid transparent; cursor: pointer; transition: all 150ms ease; } .ds-list-item:hover { background: #f5f5f5; } .ds-list-item--active { background: #d9f7f3; border-left-color: #009485; } .ds-list-item--recent::after { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #009485; margin-left: 4px; } .ds-list-star { background: transparent; color: #009485; border: none; cursor: pointer; font-size: 16px; padding: 4px; transition: transform 150ms ease; } .ds-list-star:hover { transform: scale(1.2); }"
+    },
+    {
+      "name": "Table",
+      "kind": "custom",
+      "refersTo": "data-table",
+      "description": "Sortable data table. Alternating rows for scannability; bold green column headers.",
+      "html": "<table class=\"ds-table\"><thead><tr><th class=\"ds-table__header\">Version</th><th class=\"ds-table__header\">Architecture</th></tr></thead><tbody><tr class=\"ds-table__row\"><td>2024.01</td><td>x64</td></tr><tr class=\"ds-table__row ds-table__row--alt\"><td>2023.12</td><td>x86</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; font-size: 14px; } .ds-table__header { background: #fafafa; color: #009485; font-weight: 600; padding: 12px 16px; text-align: left; border-bottom: 1px solid #e0e0e0; } .ds-table__row { border-bottom: 1px solid #e0e0e0; } .ds-table__row td { padding: 12px 16px; color: #242424; } .ds-table__row:hover { background: #f5f5f5; } .ds-table__row--alt { background: #fafafa; } .ds-table__row--alt:hover { background: #f0f0f0; }"
+    },
+    {
+      "name": "Badge / Recent Indicator",
+      "kind": "custom",
+      "refersTo": "badge",
+      "description": "Small indicator badge (e.g., 'recently updated'). Green circle with high visibility.",
+      "html": "<span class=\"ds-badge\" title=\"Updated recently\"></span>",
+      "css": ".ds-badge { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #009485; margin-left: 4px; vertical-align: middle; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Control Room",
+    "overview": "The Evergreen Workbench is a clean, modern admin dashboard designed for IT professionals who need to trust, find, and act on application version data quickly. The visual system prioritizes clarity and confidence: a neutral, minimal foundation that stays out of the way, paired with the Evergreen green as a vibrant, forward-facing signature color that commands attention for critical actions and brand presence. Every element is purposeful; nothing is decorative. The interface feels contemporary and professional—familiar enough for admins to navigate intuitively, distinctive enough to feel like a premium tool in their workflow.",
+    "keyCharacteristics": [
+      "Neutral foundation with high contrast for readability in both light and dark contexts",
+      "Vibrant green accent used strategically on primary actions, navigation, and brand touchpoints",
+      "Generous whitespace and rhythm that balances density with breathability",
+      "Accessible by default with keyboard-first navigation and high contrast ratios",
+      "Flat, contemporary form language with minimal shadows (used only for elevation on mobile)",
+      "Fluent UI component library as the structural baseline, customized for Evergreen brand"
+    ],
+    "rules": [
+      {
+        "name": "The Green Discipline Rule",
+        "body": "The Evergreen green is a signature color—used on ≤15% of most screens. Its rarity and vibrance make primary actions unmistakable and brand presence immediate. Overuse dilutes impact; restraint earns recognition.",
+        "section": "colors"
+      },
+      {
+        "name": "The Neutral Majority Rule",
+        "body": "80%+ of screens are neutral (white, gray, text). This restraint makes the green pop and keeps the interface professional and focused on content, not decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The 14px Body Rule",
+        "body": "Body text is always 14px in light mode, never smaller. Screen-based reading requires legibility; 12px body is reserved for labels and helper text only. This ensures comfortable reading at typical admin workstations.",
+        "section": "typography"
+      },
+      {
+        "name": "The 600 Weight Rule",
+        "body": "Bold/heavy text is always 600 (semibold), never 700 (bold). The extra weight difference is subtle but modern; 600 reads as confident without aggression.",
+        "section": "typography"
+      },
+      {
+        "name": "The Slight-Radius Rule",
+        "body": "Corners are never sharp (0px) and never aggressively rounded (16px+). 2–8px keeps the interface contemporary, sharp, and professional.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do use the green (#009485) on primary actions only. Button clicks, active navigation, brand presence. Every instance of green should feel intentional and important.",
+      "Do maintain high contrast. Text on background must pass WCAG AA (4.5:1 for body text). Test in both light and dark mode.",
+      "Do use 14px body text. Never go below 14px for on-screen reading, even on mobile. Labels and helpers can be 12px.",
+      "Do pair green with white. Green text on white background, or white text on green background. Never green on gray or green on green.",
+      "Do make interactive elements obvious. Button hover states must change (color, background, or subtle lift). Invisible states frustrate admins.",
+      "Do keep padding and spacing generous. 8px minimum between unrelated elements. Admins need room to click accurately, especially on touch devices.",
+      "Do organize tables by density, not decoration. Subtle alternating rows (white / light gray), light borders, align text left for easy scanning.",
+      "Do use keyboard shortcuts. Every navigation and action must be accessible by keyboard. Shortcuts (/, f, ?) are listed and always discoverable.",
+      "Do respect dark mode. All colors must invert intelligently. Test both themes equally; they're equally valid.",
+      "Do use motion conservatively. 150ms–200ms transitions on hover/focus. No decorative animations. Motion is feedback, not flourish."
+    ],
+    "donts": [
+      "Don't use green as a neutral fill. Backgrounds, containers, and cards are always white/gray, never tinted green.",
+      "Don't use drop shadows on desktop. Flat, tonal layering only. Shadows are reserved for mobile overlays.",
+      "Don't mix rounded corners. Use the radius scale (xs/sm/md/lg) consistently within a component family. Random radii look accidental.",
+      "Don't nest too many grays. The palette is intentionally limited (3–4 distinct backgrounds). More grays muddy hierarchy.",
+      "Don't use color to convey information alone. Status or importance must be supported by text labels or icons, not just color.",
+      "Don't override focus rings. All interactive elements must have a visible keyboard focus indicator. Don't hide it for aesthetics.",
+      "Don't use decorative typefaces or serifs. Segoe UI only. No Georgia, no custom fonts. Professional, familiar, efficient.",
+      "Don't add unnecessary icons. Icons clarify action, not decorate. Every icon should be immediately clear; if users need a label anyway, the icon didn't help.",
+      "Don't use animations for state changes in tables. Sorting, filtering, and column swaps should be instant. Animation here feels slow and defensive.",
+      "Don't let content overflow containers. Truncate long text with ellipsis (...) or wrap thoughtfully. Overflow breaks the layout's integrity."
+    ]
+  }
+}
