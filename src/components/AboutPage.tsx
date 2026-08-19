@@ -36,6 +36,18 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.2.0',
+    date: '2026-08-19',
+    changes: [
+      'Added reduced-motion support that respects user accessibility preferences by minimizing transitions and animations when prefers-reduced-motion is enabled.',
+      'Added toast-based undo feedback for favourite pin and unpin actions to improve error recovery.',
+      'Improved accessibility hardening across app interactions, including safer recovery flows for accidental UI actions.',
+      'Darken the Evergreen light-theme brand greens to improve contrast on white backgrounds, and update the browser theme-color meta tag and Fluent theme tokens to match.',
+      'Add explicit accessible labels for the sidebar application listbox and global search dialog so assistive technologies can announce them correctly. This also adds a visible search dialog heading, matching styles, and a regression test covering the new ARIA labelling.',
+      'Add onboarding UI and help dialog tabs'
+    ],
+  },
+  {
     version: '3.1.3',
     date: '2026-07-12',
     changes: [
