@@ -495,12 +495,40 @@ export default function AppsPage({ base }: AppsPageProps) {
                   />
                 </ErrorBoundary>
               ) : (
-                <div className="empty-state" style={{ flex: 1 }}>
-                  <BoxRegular aria-hidden="true" className="empty-state__icon" />
-                  <span className="empty-state__title">Select an application</span>
-                  <span className="empty-state__subtitle">
-                    Choose an app from the list to view version details.
-                  </span>
+                <div className="empty-state empty-state--onboarding" style={{ flex: 1 }}>
+                  <div className="onboarding-panel" role="status" aria-live="polite">
+                    <span className="onboarding-panel__eyebrow">Welcome to Evergreen Workbench</span>
+                    <BoxRegular aria-hidden="true" className="empty-state__icon" />
+                    <h2 className="empty-state__title">Track the latest app versions with confidence.</h2>
+                    <p className="empty-state__subtitle">
+                      Browse the catalog, pin the apps you care about, and jump straight to the
+                      version history you need.
+                    </p>
+
+                    <div className="onboarding-panel__steps" aria-label="Onboarding steps">
+                      <div className="onboarding-step">
+                        <span className="onboarding-step__index">1</span>
+                        <div>
+                          <strong>Pin apps</strong>
+                          <small>Keep your most important workloads at the top.</small>
+                        </div>
+                      </div>
+                      <div className="onboarding-step">
+                        <span className="onboarding-step__index">2</span>
+                        <div>
+                          <strong>Filter and sort</strong>
+                          <small>Focus on recent updates and the app details that matter most.</small>
+                        </div>
+                      </div>
+                      <div className="onboarding-step">
+                        <span className="onboarding-step__index">3</span>
+                        <div>
+                          <strong>Press / to search</strong>
+                          <small>Find any app instantly and start from the first relevant result.</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </>

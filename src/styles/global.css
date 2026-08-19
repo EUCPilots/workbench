@@ -882,20 +882,98 @@ a:hover {
   text-align: center;
 }
 
+.empty-state--onboarding {
+  padding: 24px;
+}
+
 .empty-state__icon {
   font-size: 48px;
-  opacity: 0.3;
+  opacity: 0.35;
+  color: var(--colorBrandForeground1);
 }
 
 .empty-state__title {
   font-size: 15px;
   font-weight: var(--font-weight-semibold);
   color: var(--colorNeutralForeground2);
+  margin: 0;
 }
 
 .empty-state__subtitle {
   font-size: 13px;
   color: var(--colorNeutralForeground3);
+  margin: 0;
+  max-width: 540px;
+  line-height: 1.5;
+}
+
+.onboarding-panel {
+  width: min(100%, 720px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px;
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--radius-large);
+  background: linear-gradient(180deg, var(--colorNeutralBackground1), var(--colorNeutralBackground2));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.onboarding-panel__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--colorBrandForeground1);
+}
+
+.onboarding-panel__steps {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.onboarding-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 12px;
+  text-align: left;
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--radius-medium);
+  background: var(--colorNeutralBackground1);
+}
+
+.onboarding-step__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--colorBrandBackground2);
+  color: var(--colorBrandForeground1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.onboarding-step strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+  margin-bottom: 4px;
+}
+
+.onboarding-step small {
+  display: block;
+  font-size: 12px;
+  color: var(--colorNeutralForeground3);
+  line-height: 1.4;
 }
 
 /* Disable interaction with page content when search is open */
@@ -1808,8 +1886,89 @@ body.search-open #root {
 }
 
 /* =============================================
-   Keyboard Shortcuts Table (inside Dialog)
+   Help dialog tabs and shortcut content
    ============================================= */
+.shortcut-tabs {
+  margin-bottom: 12px;
+}
+
+.help-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 4px 4px;
+}
+
+.help-panel--overview {
+  gap: 12px;
+}
+
+.help-panel__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--colorBrandForeground1);
+}
+
+.help-panel__title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--colorNeutralForeground1);
+}
+
+.help-panel__copy {
+  margin: 0;
+  color: var(--colorNeutralForeground3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.help-panel__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.help-panel__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 12px;
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--radius-medium);
+  background: var(--colorNeutralBackground1);
+  text-align: left;
+}
+
+.help-panel__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--colorBrandBackground2);
+  color: var(--colorBrandForeground1);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.help-panel__step strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--colorNeutralForeground1);
+}
+
+.help-panel__step small {
+  display: block;
+  font-size: 12px;
+  color: var(--colorNeutralForeground3);
+  line-height: 1.4;
+}
+
 .shortcuts-table {
   width: 100%;
   border-collapse: collapse;

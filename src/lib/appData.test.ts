@@ -48,6 +48,16 @@ describe('normalizeVersions', () => {
   });
 });
 
+describe('onboarding guidance', () => {
+  it('explains the core value and next steps for first-time users', () => {
+    const source = readFileSync(new URL('../components/AppsPage.tsx', import.meta.url), 'utf8');
+
+    expect(source).toContain('Welcome to Evergreen Workbench');
+    expect(source).toContain('Pin apps');
+    expect(source).toContain('Press / to search');
+  });
+});
+
 describe('brand colors', () => {
   it('uses a green text color that passes WCAG AA on white backgrounds', () => {
     const css = readFileSync(new URL('../styles/global.css', import.meta.url), 'utf8');
