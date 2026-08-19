@@ -22,6 +22,8 @@ import ThemeToggle from './ThemeToggle';
 import GlobalSearch from './GlobalSearch';
 import ErrorBoundary from './ErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import Toast from './Toast';
+import { useToastNotification } from '../utils/useToastNotification';
 
 interface AppVersion {
   Version?: string;
@@ -116,6 +118,7 @@ export default function AppsPage({ base }: AppsPageProps) {
       return null;
     }
   });
+  const { toast, showToast, dismissToast } = useToastNotification();
   const [showShortcuts, setShowShortcuts] = useState(false);
   const sidebarSearchRef = useRef<HTMLInputElement>(null);
   const swipeStartX = useRef<number | null>(null);
@@ -235,13 +238,53 @@ export default function AppsPage({ base }: AppsPageProps) {
 
   const handleToggleFavourite = useCallback((name: string) => {
     setFavourites((prev) => {
+      const wasAdded = !prev.has(name);
       const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
+      
+      if (wasAdded) {
+        next.add(name);
+        const appRecord = appData?.apps.find((a) => a.name === name);
+        showToast({
+          id: `fav-${name}`,
+          title: `Pinned "${appRecord?.displayName || name}"`,
+          intent: 'success',
+          actionText: 'Undo',
+          actionFn: () => {
+            setFavourites((f) => {
+              const undo = new Set(f);
+              undo.delete(name);
+              localStorage.setItem('favouriteApps', JSON.stringify(Array.from(undo)));
+              return undo;
+            });
+            dismissToast();
+          },
+          timeout: 5000,
+        });
+      } else {
+        next.delete(name);
+        const appRecord = appData?.apps.find((a) => a.name === name);
+        showToast({
+          id: `unfav-${name}`,
+          title: `Unpinned "${appRecord?.displayName || name}"`,
+          intent: 'success',
+          actionText: 'Undo',
+          actionFn: () => {
+            setFavourites((f) => {
+              const undo = new Set(f);
+              undo.add(name);
+              localStorage.setItem('favouriteApps', JSON.stringify(Array.from(undo)));
+              return undo;
+            });
+            dismissToast();
+          },
+          timeout: 5000,
+        });
+      }
+      
       localStorage.setItem('favouriteApps', JSON.stringify(Array.from(next)));
       return next;
     });
-  }, []);
+  }, [appData, showToast, dismissToast]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -483,6 +526,8 @@ export default function AppsPage({ base }: AppsPageProps) {
           )}
         </main>
       </div>
+      
+      <Toast message={toast} onDismiss={dismissToast} />
     </>
   );
 }

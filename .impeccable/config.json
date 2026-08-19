@@ -1,0 +1,9 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "src/styles/toast.css"
+    ],
+    "ignoreValues": []
+  }
+}

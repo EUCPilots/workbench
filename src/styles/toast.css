@@ -1,0 +1,126 @@
+/* =============================================
+   Toast Notifications
+   ============================================= */
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-medium);
+  background: var(--colorNeutralBackground2);
+  border: 1px solid var(--colorNeutralStroke2);
+  color: var(--colorNeutralForeground1);
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: toast-slide-in 150ms ease-out;
+  z-index: 1000;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+.toast--success {
+  background: #f0f9f8;
+  border-color: #009485;
+  color: #00766f;
+}
+
+.toast--error {
+  background: #fef2f0;
+  border-color: #d13438;
+  color: #a4373a;
+}
+
+.toast--warning {
+  background: #fffbf0;
+  border-color: #ffb900;
+  color: #b3860b;
+}
+
+[data-theme="dark"] .toast {
+  background: var(--colorNeutralBackground2);
+  border-color: var(--colorNeutralStroke2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .toast--success {
+  background: rgba(77, 184, 173, 0.15);
+  border-color: #4db8ad;
+  color: #4db8ad;
+}
+
+[data-theme="dark"] .toast--error {
+  background: rgba(212, 52, 56, 0.15);
+  border-color: #f18883;
+  color: #f18883;
+}
+
+[data-theme="dark"] .toast--warning {
+  background: rgba(255, 185, 0, 0.15);
+  border-color: #ffd635;
+  color: #ffd635;
+}
+
+.toast__message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.toast__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toast__action-btn {
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.toast__action-btn:hover {
+  opacity: 0.8;
+}
+
+.toast__close-btn {
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.toast__close-btn:hover {
+  opacity: 0.7;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+
+/* Mobile: Center toast at bottom */
+@media (max-width: 767px) {
+  .toast {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    min-width: auto;
+  }
+}

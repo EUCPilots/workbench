@@ -1,4 +1,18 @@
 /* =============================================
+   Motion Accessibility
+   Respect user's motion preferences (vestibular disorders, photosensitivity)
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
    CSS Custom Properties — Minimal Set
    Color vars for pre-React paint (body/html) only.
    Everything inside FluentProvider uses Fluent UI token
