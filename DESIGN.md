@@ -21,6 +21,8 @@ colors:
 typography:
   base:
     fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+  mono:
+    fontFamily: "'Cascadia Code', 'Menlo', Consolas, 'DejaVu Sans Mono', monospace"
   display:
     fontSize: "20px"
     fontWeight: 600
@@ -130,7 +132,9 @@ All neutral backgrounds shift to dark grays with inverted contrast:
 
 **Font Stack:** `'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif`
 
-Segoe UI is the system default on Windows and macOS; fallbacks ensure consistency across platforms. All type is sans-serif for clarity and contemporary feel.
+**Monospace / Fixed-Width Stack:** `'Cascadia Code', 'Menlo', Consolas, 'DejaVu Sans Mono', monospace`
+
+Segoe UI is the system default on Windows and macOS; fallbacks ensure consistency across platforms. For code, URIs, command-like values, and other fixed-width content, use the monospace stack above, preferring `Cascadia Code` on Windows and `Menlo` on macOS. All type is sans-serif for clarity and contemporary feel, while monospace is reserved for technical values that benefit from aligned spacing.
 
 **Character:** Direct, efficient, professional. No decorative serif; no playful flourishes. Type serves the content and the admin's task, not self-expression.
 
