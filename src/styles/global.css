@@ -282,7 +282,15 @@ a:hover {
   border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* Keep header button icons readable on hover (override Fluent green hover icon color) */
+/* Keep header button icons readable in both resting and hover states */
+.global-search-trigger .fui-Button__icon,
+.global-search-trigger .fui-Button__icon svg,
+.header-icon-btn .fui-Button__icon,
+.header-icon-btn .fui-Button__icon svg {
+  color: rgba(255, 255, 255, 0.9) !important;
+  fill: currentColor;
+}
+
 .global-search-trigger:hover .fui-Button__icon,
 .global-search-trigger:hover .fui-Button__icon svg,
 .header-icon-btn:hover .fui-Button__icon,

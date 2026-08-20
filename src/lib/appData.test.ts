@@ -94,3 +94,17 @@ describe('brand colors', () => {
     expect(searchSource).toContain('aria-labelledby="global-search-title"');
   });
 });
+
+describe('toast notifications', () => {
+  it('uses the Fluent UI toast primitives and an opaque background with visible border and shadow for readability', () => {
+    const toastSource = readFileSync(new URL('../components/Toast.tsx', import.meta.url), 'utf8');
+    const toastCss = readFileSync(new URL('../styles/toast.css', import.meta.url), 'utf8');
+
+    expect(toastSource).toContain('ToastTitle');
+    expect(toastSource).toContain('@fluentui/react-components');
+    expect(toastCss).toContain('background: var(--colorNeutralBackground1)');
+    expect(toastCss).toContain('color: var(--colorNeutralForeground1)');
+    expect(toastCss).toContain('border: 2px solid var(--colorNeutralStroke2)');
+    expect(toastCss).toContain('box-shadow: 0 8px 24px');
+  });
+});

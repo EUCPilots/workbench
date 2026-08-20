@@ -1,10 +1,16 @@
 /**
  * Toast Notification Component
  * Displays a dismissible toast with optional action button and auto-timeout.
- * Uses Fluent UI styling for consistency.
+ * Uses Fluent UI toast primitives for consistent theming and readable contrast.
  */
-import { Button } from '@fluentui/react-components';
-import { DismissRegular } from '@fluentui/react-icons';
+import { useEffect } from 'react';
+import {
+  Toaster,
+  Toast as FluentToast,
+  ToastBody,
+  ToastTitle,
+  useToastController,
+} from '@fluentui/react-components';
 import '../styles/toast.css';
 import type { ToastMessage } from '../utils/useToastNotification';
 
@@ -13,36 +19,39 @@ interface ToastProps {
   onDismiss: () => void;
 }
 
-function Toast({ message, onDismiss }: ToastProps) {
-  if (!message) return null;
+function AppToast({ message, onDismiss }: ToastProps) {
+  const toasterId = 'workbench-toast';
+  const { dispatchToast, dismissAllToasts } = useToastController(toasterId);
 
-  const intentClass = message.intent ? `toast--${message.intent}` : 'toast--success';
+  useEffect(() => {
+    if (!message) {
+      dismissAllToasts();
+      return;
+    }
 
-  return (
-    <div className={`toast ${intentClass}`} role="status" aria-live="polite">
-      <span className="toast__message">{message.title}</span>
-      <div className="toast__actions">
-        {message.actionFn && message.actionText && (
-          <Button
-            appearance="transparent"
-            size="small"
-            onClick={message.actionFn}
-            className="toast__action-btn"
-          >
-            {message.actionText}
-          </Button>
-        )}
-        <Button
-          appearance="transparent"
-          size="small"
-          icon={<DismissRegular />}
-          onClick={onDismiss}
-          aria-label="Dismiss notification"
-          className="toast__close-btn"
-        />
-      </div>
-    </div>
-  );
+    dismissAllToasts();
+    dispatchToast(
+      <FluentToast>
+        <ToastBody>
+          <ToastTitle>{message.title}</ToastTitle>
+        </ToastBody>
+      </FluentToast>,
+      {
+        toastId: message.id,
+        intent: message.intent ?? 'success',
+        position: 'bottom-end',
+        timeout: message.timeout ?? 5000,
+        pauseOnHover: true,
+        pauseOnWindowBlur: true,
+        priority: 100,
+        root: {
+          className: `toast toast--${message.intent ?? 'success'}`,
+        },
+      },
+    );
+  }, [dismissAllToasts, dispatchToast, message, onDismiss]);
+
+  return <Toaster toasterId={toasterId} position="bottom-end" />;
 }
 
-export default Toast;
+export default AppToast;

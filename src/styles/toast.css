@@ -1,68 +1,58 @@
 /* =============================================
    Toast Notifications
    ============================================= */
-.toast {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: var(--radius-medium);
-  background: var(--colorNeutralBackground2);
-  border: 1px solid var(--colorNeutralStroke2);
-  color: var(--colorNeutralForeground1);
-  font-size: 14px;
-  line-height: 1.4;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: toast-slide-in 150ms ease-out;
+.fui-Toaster {
   z-index: 1000;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  max-width: 400px;
+}
+
+.toast {
+  background: var(--colorNeutralBackground1) !important;
+  border: 2px solid var(--colorNeutralStroke2) !important;
+  border-radius: var(--radius-medium) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  color: var(--colorNeutralForeground1) !important;
   min-width: 300px;
+  max-width: 400px;
 }
 
 .toast--success {
-  background: #f0f9f8;
-  border-color: #009485;
-  color: #00766f;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 88%, var(--colorStatusSuccessBackground1) 12%) !important;
+  border-color: var(--colorStatusSuccessBorder1) !important;
+  color: var(--colorNeutralForeground1) !important;
 }
 
 .toast--error {
-  background: #fef2f0;
-  border-color: #d13438;
-  color: #a4373a;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 88%, var(--colorStatusDangerBackground1) 12%) !important;
+  border-color: var(--colorStatusDangerBorder1) !important;
+  color: var(--colorNeutralForeground1) !important;
 }
 
 .toast--warning {
-  background: #fffbf0;
-  border-color: #ffb900;
-  color: #b3860b;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 88%, var(--colorStatusWarningBackground1) 12%) !important;
+  border-color: var(--colorStatusWarningBorder1) !important;
+  color: var(--colorNeutralForeground1) !important;
 }
 
 [data-theme="dark"] .toast {
-  background: var(--colorNeutralBackground2);
-  border-color: var(--colorNeutralStroke2);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: var(--colorNeutralBackground1) !important;
+  border-color: var(--colorNeutralStroke2) !important;
+  color: var(--colorNeutralForeground1) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38) !important;
 }
 
 [data-theme="dark"] .toast--success {
-  background: rgba(77, 184, 173, 0.15);
-  border-color: #4db8ad;
-  color: #4db8ad;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 82%, var(--colorStatusSuccessBackground1) 18%) !important;
+  border-color: var(--colorStatusSuccessBorder1) !important;
 }
 
 [data-theme="dark"] .toast--error {
-  background: rgba(212, 52, 56, 0.15);
-  border-color: #f18883;
-  color: #f18883;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 82%, var(--colorStatusDangerBackground1) 18%) !important;
+  border-color: var(--colorStatusDangerBorder1) !important;
 }
 
 [data-theme="dark"] .toast--warning {
-  background: rgba(255, 185, 0, 0.15);
-  border-color: #ffd635;
-  color: #ffd635;
+  background: color-mix(in srgb, var(--colorNeutralBackground1) 82%, var(--colorStatusWarningBackground1) 18%) !important;
+  border-color: var(--colorStatusWarningBorder1) !important;
 }
 
 .toast__message {
@@ -108,14 +98,12 @@
   }
 }
 
-/* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .toast {
     animation: none;
   }
 }
 
-/* Mobile: Center toast at bottom */
 @media (max-width: 767px) {
   .toast {
     left: 12px;
