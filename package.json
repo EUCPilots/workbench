@@ -11,12 +11,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^7.0.1",
+    "@astrojs/react": "^7.1.0",
     "@fluentui/react-components": "^9.74.9",
     "@fluentui/react-icons": "^2.0.344",
-    "astro": "^7.3.8",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "astro": "^7.4.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "react-icons": "^5.7.0"
   },
   "devDependencies": {
@@ -27,7 +27,7 @@
     "typescript": "^7.0.2",
     "vite": "8.3.4",
     "vite-plugin-pwa": "^2.0.0",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,
