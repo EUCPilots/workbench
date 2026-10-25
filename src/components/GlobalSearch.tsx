@@ -252,7 +252,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
 
   return createPortal(
     <div
-      className="global-search-overlay"
+      className="global-search-overlay dialog-backdrop"
       onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
       onKeyDown={handleOverlayKeyDown}
       role="dialog"

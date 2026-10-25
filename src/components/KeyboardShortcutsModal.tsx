@@ -35,7 +35,7 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
   return (
     <Dialog open={open} onOpenChange={(_e, data) => { if (!data.open) onClose(); }}>
       <DialogSurface
-        backdrop={{ style: { backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' } }}
+        backdrop={{ className: 'dialog-backdrop' }}
         style={{ minWidth: '500px', maxWidth: '740px', width: 'min(90vw, 740px)' }}
       >
         <DialogTitle
