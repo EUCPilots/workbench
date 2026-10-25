@@ -1,5 +1,5 @@
 import { useMemo, useState, memo } from 'react';
-import { Card, CardHeader, Text, Input, Button } from '@fluentui/react-components';
+import { Card, CardHeader, Text, Input, Button, Tooltip } from '@fluentui/react-components';
 import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular, GlobeRegular } from '@fluentui/react-icons';
 import { FaGithub } from 'react-icons/fa';
 
@@ -41,9 +41,8 @@ function getFileType(v: AppVersion): string {
 }
 
 function hasHashField(v: AppVersion): boolean {
-  for (const key of ['Sha256', 'SHA256', 'sha256']) {
-    const val = v[key];
-    if (typeof val === 'string' && val.trim().length > 0) return true;
+  for (const [key, val] of Object.entries(v)) {
+    if (/^(sha256|sha1|hash)$/i.test(key) && typeof val === 'string' && val.trim().length > 0) return true;
   }
   return false;
 }
@@ -119,12 +118,18 @@ const ColumnChart = memo(function ColumnChart({ data }: { data: number[] }) {
           const daysAgo = reversed.length - 1 - idx;
           const label = daysAgo === 0 ? 'Today' : `${daysAgo}d ago`;
           return (
-            <div
+            <Tooltip
               key={idx}
-              className="column-chart__bar"
-              style={{ height: count > 0 ? `${Math.max((count / max) * 100, 4)}%` : '0%' }}
-              title={`${label}: ${count} app${count !== 1 ? 's' : ''} updated`}
-            />
+              content={`${label}: ${count.toLocaleString()} app${count !== 1 ? 's' : ''} updated`}
+              relationship="label"
+            >
+              <div className="column-chart__day" role="img" tabIndex={0}>
+                <div
+                  className="column-chart__bar"
+                  style={{ height: count > 0 ? `${Math.max((count / max) * 100, 4)}%` : '0%' }}
+                />
+              </div>
+            </Tooltip>
           );
         })}
       </div>
@@ -589,7 +594,7 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
       {(arm64AppCount > 0 || hashCoveragePct > 0 || recentCount > 0) && (
         <div className="dashboard-stats dashboard-stats--insights">
           {arm64AppCount > 0 && <StatCard label="ARM64 apps" value={arm64AppCount} sub="have ARM64 downloads" />}
-          {hashCoveragePct > 0 && <StatCard label="Hash coverage" value={`${hashCoveragePct}%`} sub="downloads include SHA256" />}
+          {hashCoveragePct > 0 && <StatCard label="Hash coverage" value={`${hashCoveragePct}%`} sub="downloads include SHA256, SHA1, or Hash" />}
           {recentCount > 0 && <StatCard label="Updated recently" value={recentCount} sub="last 48 hours" />}
         </div>
       )}
