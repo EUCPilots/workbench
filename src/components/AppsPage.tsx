@@ -130,6 +130,14 @@ export default function AppsPage({ base }: AppsPageProps) {
   }, [searchQuery]);
 
   useEffect(() => {
+    if (tab === 'apps') return;
+    setSearchQuery('');
+    setDebouncedQuery('');
+    setLastUpdatedFilterHours(null);
+    localStorage.setItem('lastUpdatedFilterHours', 'all');
+  }, [tab]);
+
+  useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
     const handler = (e: MediaQueryListEvent) => {
       setIsMobile(e.matches);

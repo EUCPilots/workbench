@@ -36,6 +36,16 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.2.1',
+    date: '2026-10-26',
+    changes: [
+      'Clear the app search and reset the Recent filter to All when navigating to Dashboard or About, including navigation via URL hash.',
+      'Added hover and keyboard-focus tooltips to every day in the dashboard update cadence chart, including days with no updates.',
+      'Expanded dashboard hash coverage to recognize non-empty Sha256, Sha1, and Hash fields regardless of capitalization, counting each download only once.',
+      'Unified global search and keyboard shortcuts dialog backdrops with theme-aware colors and blur, and removed the search overlay fade-in animation.',
+    ],
+  },
+  {
     version: '3.2.0',
     date: '2026-08-19',
     changes: [

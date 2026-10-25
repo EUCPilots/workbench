@@ -4,6 +4,10 @@ Evergreen Workbench is an Astro-based web application for exploring EUC pilot ap
 
 This repository contains the web edition implementation, including Astro pages and layouts, React/TSX components, and global styling assets used to run the workbench in the browser.
 
+## Apps navigation
+
+Switching from Apps to Dashboard or About clears the app search and resets the Recent filter to All, including its saved value. Returning to Apps shows the full application list. Pinned apps and the dashboard's recent-update timeframe are unchanged.
+
 ## Dashboard metrics
 
 - **Update cadence:** Hover over or keyboard-focus a day in the 30-day chart to see its updated-app count, including days with no updates. Tooltip counts refresh when the dashboard receives new app data.
