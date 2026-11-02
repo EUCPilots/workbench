@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import AstroPWA from '@vite-pwa/astro';
+import { AstroPWAIntegration as AstroPWA } from '@vite-pwa/astro';
 
 export default defineConfig({
   integrations: [
