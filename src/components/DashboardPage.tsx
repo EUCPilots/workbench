@@ -1,4 +1,4 @@
-import { useMemo, useState, memo } from 'react';
+import { useMemo, useState, memo, type KeyboardEvent } from 'react';
 import { Card, CardHeader, Text, Input, Button, Tooltip } from '@fluentui/react-components';
 import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular, GlobeRegular } from '@fluentui/react-icons';
 import { FaGithub } from 'react-icons/fa';
@@ -31,11 +31,25 @@ const MODERN_TYPES = new Set(['msix', 'msixbundle', 'appx']);
 const LEGACY_TYPES = new Set(['exe', 'msi', 'msp', 'cab', 'iso', 'zip', '7z']);
 const AGE_THRESHOLDS_DAYS = [180, 270, 360, 450, 540, 730] as const;
 
+function handleButtonKeyDown(event: KeyboardEvent<HTMLElement>, onActivate: () => void): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    onActivate();
+  }
+}
+
+function getArchitectureLabel(architecture: string): string {
+  const normalized = architecture.trim();
+  return normalized.toLowerCase() === 'arm64' ? 'ARM64' : normalized;
+}
+
 function getFileType(v: AppVersion): string {
   if (v.Type && typeof v.Type === 'string' && v.Type.trim()) return v.Type.trim().toLowerCase();
   if (v.URI) {
-    const ext = v.URI.split('?')[0].split('.').pop();
-    if (ext) return ext.toLowerCase();
+    const pathname = new URL(v.URI, 'https://workbench.invalid').pathname;
+    const filename = pathname.split('/').pop() ?? '';
+    const extension = /\.([^.]+)$/.exec(filename)?.[1];
+    if (extension) return extension.toLowerCase();
   }
   return 'unknown';
 }
@@ -77,7 +91,7 @@ const BarChart = memo(function BarChart({ data, maxItems = 15, colorVar = '--col
             <div
               className="bar-chart__fill"
               style={{
-                width: `${(count / max) * 100}%`,
+                transform: `scaleX(${count / max})`,
                 background: `var(${colorVar})`,
               }}
             />
@@ -126,7 +140,7 @@ const ColumnChart = memo(function ColumnChart({ data }: { data: number[] }) {
               <div className="column-chart__day" role="img" tabIndex={0}>
                 <div
                   className="column-chart__bar"
-                  style={{ height: count > 0 ? `${Math.max((count / max) * 100, 4)}%` : '0%' }}
+                  style={{ transform: `scaleY(${count > 0 ? Math.max(count / max, 0.04) : 0})` }}
                 />
               </div>
             </Tooltip>
@@ -196,7 +210,7 @@ const ModernityBar = memo(function ModernityBar({ modern, legacy, other }: Moder
           </span>
         )}
       </div>
-      <p className="stacked-bar__note">Modern = MSIX, MSIXBUNDLE · Legacy = EXE, MSI, MSP, CAB, ISO, ZIP, 7Z</p>
+      <p className="stacked-bar__note">Modern = MSIX, MSIXBUNDLE, APPX · Legacy = EXE, MSI, MSP, CAB, ISO, ZIP, 7Z</p>
     </div>
   );
 });
@@ -216,7 +230,7 @@ const TopApps = memo(function TopApps({ apps, onSelectApp }: { apps: AppEntry[];
             role="button"
             tabIndex={0}
             onClick={() => onSelectApp(app.name)}
-            onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+            onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(app.name))}
           >
             <span className="msix-apps__name">{app.displayName}</span>
             <span className="msix-apps__count">{app.versions.length}</span>
@@ -333,7 +347,7 @@ function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectApp(m.appName)}
-                onKeyDown={(e) => e.key === 'Enter' && onSelectApp(m.appName)}
+                onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(m.appName))}
               >
                 <div className="uri-lookup__result-app">
                   <AppGenericRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
@@ -389,7 +403,7 @@ const MsixApps = memo(function MsixApps({ apps, onSelectApp }: MsixAppsProps) {
               role="button"
               tabIndex={0}
               onClick={() => onSelectApp(app.name)}
-              onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+              onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(app.name))}
             >
               <span className="msix-apps__name">{app.displayName}</span>
               <span className="msix-apps__count">{msixCount}</span>
@@ -476,7 +490,7 @@ const RecentActivity = memo(function RecentActivity({ apps, onSelectApp }: Recen
             role="button"
             tabIndex={0}
             onClick={() => onSelectApp(app.name)}
-            onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+            onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(app.name))}
           >
             <span className="recent-activity__name">{app.displayName}</span>
             <span className="recent-activity__date">{formatRelativeDate(app.lastUpdated!)}</span>
@@ -538,8 +552,11 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
         } catch { /* ignore */ }
       }
       for (const v of app.versions) {
-        if (v.Architecture) archs.push(String(v.Architecture));
-        if (v.Architecture === 'ARM64') arm64AppNames.add(app.name);
+        if (v.Architecture) {
+          const architecture = getArchitectureLabel(String(v.Architecture));
+          if (architecture) archs.push(architecture);
+          if (architecture === 'ARM64') arm64AppNames.add(app.name);
+        }
         const ft = getFileType(v);
         types.push(ft);
         if (MODERN_TYPES.has(ft)) modern++;
@@ -595,7 +612,13 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
         <div className="dashboard-stats dashboard-stats--insights">
           {arm64AppCount > 0 && <StatCard label="ARM64 apps" value={arm64AppCount} sub="have ARM64 downloads" />}
           {hashCoveragePct > 0 && <StatCard label="Hash coverage" value={`${hashCoveragePct}%`} sub="downloads include SHA256, SHA1, or Hash" />}
-          {recentCount > 0 && <StatCard label="Updated recently" value={recentCount} sub="last 48 hours" />}
+          {recentCount > 0 && (
+            <StatCard
+              label="Updated recently"
+              value={recentCount}
+              sub={recentThresholdHours === 168 ? 'last 1 week' : `last ${recentThresholdHours} hours`}
+            />
+          )}
         </div>
       )}
 
@@ -686,7 +709,7 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
                     role="button"
                     tabIndex={0}
                     onClick={() => onSelectApp(app.name)}
-                    onKeyDown={(e) => e.key === 'Enter' && onSelectApp(app.name)}
+                    onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(app.name))}
                   >
                     <td>{app.displayName}</td>
                     <td>{app.ageDays.toLocaleString()}</td>

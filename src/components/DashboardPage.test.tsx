@@ -2,12 +2,16 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import DashboardPage from './DashboardPage';
 
-function renderDashboard(versions: Record<string, unknown>[], lastUpdated: string | null = null) {
+function renderDashboard(
+  versions: Record<string, unknown>[],
+  lastUpdated: string | null = null,
+  recentThresholdHours = 48
+) {
   return renderToStaticMarkup(
     <DashboardPage
       apps={[{ name: 'TestApp', displayName: 'Test app', versions, lastUpdated }]}
       totalVersionCount={versions.length}
-      recentThresholdHours={48}
+      recentThresholdHours={recentThresholdHours}
       onSelectApp={() => {}}
     />
   );
@@ -64,5 +68,46 @@ describe('dashboard update cadence', () => {
     expect(renderDashboard([{}], null)).toContain('aria-label="Today: 0 apps updated"');
     expect(renderDashboard([{}], '2026-10-25T11:00:00Z')).toContain('aria-label="Today: 1 app updated"');
     expect(renderDashboard([{}], '2026-10-24T11:00:00Z')).toContain('aria-label="1d ago: 1 app updated"');
+  });
+});
+
+describe('dashboard data presentation', () => {
+  it('normalizes ARM64 architecture casing in the stat and chart', () => {
+    const html = renderDashboard([
+      { Architecture: 'arm64' },
+      { Architecture: 'ARM64' },
+    ]);
+
+    expect(html).toContain('ARM64 apps');
+    expect(html).toContain('>ARM64</span>');
+    expect(html).toContain('>2</span>');
+  });
+
+  it('uses the URL pathname to find installer extensions', () => {
+    const html = renderDashboard([
+      { URI: 'https://example.com/download/installer.exe?source=feed' },
+      { URI: 'https://example.com/latest/' },
+      { URI: 'https://example.com/download/windows64' },
+    ]);
+
+    expect(html).toContain('>exe</span>');
+    expect(html).toContain('>unknown</span>');
+    expect(html).not.toContain('com/latest/');
+    expect(html).not.toContain('windows64</span>');
+  });
+
+  it('labels the recent count with the active threshold', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-25T12:00:00Z'));
+    const html = renderDashboard([{}], '2026-10-23T00:00:00Z', 72);
+
+    expect(html).toContain('last 72 hours');
+    expect(html).not.toContain('last 48 hours');
+  });
+
+  it('includes APPX in the modern installer explanation', () => {
+    const html = renderDashboard([{ Type: 'appx' }]);
+
+    expect(html).toContain('Modern = MSIX, MSIXBUNDLE, APPX');
   });
 });

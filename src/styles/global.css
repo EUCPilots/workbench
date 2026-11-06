@@ -1585,9 +1585,11 @@ body.search-open #root {
 }
 
 .bar-chart__fill {
+  width: 100%;
   height: 100%;
   border-radius: var(--radius-medium);
-  transition: width var(--duration-slower) ease;
+  transform-origin: left center;
+  transition: transform var(--duration-slower) ease;
   opacity: 0.85;
 }
 
@@ -1618,8 +1620,9 @@ body.search-open #root {
   width: 100%;
   background: var(--colorBrandBackground);
   border-radius: 2px 2px 0 0;
+  transform-origin: center bottom;
   opacity: 0.75;
-  transition: height var(--duration-slower) ease, opacity var(--duration-fast);
+  transition: transform var(--duration-slower) ease, opacity var(--duration-fast);
   min-height: 0;
   cursor: default;
 }
