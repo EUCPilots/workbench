@@ -58,6 +58,7 @@ describe('dashboard update cadence', () => {
     expect(html).toContain('aria-label="Today: 1 app updated"');
     expect(html).toContain('aria-label="1d ago: 0 apps updated"');
     expect(html).toContain('aria-label="29d ago: 0 apps updated"');
+    expect(html).toContain('style="height:100%;transform:scaleY(1)"');
     expect(html.match(/role="img" tabindex="0"/g)).toHaveLength(30);
   });
 

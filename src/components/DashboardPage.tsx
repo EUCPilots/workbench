@@ -140,7 +140,10 @@ const ColumnChart = memo(function ColumnChart({ data }: { data: number[] }) {
               <div className="column-chart__day" role="img" tabIndex={0}>
                 <div
                   className="column-chart__bar"
-                  style={{ transform: `scaleY(${count > 0 ? Math.max(count / max, 0.04) : 0})` }}
+                  style={{
+                    height: '100%',
+                    transform: `scaleY(${count > 0 ? Math.max(count / max, 0.04) : 0})`,
+                  }}
                 />
               </div>
             </Tooltip>
