@@ -1,38 +1,104 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-19T09:04:05Z",
+  "generatedAt": "2026-11-06T08:29:08Z",
   "title": "Design System: Evergreen Workbench",
   "extensions": {
     "colorMeta": {
       "primary": {
         "role": "primary",
-        "displayName": "Evergreen Vibrant",
-        "canonical": "#009485",
-        "tonalRamp": ["#004d44", "#005a52", "#006961", "#007870", "#009485", "#00a99a", "#00c4ad", "#4db8ad", "#80cdc3", "#b3e1d9"]
+        "displayName": "Evergreen",
+        "canonical": "#00766f",
+        "tonalRamp": ["#002c29", "#00433f", "#005d57", "#00766f", "#33938e", "#80bcb8", "#c0e0de", "#f3fbfa"]
       },
       "primary-dark": {
         "role": "primary",
-        "displayName": "Evergreen Dark",
-        "canonical": "#008575",
-        "tonalRamp": []
+        "displayName": "Evergreen Hover",
+        "canonical": "#006b63",
+        "tonalRamp": ["#002724", "#003d39", "#00514b", "#006b63", "#338b84", "#80b2ad", "#c0d8d6", "#f3f8f7"]
+      },
+      "primary-pressed": {
+        "role": "primary",
+        "displayName": "Evergreen Pressed",
+        "canonical": "#005d57",
+        "tonalRamp": ["#002320", "#003631", "#004941", "#005d57", "#33817b", "#80aaa6", "#c0d4d2", "#f3f8f7"]
       },
       "primary-light": {
         "role": "primary",
-        "displayName": "Evergreen Light",
+        "displayName": "Evergreen Tint",
         "canonical": "#d9f7f3",
-        "tonalRamp": []
+        "tonalRamp": ["#143b37", "#1a5751", "#20736a", "#4c958c", "#78b5ae", "#a5d4ce", "#d9f7f3", "#f4fcfb"]
+      },
+      "primary-dark-light": {
+        "role": "primary",
+        "displayName": "Evergreen Deep Tint",
+        "canonical": "#0d2926",
+        "tonalRamp": ["#071513", "#0d2926", "#17423d", "#27655e", "#53867f", "#86aaa5", "#bfd4d1", "#f3f8f7"]
       },
       "neutral-bg-primary": {
         "role": "neutral",
-        "displayName": "White Prime",
+        "displayName": "Primary Surface",
         "canonical": "#ffffff",
-        "tonalRamp": []
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#c2c2c2", "#e5e5e5", "#ffffff"]
+      },
+      "neutral-bg-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Surface",
+        "canonical": "#fafafa",
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#c0c0c0", "#e2e2e2", "#fafafa"]
+      },
+      "neutral-bg-tertiary": {
+        "role": "neutral",
+        "displayName": "Tertiary Surface",
+        "canonical": "#f0f0f0",
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#b8b8b8", "#d8d8d8", "#f0f0f0"]
+      },
+      "neutral-bg-hover": {
+        "role": "neutral",
+        "displayName": "Neutral Hover",
+        "canonical": "#f5f5f5",
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#bdbdbd", "#dfdfdf", "#f5f5f5"]
+      },
+      "neutral-stroke": {
+        "role": "neutral",
+        "displayName": "Neutral Stroke",
+        "canonical": "#e0e0e0",
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#b8b8b8", "#d0d0d0", "#e0e0e0"]
       },
       "neutral-fg-primary": {
         "role": "neutral",
-        "displayName": "Charcoal 900",
+        "displayName": "Primary Text",
         "canonical": "#242424",
-        "tonalRamp": []
+        "tonalRamp": ["#171717", "#242424", "#424242", "#666666", "#888888", "#b0b0b0", "#d8d8d8", "#ffffff"]
+      },
+      "neutral-fg-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Text",
+        "canonical": "#424242",
+        "tonalRamp": ["#171717", "#303030", "#424242", "#666666", "#888888", "#b0b0b0", "#d8d8d8", "#ffffff"]
+      },
+      "neutral-fg-tertiary": {
+        "role": "neutral",
+        "displayName": "Tertiary Text",
+        "canonical": "#616161",
+        "tonalRamp": ["#171717", "#303030", "#484848", "#616161", "#888888", "#b0b0b0", "#d8d8d8", "#ffffff"]
+      },
+      "neutral-fg-on-brand": {
+        "role": "neutral",
+        "displayName": "On-Brand Text",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#171717", "#292929", "#424242", "#666666", "#999999", "#c2c2c2", "#e5e5e5", "#ffffff"]
+      },
+      "accent-rss": {
+        "role": "tertiary",
+        "displayName": "RSS Terracotta",
+        "canonical": "#C55A11",
+        "tonalRamp": ["#351707", "#57270a", "#823a0c", "#a84c0e", "#c55a11", "#d98349", "#eab18c", "#f9e5d6"]
+      },
+      "accent-rss-bg": {
+        "role": "tertiary",
+        "displayName": "RSS Tint",
+        "canonical": "#FDF0E8",
+        "tonalRamp": ["#4c2412", "#75391b", "#a84e24", "#d16d3b", "#e9a47e", "#f3c6aa", "#f9dfcf", "#FDF0E8"]
       }
     },
     "typographyMeta": {
@@ -51,29 +117,50 @@
       "label": {
         "displayName": "Label",
         "purpose": "Form labels, badges, chips, filter toggles. 12px semibold for emphasis despite smaller size."
+      },
+      "base": {
+        "displayName": "Interface",
+        "purpose": "Segoe UI and platform sans-serif fallbacks for general interface text."
+      },
+      "mono": {
+        "displayName": "Monospace",
+        "purpose": "Cascadia Code and platform monospace fallbacks for URIs and fixed-width technical values."
       }
     },
-    "shadows": [],
+    "shadows": [
+      {
+        "name": "mobile-sidebar",
+        "value": "2px 0 12px rgba(0, 0, 0, 0.2)",
+        "purpose": "Separates the mobile navigation drawer from the dimmed content."
+      }
+    ],
     "motion": [
       {
         "name": "fast",
-        "value": "150ms cubic-bezier(0.45, 0, 0.55, 1)",
-        "purpose": "Quick feedback for hover and state transitions."
+        "value": "150ms",
+        "purpose": "Quick feedback for hover, focus, and selection states."
       },
       {
         "name": "normal",
-        "value": "200ms cubic-bezier(0.45, 0, 0.55, 1)",
-        "purpose": "Standard transition for UI changes and animations."
+        "value": "200ms",
+        "purpose": "Standard transition for sidebar and interface state changes."
       },
       {
-        "name": "sidebar-mobile",
-        "value": "200ms ease",
-        "purpose": "Sidebar slide-in/out on mobile; smooth and confident."
+        "name": "slower",
+        "value": "400ms",
+        "purpose": "Gradual bar-chart scale changes."
+      },
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Ease-out curve for emphasized transitions."
       }
     ],
     "breakpoints": [
-      { "name": "mobile", "value": "0px", "description": "Default, narrow screens" },
-      { "name": "tablet", "value": "768px", "description": "Medium screens; two-column layout available" }
+      { "name": "compact", "value": "480px", "description": "Narrow viewport spacing adjustments" },
+      { "name": "dashboard-stack", "value": "600px", "description": "Dashboard cards and charts stack for narrow screens" },
+      { "name": "mobile", "value": "767px", "description": "Sidebar becomes a mobile overlay" },
+      { "name": "tablet", "value": "1024px", "description": "Intermediate layout adjustments" }
     ]
   },
   "components": [
@@ -81,65 +168,60 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Highest-priority action button. Used for save, submit, apply, and primary CTAs.",
-      "html": "<button class=\"ds-btn-primary\">Apply Changes</button>",
-      "css": ".ds-btn-primary { background: #009485; color: #ffffff; padding: 8px 12px; border: none; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: background 150ms cubic-bezier(0.45, 0, 0.55, 1); } .ds-btn-primary:hover { background: #008575; } .ds-btn-primary:active { background: #016e61; } .ds-btn-primary:focus-visible { outline: 2px solid #009485; outline-offset: 2px; }"
+      "description": "High-priority Fluent UI action using the Evergreen brand color.",
+      "html": "<button class=\"ds-primary-button\">Apply</button>",
+      "css": ".ds-primary-button { padding: 8px 12px; border: 0; border-radius: var(--radius-medium); background: var(--colorBrandBackground); color: var(--colorNeutralForegroundOnBrand); font: 600 var(--font-size-300)/1.4 var(--font-family-base); cursor: pointer; transition: background var(--duration-fast) ease; } .ds-primary-button:hover { background: var(--colorBrandBackgroundHover); } .ds-primary-button:active { background: var(--colorBrandBackgroundPressed); } .ds-primary-button:focus-visible { outline: 2px solid var(--colorBrandForeground1); outline-offset: 2px; }"
     },
     {
       "name": "Subtle Button",
       "kind": "button",
       "refersTo": "button-subtle",
-      "description": "Secondary action or icon button. Used in headers and for less prominent actions.",
-      "html": "<button class=\"ds-btn-subtle\">⋆ Favorite</button>",
-      "css": ".ds-btn-subtle { background: transparent; color: #009485; padding: 8px 12px; border: none; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: background 150ms ease; } .ds-btn-subtle:hover { background: #f5f5f5; } .ds-btn-subtle:active { background: #e0e0e0; } .ds-btn-subtle:focus-visible { outline: 2px solid #009485; outline-offset: 2px; }"
+      "description": "Low-emphasis secondary action used for header and list controls.",
+      "html": "<button class=\"ds-subtle-button\" aria-label=\"Show keyboard shortcuts\">?</button>",
+      "css": ".ds-subtle-button { width: 32px; height: 32px; padding: 0; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: var(--radius-medium); background: rgba(255, 255, 255, 0.12); color: var(--colorNeutralForegroundOnBrand); font: 400 var(--font-size-200)/1 var(--font-family-base); cursor: pointer; transition: background var(--duration-fast) ease; } .ds-subtle-button:hover { background: rgba(255, 255, 255, 0.22); } .ds-subtle-button:focus-visible { outline: 2px solid var(--colorNeutralForegroundOnBrand); outline-offset: 2px; }"
     },
     {
-      "name": "Text Input",
+      "name": "URI Search Input",
       "kind": "input",
       "refersTo": "input-base",
-      "description": "Standard text input for search, filter, and form entry. Border appears on focus.",
-      "html": "<input type=\"text\" class=\"ds-input\" placeholder=\"Search applications...\" />",
-      "css": ".ds-input { background: #ffffff; color: #242424; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input:focus { outline: none; border-color: #009485; box-shadow: inset 0 0 0 1px #009485; } .ds-input::placeholder { color: #616161; font-style: italic; }"
+      "description": "Search field for finding an application by its download URL.",
+      "html": "<label class=\"ds-uri-search\"><span>Search by download URL</span><input type=\"search\" placeholder=\"https://example.com/installer.exe\" /></label>",
+      "css": ".ds-uri-search { display: grid; gap: 6px; color: var(--colorNeutralForeground2); font: 600 var(--font-size-200)/1.4 var(--font-family-base); } .ds-uri-search input { width: 100%; min-width: 0; padding: 8px 12px; border: 1px solid var(--colorNeutralStroke2); border-radius: var(--radius-medium); background: var(--colorNeutralBackground1); color: var(--colorNeutralForeground1); font: 400 var(--font-size-300)/1.4 'Cascadia Code', Consolas, monospace; } .ds-uri-search input:focus-visible { outline: 2px solid var(--colorBrandForeground1); outline-offset: 2px; } .ds-uri-search input::placeholder { color: var(--colorNeutralForeground3); }"
     },
     {
-      "name": "Toggle Button (Chip)",
-      "kind": "button",
-      "refersTo": "chip-toggle",
-      "description": "Filter toggle or small switch. Selected state is green.",
-      "html": "<button class=\"ds-chip\" data-selected=\"false\">24h</button>",
-      "css": ".ds-chip { background: transparent; color: #242424; border: 1px solid #e0e0e0; padding: 4px 8px; border-radius: 4px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 150ms ease; } .ds-chip:hover { background: #f5f5f5; } .ds-chip[data-selected=\"true\"] { background: #009485; color: #ffffff; border-color: #009485; } .ds-chip:focus-visible { outline: 2px solid #009485; outline-offset: -2px; }"
+      "name": "Recent Filter Toggles",
+      "kind": "chip",
+      "description": "Compact Fluent UI toggle buttons for filtering the application list by update age.",
+      "html": "<div class=\"ds-filter-toggles\"><button aria-pressed=\"true\">48h</button><button aria-pressed=\"false\">All</button></div>",
+      "css": ".ds-filter-toggles { display: flex; gap: 4px; } .ds-filter-toggles button { min-height: 28px; padding: 4px 8px; border: 1px solid var(--colorNeutralStroke2); border-radius: var(--radius-medium); background: var(--colorNeutralBackground1); color: var(--colorNeutralForeground1); font: 600 var(--font-size-200)/1.4 var(--font-family-base); cursor: pointer; } .ds-filter-toggles button[aria-pressed=\"true\"] { border-color: var(--colorBrandBackground); background: var(--colorBrandBackground); color: var(--colorNeutralForegroundOnBrand); } .ds-filter-toggles button:focus-visible { outline: 2px solid var(--colorBrandForeground1); outline-offset: 2px; }"
     },
     {
-      "name": "Navigation Tab",
+      "name": "Main Navigation Tabs",
       "kind": "nav",
-      "refersTo": "tab-nav",
-      "description": "Horizontal tab navigation. Active tab is green with underline.",
-      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab ds-tab--active\">Applications</button><button class=\"ds-tab\">Dashboard</button></div>",
-      "css": ".ds-tabs { display: flex; gap: 4px; background: #fafafa; border-bottom: 1px solid #e0e0e0; } .ds-tab { background: transparent; color: #424242; padding: 12px 16px; border: none; border-bottom: 2px solid transparent; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: all 150ms ease; } .ds-tab:hover { color: #009485; } .ds-tab--active { color: #009485; border-bottom-color: #009485; font-weight: 600; } .ds-tab:focus-visible { outline: 2px solid #009485; outline-offset: -2px; }"
+      "description": "Fluent UI transparent tabs sit on the neutral navigation strip.",
+      "html": "<nav class=\"ds-main-nav\" aria-label=\"Main navigation\"><div role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Apps</button><button role=\"tab\" aria-selected=\"false\">Dashboard</button><button role=\"tab\" aria-selected=\"false\">About</button></div></nav>",
+      "css": ".ds-main-nav { padding: 0 12px; background: var(--colorNeutralBackground2); border-bottom: 1px solid var(--colorNeutralStroke2); } .ds-main-nav [role=\"tablist\"] { display: flex; gap: 4px; min-height: 44px; align-items: stretch; } .ds-main-nav [role=\"tab\"] { padding: 8px 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--colorNeutralForeground2); font: 600 var(--font-size-300)/1.4 var(--font-family-base); cursor: pointer; } .ds-main-nav [role=\"tab\"][aria-selected=\"true\"] { border-bottom-color: var(--colorBrandBackground); color: var(--colorBrandForeground1); } .ds-main-nav [role=\"tab\"]:focus-visible { outline: 2px solid var(--colorBrandForeground1); outline-offset: -2px; }"
     },
     {
-      "name": "List Item",
+      "name": "Application List Item",
       "kind": "custom",
-      "refersTo": "list-item",
-      "description": "Application list item in sidebar. Active item has green left border and light background.",
-      "html": "<li class=\"ds-list-item ds-list-item--active\"><span>Microsoft Edge</span><span class=\"ds-list-item__actions\"><button class=\"ds-list-star\">★</button></span></li>",
-      "css": ".ds-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; color: #242424; background: transparent; border-left: 4px solid transparent; cursor: pointer; transition: all 150ms ease; } .ds-list-item:hover { background: #f5f5f5; } .ds-list-item--active { background: #d9f7f3; border-left-color: #009485; } .ds-list-item--recent::after { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #009485; margin-left: 4px; } .ds-list-star { background: transparent; color: #009485; border: none; cursor: pointer; font-size: 16px; padding: 4px; transition: transform 150ms ease; } .ds-list-star:hover { transform: scale(1.2); }"
+      "description": "Sidebar option with a filled brand active state and a separate pin action.",
+      "html": "<ul class=\"ds-app-list\" role=\"listbox\" aria-label=\"Applications\"><li class=\"ds-app-option\" role=\"option\" aria-selected=\"true\"><span>7-Zip</span><span class=\"ds-app-option__badge\" aria-label=\"Updated recently\"></span><button aria-label=\"Pin 7-Zip\"><svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><path d=\"m8 1.5 1.9 3.9 4.3.6-3.1 3-.8 4.3L8 11.2l-3.9 2.1.8-4.3-3.1-3 4.3-.6L8 1.5Z\"/></svg></button></li></ul>",
+      "css": ".ds-app-list { margin: 0; padding: 0; list-style: none; } .ds-app-option { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 1px 6px; padding: 7px 12px 7px 16px; border-radius: var(--radius-large); color: var(--colorNeutralForeground1); font: 400 13px/1.4 var(--font-family-base); cursor: pointer; transition: background var(--duration-fast) ease; } .ds-app-option:hover { background: var(--colorBrandBackground2); } .ds-app-option[aria-selected=\"true\"] { background: var(--colorBrandBackground); color: var(--colorNeutralForegroundOnBrand); font-weight: 600; } .ds-app-option__badge { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--colorBrandBackground); } .ds-app-option[aria-selected=\"true\"] .ds-app-option__badge { background: var(--colorNeutralForegroundOnBrand); } .ds-app-option button { border: 0; background: transparent; color: inherit; cursor: pointer; } .ds-app-option button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; } .ds-app-option button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }"
     },
     {
-      "name": "Table",
+      "name": "Version Table",
       "kind": "custom",
-      "refersTo": "data-table",
-      "description": "Sortable data table. Alternating rows for scannability; bold green column headers.",
-      "html": "<table class=\"ds-table\"><thead><tr><th class=\"ds-table__header\">Version</th><th class=\"ds-table__header\">Architecture</th></tr></thead><tbody><tr class=\"ds-table__row\"><td>2024.01</td><td>x64</td></tr><tr class=\"ds-table__row ds-table__row--alt\"><td>2023.12</td><td>x86</td></tr></tbody></table>",
-      "css": ".ds-table { width: 100%; border-collapse: collapse; font-size: 14px; } .ds-table__header { background: #fafafa; color: #009485; font-weight: 600; padding: 12px 16px; text-align: left; border-bottom: 1px solid #e0e0e0; } .ds-table__row { border-bottom: 1px solid #e0e0e0; } .ds-table__row td { padding: 12px 16px; color: #242424; } .ds-table__row:hover { background: #f5f5f5; } .ds-table__row--alt { background: #fafafa; } .ds-table__row--alt:hover { background: #f0f0f0; }"
+      "description": "Dense, horizontally scrollable version data with quiet dividers and row hover feedback.",
+      "html": "<div class=\"ds-version-table-wrap\"><table class=\"ds-version-table\"><thead><tr><th scope=\"col\">Version</th><th scope=\"col\">Architecture</th></tr></thead><tbody><tr><td>26.05</td><td>x64</td></tr><tr><td>25.04</td><td>arm64</td></tr></tbody></table></div>",
+      "css": ".ds-version-table-wrap { overflow-x: auto; border: 1px solid var(--colorNeutralStroke2); border-radius: var(--radius-large); } .ds-version-table { width: 100%; border-collapse: collapse; color: var(--colorNeutralForeground1); font: 400 var(--font-size-200)/1.4 var(--font-family-base); } .ds-version-table th { padding: 8px 12px 4px; border-bottom: 1px solid var(--colorNeutralStroke2); background: var(--colorNeutralBackground2); color: var(--colorNeutralForeground2); font-size: var(--font-size-300); font-weight: 600; text-align: left; white-space: nowrap; } .ds-version-table td { height: 44px; padding: 0 12px; border-bottom: 1px solid var(--colorNeutralStroke2); white-space: nowrap; } .ds-version-table tbody tr:hover td { background: var(--colorNeutralBackground1Hover); }"
     },
     {
-      "name": "Badge / Recent Indicator",
+      "name": "Dashboard Stat Card",
       "kind": "custom",
-      "refersTo": "badge",
-      "description": "Small indicator badge (e.g., 'recently updated'). Green circle with high visibility.",
-      "html": "<span class=\"ds-badge\" title=\"Updated recently\"></span>",
-      "css": ".ds-badge { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #009485; margin-left: 4px; vertical-align: middle; }"
+      "description": "Fluent UI card pairs a prominent brand-colored metric with its compact label.",
+      "html": "<article class=\"ds-stat-card\"><strong>599</strong><span>Apps tracked</span><small>Current catalog</small></article>",
+      "css": ".ds-stat-card { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: var(--radius-large); background: var(--colorNeutralBackground1); color: var(--colorNeutralForeground1); font-family: var(--font-family-base); } .ds-stat-card strong { color: var(--colorBrandForeground1); font-size: 24px; line-height: 1.2; } .ds-stat-card span { font-size: var(--font-size-200); font-weight: 600; } .ds-stat-card small { color: var(--colorNeutralForeground3); font-size: var(--font-size-100); }"
     }
   ],
   "narrative": {
