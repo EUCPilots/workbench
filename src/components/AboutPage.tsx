@@ -36,6 +36,15 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.2.2',
+    date: '2026-11-09',
+    changes: [
+      'Upgraded the Astro PWA integration and refreshed related framework and build dependencies.',
+      'Improved the dashboard with consistent ARM64 and installer-type reporting, better keyboard support, and corrected update cadence chart rendering.',
+      'Removed the URI lookup feature from the Dashboard.',
+    ],
+  },
+  {
     version: '3.2.1',
     date: '2026-10-26',
     changes: [

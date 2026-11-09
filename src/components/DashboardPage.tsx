@@ -1,6 +1,6 @@
 import { useMemo, useState, memo, type KeyboardEvent } from 'react';
-import { Card, CardHeader, Text, Input, Button, Tooltip } from '@fluentui/react-components';
-import { SearchRegular, AppGenericRegular, LockClosedRegular, DismissRegular, GlobeRegular } from '@fluentui/react-icons';
+import { Card, CardHeader, Text, Button, Tooltip } from '@fluentui/react-components';
+import { LockClosedRegular, GlobeRegular } from '@fluentui/react-icons';
 import { FaGithub } from 'react-icons/fa';
 
 interface AppVersion {
@@ -244,134 +244,6 @@ const TopApps = memo(function TopApps({ apps, onSelectApp }: { apps: AppEntry[];
   );
 });
 
-interface UriMatch {
-  appName: string;
-  displayName: string;
-  matchedUri: string;
-  version: AppVersion;
-}
-
-interface UriIndexEntry {
-  uris: string[];
-  appName: string;
-  displayName: string;
-  version: AppVersion;
-}
-
-function UriLookup({ apps, onSelectApp }: { apps: AppEntry[]; onSelectApp: (name: string) => void }) {
-  const [query, setQuery] = useState('');
-
-  const uriIndex = useMemo<UriIndexEntry[]>(() => {
-    const index: UriIndexEntry[] = [];
-    for (const app of apps) {
-      for (const v of app.versions) {
-        const uris: string[] = [];
-        for (const val of Object.values(v)) {
-          if (typeof val === 'string' && /^https?:\/\//i.test(val)) uris.push(val);
-        }
-        if (uris.length > 0) index.push({ uris, appName: app.name, displayName: app.displayName, version: v });
-      }
-    }
-    return index;
-  }, [apps]);
-
-  const matches = useMemo<UriMatch[]>(() => {
-    const q = query.trim().toLowerCase();
-    if (q.length < 4) return [];
-    const results: UriMatch[] = [];
-    for (const entry of uriIndex) {
-      for (const uri of entry.uris) {
-        if (uri.toLowerCase().includes(q)) {
-          results.push({ appName: entry.appName, displayName: entry.displayName, matchedUri: uri, version: entry.version });
-          break;
-        }
-      }
-      if (results.length >= 50) break;
-    }
-    return results;
-  }, [uriIndex, query]);
-
-  const hasQuery = query.trim().length >= 4;
-
-  function highlightMatch(text: string, q: string) {
-    const idx = text.toLowerCase().indexOf(q.toLowerCase());
-    if (idx === -1) return <>{text}</>;
-    return (
-      <>
-        {text.slice(0, idx)}
-        <mark className="search-highlight">{text.slice(idx, idx + q.length)}</mark>
-        {text.slice(idx + q.length)}
-      </>
-    );
-  }
-
-  return (
-    <Card className="uri-lookup">
-      <CardHeader
-        header={<Text weight="semibold">URI lookup</Text>}
-        description={<Text size={200}>Paste a download URL to find which app it belongs to</Text>}
-      />
-
-      <Input
-        contentBefore={<SearchRegular aria-hidden="true" style={{ width: 15, height: 15 }} />}
-        contentAfter={
-          query ? (
-            <Button
-              appearance="subtle"
-              size="small"
-              icon={<DismissRegular style={{ width: 14, height: 14 }} />}
-              onClick={() => setQuery('')}
-              aria-label="Clear"
-            />
-          ) : undefined
-        }
-        placeholder="https://example.com/installer.exe"
-        value={query}
-        onChange={(_e, data) => setQuery(data.value)}
-        spellCheck={false}
-        autoComplete="off"
-        aria-label="Search by download URL"
-        style={{ fontFamily: 'Cascadia Code, Consolas, monospace', width: '100%' }}
-      />
-
-      {hasQuery && matches.length === 0 && (
-        <p className="uri-lookup__empty">No matching URI found.</p>
-      )}
-
-      {matches.length > 0 && (
-        <ul className="uri-lookup__results">
-          {matches.map((m) => {
-            const v = m.version;
-            const meta = [v.Version, v.Architecture, v.Type ?? getFileType(v)].filter(Boolean).join(' · ');
-            return (
-              <li
-                key={`${m.appName}|${m.matchedUri}`}
-                className="uri-lookup__result"
-                role="button"
-                tabIndex={0}
-                onClick={() => onSelectApp(m.appName)}
-                onKeyDown={(e) => handleButtonKeyDown(e, () => onSelectApp(m.appName))}
-              >
-                <div className="uri-lookup__result-app">
-                  <AppGenericRegular aria-hidden="true" style={{ width: 12, height: 12 }} />
-                  <span className="uri-lookup__result-name">{m.displayName}</span>
-                  {meta && <span className="uri-lookup__result-meta">{meta}</span>}
-                </div>
-                <div className="uri-lookup__result-uri">
-                  {highlightMatch(m.matchedUri, query.trim())}
-                </div>
-              </li>
-            );
-          })}
-          {matches.length === 50 && (
-            <li className="uri-lookup__more">Showing first 50 matches — refine your query to narrow results</li>
-          )}
-        </ul>
-      )}
-    </Card>
-  );
-}
-
 function MsixCallout({ count }: { count: number }) {
   return (
     <div className="msix-callout">
@@ -598,9 +470,6 @@ export default function DashboardPage({ apps, totalVersionCount, onSelectApp, re
         />
         <ColumnChart data={cadenceCounts} />
       </Card>
-
-      {/* URI lookup */}
-      <UriLookup apps={apps} onSelectApp={onSelectApp} />
 
       {/* Primary stat cards */}
       <div className="dashboard-stats">

@@ -73,6 +73,13 @@ describe('dashboard update cadence', () => {
 });
 
 describe('dashboard data presentation', () => {
+  it('does not render URI lookup', () => {
+    const html = renderDashboard([{ URI: 'https://example.com/installer.exe' }]);
+
+    expect(html).not.toContain('URI lookup');
+    expect(html).not.toContain('Search by download URL');
+  });
+
   it('normalizes ARM64 architecture casing in the stat and chart', () => {
     const html = renderDashboard([
       { Architecture: 'arm64' },
