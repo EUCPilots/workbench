@@ -14,7 +14,7 @@
     "@astrojs/react": "^7.1.4",
     "@fluentui/react-components": "^9.75.1",
     "@fluentui/react-icons": "^2.0.345",
-    "astro": "^7.4.7",
+    "astro": "^7.4.8",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-icons": "^5.7.0"
