@@ -11,10 +11,10 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^7.1.4",
-    "@fluentui/react-components": "^9.75.1",
-    "@fluentui/react-icons": "^2.0.345",
-    "astro": "^7.4.7",
+    "@astrojs/react": "^7.1.9",
+    "@fluentui/react-components": "^9.75.2",
+    "@fluentui/react-icons": "^2.0.346",
+    "astro": "^7.4.12",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-icons": "^5.7.0"
@@ -23,9 +23,9 @@
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vite-pwa/astro": "^2.0.1",
+    "@vite-pwa/astro": "^2.0.2",
     "typescript": "^7.0.2",
-    "vite": "8.3.6",
+    "vite": "8.3.8",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"
   },
