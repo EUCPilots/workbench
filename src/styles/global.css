@@ -663,6 +663,65 @@ a:hover {
   gap: 12px;
 }
 
+.winget-packages {
+  padding: 12px 16px;
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--radius-large);
+  background: var(--colorNeutralBackground1);
+}
+
+.winget-packages h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.winget-packages p,
+.winget-packages__feedback {
+  margin: 4px 0 0;
+  color: var(--colorNeutralForeground2);
+}
+
+.winget-packages__feedback:empty {
+  margin: 0;
+}
+
+.winget-packages__list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.winget-packages__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--colorNeutralStroke2);
+}
+
+.winget-packages__identity {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.winget-packages__identity strong,
+.winget-packages__identity code {
+  display: block;
+}
+
+.winget-packages code {
+  overflow-wrap: anywhere;
+}
+
+.winget-packages__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
 /* =============================================
    Filter Section
    ============================================= */

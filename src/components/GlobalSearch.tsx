@@ -2,40 +2,23 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, Input } from '@fluentui/react-components';
 import { SearchRegular, HistoryRegular, AppGenericRegular, DismissRegular } from '@fluentui/react-icons';
+import type { AppRecord, AppVersion } from '../lib/appData';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-interface AppVersion {
-  Version?: string;
-  Type?: string;
-  Architecture?: string;
-  Language?: string;
-  URI?: string;
-  Size?: number | string;
-  [key: string]: unknown;
-}
-
-interface AppEntry {
-  name: string;
-  displayName: string;
-  versions: AppVersion[];
-}
-
-interface VersionMatch {
+interface SearchMatch {
   field: string;
   value: string;
-  versionIndex: number;
 }
 
 interface AppResult {
   appName: string;
   displayName: string;
-  nameMatch: boolean;
-  versionMatches: VersionMatch[];
+  matches: SearchMatch[];
 }
 
 interface GlobalSearchProps {
-  apps: AppEntry[];
+  apps: Pick<AppRecord, 'name' | 'displayName' | 'versions' | 'winget'>[];
   onSelect: (appName: string) => void;
 }
 
@@ -126,21 +109,27 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
     for (const app of appsWithLower) {
       const nameMatch = app.lowerDisplayName.includes(q) || app.lowerName.includes(q);
 
-      const versionMatches: VersionMatch[] = [];
+      const packages = app.winget?.packages ?? [];
+      const packageMatch = packages.find(({ id }) => id.toLowerCase() === q)
+        ?? packages.find(({ id }) => id.toLowerCase().includes(q));
+      const versionMatches: SearchMatch[] = [];
       for (let i = 0; i < app.versions.length; i++) {
         if (versionMatches.length >= MAX_VERSION_MATCHES) break;
         const v = app.versions[i];
         for (const { key, label } of VERSION_FIELDS) {
           const val = String(v[key] ?? '');
           if (val && val.toLowerCase().includes(q)) {
-            versionMatches.push({ field: label, value: val, versionIndex: i });
+            versionMatches.push({ field: label, value: val });
             break;
           }
         }
       }
 
-      if (nameMatch || versionMatches.length > 0) {
-        out.push({ appName: app.name, displayName: app.displayName, nameMatch, versionMatches });
+      const matches = packageMatch
+        ? [{ field: 'WinGet ID', value: packageMatch.id }, ...versionMatches]
+        : versionMatches;
+      if (nameMatch || matches.length > 0) {
+        out.push({ appName: app.name, displayName: app.displayName, matches });
       }
     }
 
@@ -283,7 +272,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
               )
             }
             className="global-search-input"
-            placeholder="Search apps, versions, URLs…"
+            placeholder="Search apps, versions, WinGet IDs…"
             value={inputValue}
             onChange={(_e, data) => setInputValue(data.value)}
             onKeyDown={handleKeyDown}
@@ -297,7 +286,7 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
 
         {inputValue.trim() === '' && searchHistory.length === 0 && (
           <div className="global-search-hint">
-            Type to search across all apps and version data
+            Search across all apps, version data, and WinGet package IDs
           </div>
         )}
 
@@ -350,9 +339,9 @@ export default function GlobalSearch({ apps, onSelect }: GlobalSearchProps) {
                   {highlightMatch(result.displayName, query.trim())}
                 </div>
 
-                {result.versionMatches.length > 0 && (
+                {result.matches.length > 0 && (
                   <ul className="global-search-matches">
-                    {result.versionMatches.map((m, mi) => (
+                    {result.matches.map((m, mi) => (
                       <li key={mi} className="global-search-match">
                         <span className="global-search-match__field">{m.field}</span>
                         <span className="global-search-match__value">

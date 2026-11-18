@@ -52,6 +52,7 @@ dist/
 
 # App JSON data — fetched from aaronparker/apptracker at build time, not stored here
 json/
+/winget/evergreen-winget.json
 
 # Cloned source repo used during CI build
 _appdata/

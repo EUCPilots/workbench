@@ -1,6 +1,9 @@
-import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, it, vi } from 'vitest';
 import { normalizeVersions, type AppVersion } from './appData';
+import { loadWinGetMappings } from './wingetMapping';
 
 function relativeLuminance(hex: string) {
   const value = hex.replace('#', '').trim();
@@ -29,6 +32,63 @@ describe('normalizeVersions', () => {
 
     expect(result).toBe(versions);
     expect(result).toHaveLength(2);
+  });
+
+  describe('WinGet mappings', () => {
+    function withMappingFile(content: string | undefined, check: (path: string) => void) {
+      const dir = mkdtempSync(join(tmpdir(), 'workbench-winget-'));
+      const path = join(dir, 'evergreen-winget.json');
+      try {
+        if (content !== undefined) writeFileSync(path, content);
+        check(path);
+      } finally {
+        rmSync(dir, { recursive: true });
+      }
+    }
+
+    it('keeps all distinct package IDs on one case-normalized Evergreen key', () => {
+      const x64 = { id: 'Postman.Postman', name: 'Postman', publisher: 'Postman', architectures: ['x64'] };
+      const arm64 = { ...x64, id: 'Postman.Postman.arm64', architectures: ['arm64'] };
+      const notepad = { id: 'Notepad++.Notepad++', name: 'Notepad++', publisher: 'Notepad++ Team', architectures: [] };
+      withMappingFile(JSON.stringify({
+        schemaVersion: 1,
+        applications: {
+          Postman: { match: 'high', winget: [x64, arm64, x64], wingetByArchitecture: {} },
+          PostmanAlias: { match: 'medium', winget: [x64] },
+          NotepadPlusPlus: { match: 'high', winget: [notepad] },
+          NoEquivalent: { match: 'override', winget: [] },
+          NotFound: { match: null, winget: [] },
+        },
+      }), (path) => {
+        const mappings = loadWinGetMappings(path);
+        expect(mappings.get('postman')).toEqual({ match: 'high', packages: [x64, arm64] });
+        expect(mappings.get('postmanalias')).toEqual({ match: 'medium', packages: [x64] });
+        expect(mappings.get('notepadplusplus')?.packages).toEqual([notepad]);
+        expect(mappings.get('noequivalent')).toEqual({ match: 'override', packages: [] });
+        expect(mappings.get('notfound')).toEqual({ match: null, packages: [] });
+        expect(mappings.get('notinmapping')).toBeUndefined();
+      });
+    });
+
+    it.each([
+      ['missing', undefined],
+      ['malformed JSON', '{'],
+      ['unsupported schema', '{"schemaVersion":2,"applications":{}}'],
+      ['unsafe command argument', JSON.stringify({
+        schemaVersion: 1,
+        applications: {
+          Example: { match: 'high', winget: [{ id: 'Example.App;whoami', name: 'Example', publisher: 'Example', architectures: [] }] },
+        },
+      })],
+    ])('warns and omits WinGet metadata when input is %s', (_label, content) => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        withMappingFile(content, (path) => expect(loadWinGetMappings(path).size).toBe(0));
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('Building without WinGet metadata.'));
+      } finally {
+        warn.mockRestore();
+      }
+    });
   });
 
   it('wraps a single object in an array', () => {

@@ -1,6 +1,7 @@
 import { basename, join } from 'node:path';
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { loadWinGetMappings, type WinGetMapping } from './wingetMapping';
 
 export interface AppVersion {
   Version?: string;
@@ -18,6 +19,7 @@ export interface AppRecord {
   link: string | null;
   versions: AppVersion[];
   lastUpdated: string | null;
+  winget?: WinGetMapping;
 }
 
 interface SupportedApp {
@@ -101,6 +103,9 @@ function buildDateMapFromGit(): Map<string, string> {
 
 const supportedAppMap = loadSupportedAppMap();
 const dateMap = buildDateMapFromGit();
+const wingetMappings = loadWinGetMappings(
+  join(process.env.JSON_GIT_DIR ?? process.cwd(), 'winget', 'evergreen-winget.json')
+);
 
 export function getApps(): AppRecord[] {
   return Object.entries(modules)
@@ -111,7 +116,8 @@ export function getApps(): AppRecord[] {
       const displayName = supportedApp?.application ?? name;
       const link = supportedApp?.link ?? null;
       const lastUpdated = dateMap.get(name.toLowerCase()) ?? null;
-      return { name, displayName, link, versions: normalizeVersions(mod.default), lastUpdated };
+      const winget = wingetMappings.get(name.toLowerCase());
+      return { name, displayName, link, versions: normalizeVersions(mod.default), lastUpdated, ...(winget && { winget }) };
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }));
 }

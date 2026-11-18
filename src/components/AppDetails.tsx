@@ -19,25 +19,62 @@ import {
   ArrowSortDownRegular,
   ArrowSortRegular,
 } from '@fluentui/react-icons';
+import type { AppVersion, AppRecord } from '../lib/appData';
 
-interface AppVersion {
-  Version?: string;
-  Type?: string;
-  Architecture?: string;
-  Language?: string;
-  URI?: string;
-  Size?: number | string;
-  [key: string]: unknown;
-}
-
-interface AppDetailsProps {
+interface AppDetailsProps extends Omit<AppRecord, 'name'> {
   appName: string;
-  displayName: string;
-  link: string | null;
-  versions: AppVersion[];
-  lastUpdated: string | null;
   onBack?: () => void;
   base: string;
+}
+
+function WinGetPackages({ mapping }: { mapping: NonNullable<AppRecord['winget']> }) {
+  const [copyResult, setCopyResult] = useState<{ message: string; fallback?: string }>();
+
+  async function copy(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyResult({ message: `${label} copied.` });
+    } catch {
+      setCopyResult({ message: `Could not copy ${label.toLowerCase()}. Select and copy the text below.`, fallback: text });
+    }
+  }
+
+  return (
+    <section className="winget-packages" aria-labelledby="winget-packages-title">
+      <h2 id="winget-packages-title">WinGet packages</h2>
+      {mapping.packages.length === 0 ? (
+        <p>{mapping.match === 'override' ? 'No equivalent package recorded.' : 'No package match found.'}</p>
+      ) : (
+        <>
+          {mapping.match === 'medium' && (
+            <p>Possible match. Verify the package and edition before using it.</p>
+          )}
+          <ul className="winget-packages__list">
+            {mapping.packages.map(({ id, name, publisher, architectures }) => {
+              const inspectCommand = `winget show --id ${id} --exact --source winget`;
+              return (
+                <li className="winget-packages__item" key={id}>
+                  <div className="winget-packages__identity">
+                    <strong>{name}</strong>
+                    <code>{id}</code>
+                    <p>{publisher}{architectures.length > 0 && ` · ${architectures.join(', ')}`}</p>
+                  </div>
+                  <div className="winget-packages__actions">
+                    <Button appearance="subtle" size="small" aria-label={`Copy package ID: ${id}`}
+                      onClick={() => void copy(id, 'Package ID')}>Copy package ID</Button>
+                    <Button appearance="subtle" size="small" aria-label={`Copy inspect command: ${id}`}
+                      onClick={() => void copy(inspectCommand, 'Inspect command')}>Copy inspect command</Button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="winget-packages__feedback" role="status">{copyResult?.message}</div>
+          {copyResult?.fallback && <code>{copyResult.fallback}</code>}
+        </>
+      )}
+    </section>
+  );
 }
 
 const DROPDOWN_FILTER_COLS = new Set([
@@ -137,7 +174,7 @@ function initFileTypes(name: string, types: string[]): Set<string> {
   return new Set(types);
 }
 
-export default function AppDetails({ appName, displayName, link, versions, lastUpdated, onBack, base }: AppDetailsProps) {
+export default function AppDetails({ appName, displayName, link, versions, lastUpdated, winget, onBack, base }: AppDetailsProps) {
   const feedUrl = `${base}feeds/${appName}.xml`;
   const formattedUpdated = formatDate(lastUpdated);
 
@@ -381,6 +418,7 @@ export default function AppDetails({ appName, displayName, link, versions, lastU
       </div>
 
       <div className="details-panel__body">
+        {winget && <WinGetPackages key={appName} mapping={winget} />}
         {/* Filters */}
         <div className="filter-section">
           {architectures.length > 0 && (

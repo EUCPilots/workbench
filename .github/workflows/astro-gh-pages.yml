@@ -11,6 +11,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - ".github/workflows/astro-gh-pages.yml"
       - "src/**"
       - "public/**"
       - "astro.config.mjs"
@@ -43,11 +44,10 @@ jobs:
 
       - name: Fetch app JSON data from eucpilots/apptracker
         run: |
-          # Blobless sparse clone: downloads full commit history but only the
-          # json/ directory blobs. This gives git log accurate lastUpdated dates
-          # without downloading the rest of the repository content.
+          # Keep the catalog and its WinGet mapping on the same checkout.
+          # Full history gives git log accurate lastUpdated dates.
           git clone --filter=blob:none --sparse https://github.com/eucpilots/apptracker.git ${{ github.workspace }}/_appdata
-          cd ${{ github.workspace }}/_appdata && git sparse-checkout set json
+          cd ${{ github.workspace }}/_appdata && git sparse-checkout set json winget
           mkdir -p ${{ github.workspace }}/json
           cp ${{ github.workspace }}/_appdata/json/*.json ${{ github.workspace }}/json/
 
@@ -68,8 +68,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          # Point git log at the cloned source repo so lastUpdated dates are
-          # resolved from eucpilots/apptracker's commit history, not this repo.
+          # Read lastUpdated dates and WinGet metadata from the source checkout.
           JSON_GIT_DIR: ${{ github.workspace }}/_appdata
 
       - name: Upload artifact

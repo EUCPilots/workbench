@@ -24,24 +24,7 @@ import ErrorBoundary from './ErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import Toast from './Toast';
 import { useToastNotification } from '../utils/useToastNotification';
-
-interface AppVersion {
-  Version?: string;
-  Type?: string;
-  Architecture?: string;
-  Language?: string;
-  URI?: string;
-  Size?: number | string;
-  [key: string]: unknown;
-}
-
-interface AppRecord {
-  name: string;
-  displayName: string;
-  link: string | null;
-  versions: AppVersion[];
-  lastUpdated: string | null;
-}
+import type { AppRecord } from '../lib/appData';
 
 interface AppData {
   meta: {
@@ -50,14 +33,6 @@ interface AppData {
     generatedAt: string;
   };
   apps: AppRecord[];
-}
-
-interface AppEntry {
-  name: string;
-  displayName: string;
-  link: string | null;
-  versions: AppVersion[];
-  lastUpdated: string | null;
 }
 
 type Tab = 'apps' | 'dashboard' | 'about';
@@ -176,16 +151,7 @@ export default function AppsPage({ base }: AppsPageProps) {
       });
   }, [base]);
 
-  const allApps: AppEntry[] = useMemo(() => {
-    if (!appData) return [];
-    return appData.apps.map((a) => ({
-      name: a.name,
-      displayName: a.displayName,
-      link: a.link,
-      versions: a.versions,
-      lastUpdated: a.lastUpdated,
-    }));
-  }, [appData]);
+  const allApps = useMemo(() => appData?.apps ?? [], [appData]);
 
   useEffect(() => {
     function onHashChange() {
@@ -498,6 +464,7 @@ export default function AppsPage({ base }: AppsPageProps) {
                     link={selectedEntry.link}
                     versions={selectedEntry.versions}
                     lastUpdated={selectedEntry.lastUpdated}
+                    winget={selectedEntry.winget}
                     onBack={isMobile ? () => setSidebarOpen(true) : undefined}
                     base={base}
                   />
