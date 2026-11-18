@@ -10,7 +10,8 @@ Switching from Apps to Dashboard or About clears the app search and resets the R
 
 ## WinGet package references
 
-App details list all mapped WinGet package IDs for the same Evergreen app.
+The WinGet button in the app details header opens a flyout listing all mapped
+WinGet package IDs for the same Evergreen app.
 Copy an ID or a `winget show` command to inspect the package on Windows.
 Use global search to find Evergreen apps by WinGet ID. Matches are references
 only; Evergreen remains the source for versions and installer URLs.

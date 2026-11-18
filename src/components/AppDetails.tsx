@@ -9,11 +9,15 @@ import {
   MenuPopover,
   MenuList,
   MenuItemCheckbox,
+  Popover,
+  PopoverTrigger,
+  PopoverSurface,
 } from '@fluentui/react-components';
 import {
   ArrowLeftRegular,
   CopyRegular,
   RssRegular,
+  BoxRegular,
   CheckmarkRegular,
   ArrowSortUpRegular,
   ArrowSortDownRegular,
@@ -74,6 +78,29 @@ function WinGetPackages({ mapping }: { mapping: NonNullable<AppRecord['winget']>
         </>
       )}
     </section>
+  );
+}
+
+function WinGetFlyout({ displayName, mapping }: { displayName: string; mapping: NonNullable<AppRecord['winget']> }) {
+  const count = mapping.packages.length;
+  return (
+    <Popover withArrow trapFocus positioning="below">
+      <PopoverTrigger disableButtonEnhancement>
+        <button
+          className="winget-trigger-btn"
+          title={`WinGet packages for ${displayName}`}
+          aria-label={`WinGet packages for ${displayName}${count > 0 ? ` (${count})` : ''}`}
+        >
+          <BoxRegular aria-hidden="true" style={{ width: 13, height: 13 }} />
+          <span className="winget-trigger-btn__label">
+            WinGet{count > 0 ? ` (${count})` : ''}
+          </span>
+        </button>
+      </PopoverTrigger>
+      <PopoverSurface className="winget-flyout" aria-labelledby="winget-packages-title">
+        <WinGetPackages mapping={mapping} />
+      </PopoverSurface>
+    </Popover>
   );
 }
 
@@ -389,6 +416,9 @@ export default function AppDetails({ appName, displayName, link, versions, lastU
             {copiedCmd ? 'Copied!' : `Get-EvergreenApp -Name ${appName}`}
           </code>
         </button>
+        {formattedUpdated && (
+          <span className="details-panel__updated">Updated {formattedUpdated}</span>
+        )}
         <a
           className="feed-subscribe-btn"
           href={feedUrl}
@@ -400,9 +430,6 @@ export default function AppDetails({ appName, displayName, link, versions, lastU
           <RssRegular aria-hidden="true" style={{ width: 13, height: 13 }} />
           <span className="feed-subscribe-btn__label">RSS</span>
         </a>
-        {formattedUpdated && (
-          <span className="details-panel__updated">Updated {formattedUpdated}</span>
-        )}
         {link && (
           <a
             className="details-panel__about-btn"
@@ -415,10 +442,10 @@ export default function AppDetails({ appName, displayName, link, versions, lastU
             About App
           </a>
         )}
+        {winget && <WinGetFlyout displayName={displayName} mapping={winget} />}
       </div>
 
       <div className="details-panel__body">
-        {winget && <WinGetPackages key={appName} mapping={winget} />}
         {/* Filters */}
         <div className="filter-section">
           {architectures.length > 0 && (
