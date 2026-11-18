@@ -39,7 +39,10 @@ const CHANGELOG = [
     version: '3.3.0',
     date: '2026-11-18',
     changes: [
-      
+      'Added WinGet package references to app details, with copy actions for package IDs and inspect commands, plus global search by package ID.',
+      'Added a counted WinGet button in the app header that opens a flyout of mapped packages.',
+      'Added a first-visit welcome dialog introducing key Workbench features; dismissal is remembered between visits.',
+      'Updated project dependencies.',
     ],
   },
   {
