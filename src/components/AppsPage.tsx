@@ -94,10 +94,32 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
   });
   const { toast, showToast, dismissToast } = useToastNotification();
-  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [activeHelpDialog, setActiveHelpDialog] = useState<'welcome' | 'help' | null>(null);
   const sidebarSearchRef = useRef<HTMLInputElement>(null);
   const swipeStartX = useRef<number | null>(null);
   const swipeStartY = useRef<number | null>(null);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('welcomeDialogSeen') !== 'true') {
+        setActiveHelpDialog('welcome');
+      }
+    } catch (error) {
+      console.error('Unable to read welcome dialog preference', error);
+      setActiveHelpDialog('welcome');
+    }
+  }, []);
+
+  const closeHelpDialog = useCallback(() => {
+    if (activeHelpDialog === 'welcome') {
+      try {
+        localStorage.setItem('welcomeDialogSeen', 'true');
+      } catch (error) {
+        console.error('Unable to save welcome dialog preference', error);
+      }
+    }
+    setActiveHelpDialog(null);
+  }, [activeHelpDialog]);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedQuery(searchQuery), 150);
@@ -267,7 +289,8 @@ export default function AppsPage({ base }: AppsPageProps) {
 
       if (e.key === '?' && !inInput) {
         e.preventDefault();
-        setShowShortcuts((v) => !v);
+        if (activeHelpDialog) closeHelpDialog();
+        else setActiveHelpDialog('help');
         return;
       }
 
@@ -301,7 +324,7 @@ export default function AppsPage({ base }: AppsPageProps) {
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [tab, orderedApps, selectedApp, handleSelectApp, handleToggleFavourite]);
+  }, [tab, orderedApps, selectedApp, activeHelpDialog, closeHelpDialog, handleSelectApp, handleToggleFavourite]);
 
   const selectedEntry = useMemo(
     () => allApps.find((a) => a.name === selectedApp) ?? null,
@@ -358,7 +381,11 @@ export default function AppsPage({ base }: AppsPageProps) {
 
   return (
     <>
-      <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
+      <KeyboardShortcutsModal
+        open={activeHelpDialog !== null}
+        welcome={activeHelpDialog === 'welcome'}
+        onClose={closeHelpDialog}
+      />
 
       {/* Header */}
       <header className="app-header">
@@ -373,7 +400,7 @@ export default function AppsPage({ base }: AppsPageProps) {
             appearance="subtle"
             className="header-icon-btn"
             icon={<QuestionCircleRegular />}
-            onClick={() => setShowShortcuts(true)}
+            onClick={() => setActiveHelpDialog('help')}
             aria-label="Keyboard shortcuts"
             title="Keyboard shortcuts (?)"
           />

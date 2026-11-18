@@ -26,17 +26,22 @@ const SHORTCUTS: ShortcutRow[] = [
 
 interface KeyboardShortcutsModalProps {
   open: boolean;
+  welcome?: boolean;
   onClose: () => void;
 }
 
-export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
+export default function KeyboardShortcutsModal({
+  open,
+  welcome = false,
+  onClose,
+}: KeyboardShortcutsModalProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'shortcuts'>('overview');
 
   return (
     <Dialog open={open} onOpenChange={(_e, data) => { if (!data.open) onClose(); }}>
       <DialogSurface
         backdrop={{ className: 'dialog-backdrop' }}
-        style={{ minWidth: '500px', maxWidth: '740px', width: 'min(90vw, 740px)' }}
+        style={{ minWidth: 0, maxWidth: '740px', width: 'min(90vw, 740px)' }}
       >
         <DialogTitle
           action={
@@ -48,23 +53,25 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
             />
           }
         >
-          Help
+          {welcome ? 'Welcome to Evergreen Workbench' : 'Help'}
         </DialogTitle>
         <DialogBody>
           <DialogContent>
-            <TabList
-              selectedValue={activeTab}
-              onTabSelect={(_e, data) => setActiveTab(data.value as 'overview' | 'shortcuts')}
-              appearance="subtle"
-              className="shortcut-tabs"
-            >
-              <Tab value="overview">What is this</Tab>
-              <Tab value="shortcuts">Keyboard shortcuts</Tab>
-            </TabList>
+            {!welcome && (
+              <TabList
+                selectedValue={activeTab}
+                onTabSelect={(_e, data) => setActiveTab(data.value as 'overview' | 'shortcuts')}
+                appearance="subtle"
+                className="shortcut-tabs"
+              >
+                <Tab value="overview">What is this</Tab>
+                <Tab value="shortcuts">Keyboard shortcuts</Tab>
+              </TabList>
+            )}
 
             {activeTab === 'overview' ? (
               <div className="help-panel help-panel--overview">
-                <span className="help-panel__eyebrow">Welcome to Evergreen Workbench</span>
+                {!welcome && <span className="help-panel__eyebrow">Welcome to Evergreen Workbench</span>}
                 <h3 className="help-panel__title">Track the latest app versions with confidence.</h3>
                 <p className="help-panel__copy">
                   Browse the catalog, pin the apps you care about, and jump straight to the
@@ -94,6 +101,11 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
                     </div>
                   </div>
                 </div>
+                {welcome && (
+                  <div className="welcome-dialog__actions">
+                    <Button appearance="primary" onClick={onClose}>Explore apps</Button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="help-panel help-panel--shortcuts">

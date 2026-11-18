@@ -36,6 +36,13 @@ const INFO_ROWS = [
 
 const CHANGELOG = [
   {
+    version: '3.3.0',
+    date: '2026-11-18',
+    changes: [
+      
+    ],
+  },
+  {
     version: '3.2.2',
     date: '2026-11-09',
     changes: [
